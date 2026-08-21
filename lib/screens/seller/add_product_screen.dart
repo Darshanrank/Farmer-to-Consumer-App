@@ -150,8 +150,26 @@ class _AddProductScreenState extends State<AddProductScreen>
 
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        throw Exception('User not logged in');
+      final String sellerId = currentUser?.uid ?? 'seller_${DateTime.now().millisecondsSinceEpoch}';
+      
+      String sellerName = 'Kisan Farmer';
+      if (currentUser != null) {
+        try {
+          DocumentSnapshot userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .get()
+              .timeout(const Duration(seconds: 4));
+
+          if (userDoc.exists) {
+            final data = userDoc.data() as Map<String, dynamic>?;
+            if (data != null && data['fullName'] != null && data['fullName'].toString().trim().isNotEmpty) {
+              sellerName = data['fullName'].toString();
+            }
+          }
+        } catch (e) {
+          debugPrint('User doc fetch failed/timed out: $e');
+        }
       }
 
       String imageUrl = '';
@@ -159,15 +177,15 @@ class _AddProductScreenState extends State<AddProductScreen>
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('product_images')
-            .child('${DateTime.now().millisecondsSinceEpoch}_${currentUser.uid}.jpg');
+            .child('${DateTime.now().millisecondsSinceEpoch}_$sellerId.jpg');
 
         final uploadTask = storageRef.putData(
             _imageBytes!, SettableMetadata(contentType: 'image/jpeg'));
         
-        final snapshot = await uploadTask;
-        imageUrl = await snapshot.ref.getDownloadURL();
+        final snapshot = await uploadTask.timeout(const Duration(seconds: 4));
+        imageUrl = await snapshot.ref.getDownloadURL().timeout(const Duration(seconds: 4));
       } catch (e) {
-        debugPrint('Firebase Storage upload failed: $e. Falling back to base64.');
+        debugPrint('Firebase Storage upload failed or timed out: $e. Falling back to base64.');
         try {
           String base64String = base64Encode(_imageBytes!);
           if (base64String.length > 800000) {
@@ -175,21 +193,7 @@ class _AddProductScreenState extends State<AddProductScreen>
           }
           imageUrl = base64String;
         } catch (fallbackError) {
-          throw Exception('Failed to upload image: $e\nFallback failed: $fallbackError');
-        }
-      }
-
-      DocumentSnapshot userDoc =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUser.uid)
-              .get();
-
-      String sellerName = 'Unknown Seller';
-      if (userDoc.exists) {
-        final data = userDoc.data() as Map<String, dynamic>?;
-        if (data != null && data['fullName'] != null) {
-          sellerName = data['fullName'].toString();
+          throw Exception('Failed to process image: $e\nFallback error: $fallbackError');
         }
       }
 
@@ -211,7 +215,6 @@ class _AddProductScreenState extends State<AddProductScreen>
       final String unit = _selectedUnit;
       final String category = _selectedCategory ?? 'Other';
       final String harvestDate = _harvestDateController.text.trim();
-      final String sellerId = currentUser.uid;
 
       final Map<String, dynamic> productData = <String, dynamic>{
         'name': productName,
@@ -222,7 +225,7 @@ class _AddProductScreenState extends State<AddProductScreen>
         'category': category,
         'seller_name': sellerName,
         'imageUrl': imageUrl,
-        'image': imageUrl, // Ensure backward compatibility with the fallback string
+        'image': imageUrl, // Backward compatibility
         'sellerId': sellerId,
         'createdAt': FieldValue.serverTimestamp(),
       };
@@ -232,7 +235,10 @@ class _AddProductScreenState extends State<AddProductScreen>
       }
 
       debugPrint('Adding product to Firestore...');
-      await FirebaseFirestore.instance.collection('products').add(productData);
+      await FirebaseFirestore.instance
+          .collection('products')
+          .add(productData)
+          .timeout(const Duration(seconds: 10));
       debugPrint('Product added successfully!');
 
       if (!mounted) return;
@@ -262,11 +268,14 @@ class _AddProductScreenState extends State<AddProductScreen>
         _imageBytes = null;
       });
 
-      // After publishing, navigate back to SellerDashboard
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const SellerDashboard()),
-        (route) => false,
-      );
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context, true);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const SellerDashboard()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -274,7 +283,7 @@ class _AddProductScreenState extends State<AddProductScreen>
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Error adding product: $e"),
+          content: Text("Error adding product: ${e.toString().replaceAll('Exception: ', '')}"),
           backgroundColor: AppColors.error,
         ),
       );

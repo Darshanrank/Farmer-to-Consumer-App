@@ -122,11 +122,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
           final uploadTask = storageRef.putData(
               _imageBytes!, SettableMetadata(contentType: 'image/jpeg'));
           
-          final snapshot = await uploadTask;
-          finalImageUrl = await snapshot.ref.getDownloadURL();
-          finalImageBase64Fallback = finalImageUrl; // Both fields can be url now
+          final snapshot = await uploadTask.timeout(const Duration(seconds: 4));
+          finalImageUrl = await snapshot.ref.getDownloadURL().timeout(const Duration(seconds: 4));
+          finalImageBase64Fallback = finalImageUrl;
         } catch (e) {
-          debugPrint('Firebase Storage upload failed: $e. Falling back to base64.');
+          debugPrint('Firebase Storage upload failed or timed out: $e. Falling back to base64.');
           try {
             String base64String = base64Encode(_imageBytes!);
             if (base64String.length > 800000) {
@@ -150,9 +150,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         'category': _categoryController.text,
         'seller_name': _sellerNameController.text,
         'imageUrl': finalImageUrl,
-        'image': finalImageBase64Fallback, // Backward compatibility
+        'image': finalImageBase64Fallback,
         'updated_at': FieldValue.serverTimestamp(),
-      });
+      }).timeout(const Duration(seconds: 10));
 
       // Close loading dialog
       Navigator.pop(context);
