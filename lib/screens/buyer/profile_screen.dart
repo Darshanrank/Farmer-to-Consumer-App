@@ -8,6 +8,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kisanbazaar/screens/auth/login_screen.dart';
 import 'package:kisanbazaar/theme/app_colors.dart';
+import 'package:kisanbazaar/services/auth_service.dart';
+import 'package:kisanbazaar/screens/buyer/notifications_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,13 +22,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
+  final AuthService _authService = AuthService();
 
   final TextEditingController _mobileController = TextEditingController();
 
   String? name, email, imageUrl;
   bool isLoading = true;
 
-  // Multiple addresses list: each address is a Map with 'label', 'address', 'phone', 'isDefault'
   List<Map<String, dynamic>> _addresses = [];
 
   @override
@@ -37,27 +39,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _fetchUserData() async {
     try {
-      String? userId = _auth.currentUser?.uid;
+      String? userId = _authService.currentUserId;
       if (userId != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
-        if (userDoc.exists && mounted) {
-          final data = userDoc.data() as Map<String, dynamic>?;
+        final user = await _authService.getUserModel(userId);
+        if (user != null && mounted) {
           setState(() {
-            name = data?['fullName'] ?? data?['name'] ?? 'User';
-            email = data?['email'];
-            _mobileController.text = data?['phone'] ?? '';
-            imageUrl = data?['image'] ?? '';
+            name = user.fullName;
+            email = user.email;
+            _mobileController.text = user.phone;
+            imageUrl = user.imageUrl ?? '';
             isLoading = false;
 
-            // Load addresses list
-            if (data?['addresses'] != null && data!['addresses'] is List) {
-              _addresses = List<Map<String, dynamic>>.from(
-                (data['addresses'] as List).map((e) => Map<String, dynamic>.from(e)),
-              );
+            if (user.addresses.isNotEmpty) {
+              _addresses = user.addresses.map((a) => a.toJson()).toList();
             } else {
-              // Migrate legacy single address to new format
-              String legacyAddress = data?['address'] ?? '';
-              String legacyPhone = data?['phone'] ?? '';
+              String legacyAddress = user.address ?? '';
+              String legacyPhone = user.phone;
               if (legacyAddress.isNotEmpty) {
                 _addresses = [
                   {
@@ -93,16 +90,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _saveProfile() async {
     try {
       String userId = _auth.currentUser!.uid;
-
-      // Get the default address for backward compatibility
       String defaultAddress = '';
-      String defaultPhone = _mobileController.text;
       for (var addr in _addresses) {
         if (addr['isDefault'] == true) {
           defaultAddress = addr['address'] ?? '';
-          if (addr['phone'] != null && addr['phone'].toString().isNotEmpty) {
-            defaultPhone = addr['phone'];
-          }
           break;
         }
       }
@@ -110,35 +101,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         defaultAddress = _addresses.first['address'] ?? '';
       }
 
-      await _firestore.collection('users').doc(userId).update({
-        'phone': _mobileController.text,
-        'address': defaultAddress, // backward compatibility
-        'addresses': _addresses,
-      });
+      await _authService.updateProfile(
+        userId,
+        phone: _mobileController.text,
+        defaultAddress: defaultAddress,
+        addresses: _addresses,
+      );
+      
       Fluttertoast.showToast(msg: "Profile updated successfully!", backgroundColor: AppColors.primary);
     } catch (e) {
       Fluttertoast.showToast(msg: "Update failed: $e", backgroundColor: Colors.red);
     }
   }
 
-  // Auto-save addresses to Firestore
   Future<void> _saveAddressesToFirestore() async {
     try {
       String userId = _auth.currentUser!.uid;
-      String defaultAddress = '';
-      for (var addr in _addresses) {
-        if (addr['isDefault'] == true) {
-          defaultAddress = addr['address'] ?? '';
-          break;
-        }
-      }
-      if (defaultAddress.isEmpty && _addresses.isNotEmpty) {
-        defaultAddress = _addresses.first['address'] ?? '';
-      }
-      await _firestore.collection('users').doc(userId).update({
-        'address': defaultAddress,
-        'addresses': _addresses,
-      });
+      await _authService.updateUserAddresses(userId, _addresses);
     } catch (e) {
       debugPrint('Error auto-saving addresses: $e');
     }
@@ -161,17 +140,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Padding(
               padding: EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 24,
+                left: 24, right: 24, top: 24,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
               child: SingleChildScrollView(
@@ -181,32 +156,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Center(
                       child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                        width: 40, height: 4,
+                        decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      isEditing ? "Edit ${existing!['label'] ?? 'Address'}" : "Add New Address",
+                      isEditing ? "Edit ${existing['label'] ?? 'Address'}" : "Add New Address",
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
 
-                    // Label chips — locked during edit
                     const Text("Address Type", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     const SizedBox(height: 8),
                     if (isEditing)
-                      // Show current label as a non-editable chip
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryLight.withOpacity(0.15),
+                          color: AppColors.primaryLight.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -218,9 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               size: 18, color: AppColors.primary,
                             ),
                             const SizedBox(width: 6),
-                            Text(existing!['label'] ?? selectedLabel,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
-                            ),
+                            Text(existing['label'] ?? selectedLabel, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
                             const SizedBox(width: 6),
                             Icon(Icons.lock_outline, size: 14, color: Colors.grey[400]),
                           ],
@@ -234,14 +201,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return ChoiceChip(
                             label: Text(label),
                             selected: selected,
-                            selectedColor: AppColors.primaryLight.withOpacity(0.3),
+                            selectedColor: AppColors.primaryLight.withValues(alpha: 0.3),
                             labelStyle: TextStyle(
                               color: selected ? AppColors.primary : Colors.grey[700],
                               fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                             ),
-                            onSelected: (val) {
-                              setModalState(() => selectedLabel = label);
-                            },
+                            onSelected: (val) => setModalState(() => selectedLabel = label),
                           );
                         }).toList(),
                       ),
@@ -251,10 +216,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         controller: labelController,
                         decoration: InputDecoration(
                           labelText: "Custom Label",
-                          hintText: "e.g. Grandma's House",
                           prefixIcon: const Icon(Icons.label_outline, color: AppColors.primary),
-                          filled: true,
-                          fillColor: AppColors.background,
+                          filled: true, fillColor: AppColors.background,
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                         ),
                       ),
@@ -266,13 +229,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       maxLines: 3,
                       decoration: InputDecoration(
                         labelText: "Full Address *",
-                        hintText: "House No, Street, City, State, PIN",
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.only(bottom: 40),
-                          child: Icon(Icons.location_on_rounded, color: AppColors.primary),
-                        ),
-                        filled: true,
-                        fillColor: AppColors.background,
+                        prefixIcon: const Padding(padding: EdgeInsets.only(bottom: 40), child: Icon(Icons.location_on_rounded, color: AppColors.primary)),
+                        filled: true, fillColor: AppColors.background,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                       ),
                     ),
@@ -283,10 +241,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: "Phone Number",
-                        hintText: "Contact number for delivery",
                         prefixIcon: const Icon(Icons.phone_rounded, color: AppColors.primary),
-                        filled: true,
-                        fillColor: AppColors.background,
+                        filled: true, fillColor: AppColors.background,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                       ),
                     ),
@@ -312,10 +268,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             return;
                           }
 
-                          // When editing, keep the original label
                           String finalLabel;
                           if (isEditing) {
-                            finalLabel = existing!['label'] ?? selectedLabel;
+                            finalLabel = existing['label'] ?? selectedLabel;
                           } else {
                             finalLabel = selectedLabel == 'Other'
                                 ? (labelController.text.trim().isEmpty ? 'Other' : labelController.text.trim())
@@ -337,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }
 
                             if (isEditing) {
-                              _addresses[index!] = newAddress;
+                              _addresses[index] = newAddress;
                             } else {
                               _addresses.add(newAddress);
                             }
@@ -347,14 +302,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }
                           });
 
-                          // Auto-save to Firestore immediately
                           _saveAddressesToFirestore();
-
                           Navigator.pop(context);
-                          Fluttertoast.showToast(
-                            msg: isEditing ? "Address updated!" : "Address added!",
-                            backgroundColor: AppColors.primary,
-                          );
+                          Fluttertoast.showToast(msg: isEditing ? "Address updated!" : "Address added!", backgroundColor: AppColors.primary);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -399,7 +349,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _addresses.first['isDefault'] = true;
                 }
               });
-              // Auto-save to Firestore immediately
               _saveAddressesToFirestore();
               Navigator.pop(context);
               Fluttertoast.showToast(msg: "Address deleted", backgroundColor: AppColors.error);
@@ -421,38 +370,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (isLoading) return const Scaffold(backgroundColor: Colors.white, body: Center(child: CircularProgressIndicator(color: AppColors.primary)));
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildPremiumHeader(),
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Contact Details", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  const Text("Account Details", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 16),
-                  _buildTextField(_mobileController, "Mobile Number", Icons.phone_rounded),
-                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
+                      border: Border.all(color: AppColors.divider)
+                    ),
+                    child: _buildTextField(_mobileController, "Mobile Number", Icons.phone_rounded),
+                  ),
+                  const SizedBox(height: 32),
 
-                  // Addresses Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text("My Addresses", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                       TextButton.icon(
                         onPressed: () => _showAddEditAddressDialog(),
-                        icon: const Icon(Icons.add_circle_outline, size: 20, color: AppColors.primary),
-                        label: const Text("Add", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                        icon: const Icon(Icons.add_circle, size: 20, color: AppColors.primary),
+                        label: const Text("Add", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w900)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-
+                  const SizedBox(height: 12),
                   if (_addresses.isEmpty)
                     GestureDetector(
                       onTap: () => _showAddEditAddressDialog(),
@@ -460,133 +416,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[300]!, style: BorderStyle.solid),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), style: BorderStyle.solid),
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10)]
                         ),
                         child: Column(
                           children: [
-                            Icon(Icons.add_location_alt_outlined, size: 40, color: Colors.grey[400]),
-                            const SizedBox(height: 8),
-                            Text("No addresses added yet", style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                            Icon(Icons.add_location_alt_rounded, size: 48, color: AppColors.primary.withValues(alpha: 0.5)),
+                            const SizedBox(height: 12),
+                            const Text("No addresses added yet", style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 16)),
                             const SizedBox(height: 4),
-                            const Text("Tap to add your first address", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                            const Text("Tap to add your first delivery address", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
                           ],
                         ),
                       ),
                     )
                   else
-                    ...List.generate(_addresses.length, (index) {
-                      final addr = _addresses[index];
-                      bool isDefault = addr['isDefault'] == true;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isDefault ? AppColors.primaryLight.withOpacity(0.08) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isDefault ? AppColors.primary : Colors.grey[200]!,
-                            width: isDefault ? 2 : 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  addr['label'] == 'Home'
-                                      ? Icons.home_rounded
-                                      : addr['label'] == 'Office' || addr['label'] == 'Work'
-                                          ? Icons.business_rounded
-                                          : Icons.location_on_rounded,
-                                  color: isDefault ? AppColors.primary : Colors.grey[600],
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  addr['label'] ?? 'Address',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: isDefault ? AppColors.primary : AppColors.textPrimary,
-                                  ),
-                                ),
-                                if (isDefault) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Text("Default", style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.bold)),
-                                  ),
-                                ],
-                                const Spacer(),
-                                PopupMenuButton<String>(
-                                  icon: Icon(Icons.more_vert, color: Colors.grey[500], size: 20),
-                                  onSelected: (value) {
-                                    if (value == 'edit') {
-                                      _showAddEditAddressDialog(existing: addr, index: index);
-                                    } else if (value == 'delete') {
-                                      _deleteAddress(index);
-                                    } else if (value == 'default') {
-                                      setState(() {
-                                        for (var a in _addresses) {
-                                          a['isDefault'] = false;
-                                        }
-                                        _addresses[index]['isDefault'] = true;
-                                      });
-                                      _saveAddressesToFirestore();
-                                      Fluttertoast.showToast(msg: "${addr['label']} set as default", backgroundColor: AppColors.primary);
-                                    }
-                                  },
-                                  itemBuilder: (context) => [
-                                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                    if (!isDefault)
-                                      const PopupMenuItem(value: 'default', child: Text('Set as Default')),
-                                    const PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: Colors.red))),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(addr['address'] ?? '', style: TextStyle(color: Colors.grey[700], height: 1.4)),
-                            if (addr['phone'] != null && addr['phone'].toString().isNotEmpty) ...[
-                              const SizedBox(height: 4),
-                              Text("📞 ${addr['phone']}", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-                            ],
-                          ],
-                        ),
-                      );
-                    }),
+                    ...List.generate(_addresses.length, (index) => _buildAddressCard(_addresses[index], index)),
 
-                  const SizedBox(height: 24),
-                  const Text("Account Settings", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 12),
-                  _buildOptionTile(Icons.shopping_bag_rounded, "My Orders", () {}),
-                  _buildOptionTile(Icons.notifications_rounded, "Notifications", () {}),
-                  _buildOptionTile(Icons.help_center_rounded, "Help Center", () {}),
+                  const SizedBox(height: 32),
+                  const Text("Settings", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
+                      border: Border.all(color: AppColors.divider)
+                    ),
+                    child: Column(
+                      children: [
+                        _buildOptionTile(Icons.shopping_bag_rounded, "My Orders", () {}),
+                        const Divider(height: 1),
+                        _buildOptionTile(Icons.notifications_rounded, "Notifications", () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen()));
+                        }),
+                        const Divider(height: 1),
+                        _buildOptionTile(Icons.help_center_rounded, "Help Center", () {}),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: _saveProfile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 54),
+                      minimumSize: const Size(double.infinity, 56),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
+                      elevation: 4,
+                      shadowColor: AppColors.primary.withValues(alpha: 0.3)
                     ),
-                    child: const Text("SAVE CHANGES", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                    child: const Text("SAVE CHANGES", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 0.5)),
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
+                  OutlinedButton(
                     onPressed: _logout,
-                    style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 54), foregroundColor: Colors.red),
-                    child: const Text("Sign Out", style: TextStyle(fontWeight: FontWeight.bold)),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 56),
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))
+                    ),
+                    child: const Text("SIGN OUT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 0.5)),
                   ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -596,25 +492,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildPremiumHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(24, 80, 24, 40),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
-        borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryLight],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40), bottomRight: Radius.circular(40)),
       ),
       child: Column(
         children: [
           Stack(
             children: [
               Container(
-                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 4)),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle, 
+                  border: Border.all(color: Colors.white, width: 4),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 5))]
+                ),
                 child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: AppColors.lightGreenBg,
+                  radius: 56,
+                  backgroundColor: Colors.white,
                   backgroundImage: imageUrl != null && imageUrl!.isNotEmpty ? NetworkImage(imageUrl!) : null,
-                  child: imageUrl == null || imageUrl!.isEmpty ? Icon(Icons.person_rounded, size: 50, color: AppColors.primary.withOpacity(0.5)) : null,
+                  child: imageUrl == null || imageUrl!.isEmpty ? const Icon(Icons.person_rounded, size: 56, color: AppColors.primary) : null,
                 ),
               ),
               Positioned(
@@ -623,17 +527,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: GestureDetector(
                   onTap: _pickImage,
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 5)]),
+                    child: const Icon(Icons.camera_alt_rounded, color: AppColors.primary, size: 20),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          Text(name ?? "User", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
-          Text(email ?? "", style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+          Text(name ?? "User", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white)),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
+            child: Text(email ?? "", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+          ),
         ],
       ),
     );
@@ -646,8 +555,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.primary),
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+      ),
+    );
+  }
+
+  Widget _buildAddressCard(Map<String, dynamic> addr, int index) {
+    bool isDefault = addr['isDefault'] == true;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDefault ? AppColors.primaryLight.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDefault ? AppColors.primary.withValues(alpha: 0.5) : AppColors.divider,
+          width: isDefault ? 2 : 1,
+        ),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDefault ? AppColors.primary.withValues(alpha: 0.1) : AppColors.background,
+                  shape: BoxShape.circle
+                ),
+                child: Icon(
+                  addr['label'] == 'Home' ? Icons.home_rounded : addr['label'] == 'Office' || addr['label'] == 'Work' ? Icons.business_rounded : Icons.location_on_rounded,
+                  color: isDefault ? AppColors.primary : Colors.grey[600],
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                addr['label'] ?? 'Address',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: isDefault ? AppColors.primary : AppColors.textPrimary),
+              ),
+              if (isDefault) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                  child: const Text("Default", style: TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.bold)),
+                ),
+              ],
+              const Spacer(),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert_rounded, color: Colors.grey[400]),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _showAddEditAddressDialog(existing: addr, index: index);
+                  } else if (value == 'delete') {
+                    _deleteAddress(index);
+                  } else if (value == 'default') {
+                    setState(() {
+                      for (var a in _addresses) {
+                        a['isDefault'] = false;
+                      }
+                      _addresses[index]['isDefault'] = true;
+                    });
+                    _saveAddressesToFirestore();
+                    Fluttertoast.showToast(msg: "${addr['label']} set as default", backgroundColor: AppColors.primary);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  if (!isDefault) const PopupMenuItem(value: 'default', child: Text('Set as Default')),
+                  const PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: Colors.red))),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(addr['address'] ?? '', style: TextStyle(color: Colors.grey[700], height: 1.5, fontSize: 14)),
+          if (addr['phone'] != null && addr['phone'].toString().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text("📞 ${addr['phone']}", style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.bold)),
+          ],
+        ],
       ),
     );
   }
@@ -655,14 +646,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildOptionTile(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       onTap: onTap,
-      contentPadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(12)),
         child: Icon(icon, color: AppColors.primary, size: 20),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-      trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
     );
   }
 }

@@ -1,15 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kisanbazaar/screens/auth/login_screen.dart';
 import 'package:kisanbazaar/screens/seller/profile_screen.dart';
 import 'package:kisanbazaar/screens/seller/add_product_screen.dart';
 import 'package:kisanbazaar/screens/seller/my_products_screen.dart';
 import 'package:kisanbazaar/screens/seller/order_received_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kisanbazaar/theme/app_colors.dart';
-import 'package:kisanbazaar/screens/seller/seller_dashboard.dart';
 
 class SellerDashboard extends StatefulWidget {
   const SellerDashboard({super.key});
@@ -31,7 +28,6 @@ class _SellerDashboardState extends State<SellerDashboard> {
     final prefs = await SharedPreferences.getInstance();
     int savedIndex = prefs.getInt('seller_selectedIndex') ?? 0;
 
-    // Validate index (Seller dashboard has 5 tabs: 0, 1, 2, 3, 4)
     if (savedIndex > 4 || savedIndex < 0) {
       savedIndex = 0;
     }
@@ -53,65 +49,12 @@ class _SellerDashboardState extends State<SellerDashboard> {
     _saveSelectedIndex(index);
   }
 
-  Future<void> _logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    } catch (e) {
-      Fluttertoast.showToast(msg: 'Error logging out: $e');
-    }
-  }
-
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text(
-            'Logout',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                _logout();
-              },
-              child: const Text(
-                'Logout',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
       _buildHomeScreen(),
       const MyProductsScreen(),
-      const AddProductScreen(), // Handled via FAB in home, but keeping it in tabs just in case
+      const AddProductScreen(), 
       const OrderReceivedScreen(),
       const ProfileScreen(),
     ];
@@ -124,15 +67,15 @@ class _SellerDashboardState extends State<SellerDashboard> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.eco_rounded, color: Colors.white, size: 20),
+              child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 10),
             const Text(
-              'KisaanBazaar',
-              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: 0.5),
+              'Seller Hub',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: 0.5, color: Colors.white),
             ),
           ],
         ),
@@ -141,7 +84,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF1B5E20), Color(0xFF388E3C), Color(0xFF43A047)],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
           ),
         ),
@@ -150,77 +93,55 @@ class _SellerDashboardState extends State<SellerDashboard> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              icon: const Icon(Icons.account_circle_rounded, size: 26),
+              icon: const Icon(Icons.person_rounded, size: 22, color: Colors.white),
               onPressed: () => _onItemTapped(4),
             ),
           ),
         ],
       ),
-      body:
-          screens[_selectedIndex == 2
-              ? 0
-              : _selectedIndex], // If Add is selected, show home but it won't be since we use FAB
-      floatingActionButton:
-          _selectedIndex == 0
-              ? FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AddProductScreen()),
-                  );
-                },
-                backgroundColor: AppColors.primary,
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text(
-                  'Add Product',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-              : null,
+      body: screens[_selectedIndex == 2 ? 0 : _selectedIndex],
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AddProductScreen()));
+              },
+              backgroundColor: AppColors.primary,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('Add Product', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              elevation: 4,
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: SafeArea(
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2),
-              label: 'Products',
-            ),
-            BottomNavigationBarItem(
-              icon: SizedBox.shrink(), // Empty space for FAB
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'Orders',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          onTap: (index) {
-            if (index == 2) return; // Ignore tap on empty FAB slot
-            _onItemTapped(index);
-          },
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))]
+          ),
+          child: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), activeIcon: Icon(Icons.dashboard_rounded), label: 'Dashboard'),
+              BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2_rounded), label: 'Products'),
+              BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.list_alt_outlined), activeIcon: Icon(Icons.list_alt_rounded), label: 'Orders'),
+              BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), activeIcon: Icon(Icons.person_rounded), label: 'Profile'),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textSecondary,
+            type: BottomNavigationBarType.fixed,
+            showUnselectedLabels: false,
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            onTap: (index) {
+              if (index == 2) return;
+              _onItemTapped(index);
+            },
+          ),
         ),
       ),
     );
@@ -236,43 +157,32 @@ class _SellerDashboardState extends State<SellerDashboard> {
         children: [
           // Welcome Section
           FutureBuilder<DocumentSnapshot>(
-            future:
-                FirebaseFirestore.instance.collection('users').doc(uid).get(),
+            future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
             builder: (context, snapshot) {
-              String name = "Farmer";
+              String name = "Seller";
               if (snapshot.hasData && snapshot.data!.exists) {
-                name = snapshot.data!.get('fullName') ?? "Farmer";
+                final data = snapshot.data!.data() as Map<String, dynamic>?;
+                name = data?['fullName'] ?? "Seller";
               }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome back,',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 16),
-                  ),
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24, left: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Welcome back,', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                    Text(name, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
+                  ],
+                ),
               );
             },
           ),
-          const SizedBox(height: 24),
 
           // Stats Cards
           Row(
             children: [
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('orders')
-                      .where('sellerId', isEqualTo: uid)
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('orders').where('sellerId', isEqualTo: uid).snapshots(),
                   builder: (context, snapshot) {
                     double totalEarnings = 0;
                     if (snapshot.hasData) {
@@ -286,8 +196,8 @@ class _SellerDashboardState extends State<SellerDashboard> {
                     return _buildStatCard(
                       title: "Total Earnings",
                       value: "₹${totalEarnings.toStringAsFixed(0)}",
-                      icon: Icons.currency_rupee,
-                      color: const Color(0xFF4CAF50),
+                      icon: Icons.account_balance_wallet_rounded,
+                      color: AppColors.success,
                     );
                   },
                 ),
@@ -295,21 +205,13 @@ class _SellerDashboardState extends State<SellerDashboard> {
               const SizedBox(width: 16),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream:
-                      FirebaseFirestore.instance
-                          .collection('orders')
-                          .where('sellerId', isEqualTo: uid)
-                          .where('status', isEqualTo: 'pending')
-                          .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('orders').where('sellerId', isEqualTo: uid).where('status', isEqualTo: 'pending').snapshots(),
                   builder: (context, snapshot) {
                     return _buildStatCard(
-                      title: "Orders Pending",
-                      value:
-                          snapshot.hasData
-                              ? snapshot.data!.docs.length.toString()
-                              : "0",
-                      icon: Icons.pending_actions,
-                      color: const Color(0xFFFFA000),
+                      title: "Pending Orders",
+                      value: snapshot.hasData ? snapshot.data!.docs.length.toString() : "0",
+                      icon: Icons.pending_actions_rounded,
+                      color: Colors.orange,
                     );
                   },
                 ),
@@ -318,20 +220,13 @@ class _SellerDashboardState extends State<SellerDashboard> {
           ),
           const SizedBox(height: 16),
           StreamBuilder<QuerySnapshot>(
-            stream:
-                FirebaseFirestore.instance
-                    .collection('products')
-                    .where('sellerId', isEqualTo: uid)
-                    .snapshots(),
+            stream: FirebaseFirestore.instance.collection('products').where('sellerId', isEqualTo: uid).snapshots(),
             builder: (context, snapshot) {
               return _buildStatCard(
                 title: "Active Products",
-                value:
-                    snapshot.hasData
-                        ? snapshot.data!.docs.length.toString()
-                        : "0",
-                icon: Icons.inventory,
-                color: const Color(0xFF2196F3),
+                value: snapshot.hasData ? snapshot.data!.docs.length.toString() : "0",
+                icon: Icons.inventory_2_rounded,
+                color: Colors.blue,
                 isFullWidth: true,
               );
             },
@@ -343,34 +238,22 @@ class _SellerDashboardState extends State<SellerDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Recent Orders',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              const Padding(
+                padding: EdgeInsets.only(left: 4),
+                child: Text('Recent Orders', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
               ),
               TextButton(
                 onPressed: () => _onItemTapped(3),
-                child: const Text(
-                  "View All",
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: const Text("View All", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w900)),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           FutureBuilder<QuerySnapshot>(
-            future:
-                FirebaseFirestore.instance
-                    .collection('orders')
-                    .where('sellerId', isEqualTo: uid)
-                    .get(),
+            future: FirebaseFirestore.instance.collection('orders').where('sellerId', isEqualTo: uid).get(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                );
+                return const Center(child: CircularProgressIndicator(color: AppColors.primary));
               }
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
@@ -399,73 +282,50 @@ class _SellerDashboardState extends State<SellerDashboard> {
                 itemCount: itemCount,
                 itemBuilder: (context, index) {
                   final order = orders[index];
-                  return Card(
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  bool isDelivered = order['status'].toString().toLowerCase() == 'delivered';
+                  
+                  return Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
+                      border: Border.all(color: AppColors.divider)
+                    ),
+                    child: Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(color: isDelivered ? AppColors.success.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1), shape: BoxShape.circle),
+                        child: Icon(Icons.receipt_long_rounded, color: isDelivered ? AppColors.success : Colors.orange, size: 20),
                       ),
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.primaryLight.withOpacity(
-                          0.2,
-                        ),
-                        child: const Icon(
-                          Icons.receipt_long,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      title: Text(
-                        'Order #${order.id.substring(0, 8)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        'Status: ${order['status'] ?? 'pending'}',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      trailing: Text(
-                        '₹${order['totalAmount'] ?? order['total'] ?? '0'}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: AppColors.primary,
-                        ),
-                      ),
+                      title: Text('Order #${order.id.substring(0, 8)}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                      subtitle: Text('${order['status'] ?? 'pending'}'.toUpperCase(), style: TextStyle(color: isDelivered ? AppColors.success : Colors.orange, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.5)),
+                      trailing: Text('₹${order['totalAmount'] ?? order['total'] ?? '0'}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.primary)),
+                    ),
                     ),
                   );
                 },
               );
             },
           ),
-          const SizedBox(height: 80), // Space for FAB
+          const SizedBox(height: 80), 
         ],
       ),
     );
   }
 
-  Widget _buildStatCard({
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-    bool isFullWidth = false,
-  }) {
+  Widget _buildStatCard({required String title, required String value, required IconData icon, required Color color, bool isFullWidth = false}) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 15, offset: const Offset(0, 5))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,31 +334,16 @@ class _SellerDashboardState extends State<SellerDashboard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(icon, color: color, size: 24),
+              Expanded(child: Text(title, style: TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.bold), maxLines: 2)),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: Icon(icon, color: color, size: 20),
+              )
             ],
           ),
           const SizedBox(height: 16),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: color)),
         ],
       ),
     );
@@ -510,27 +355,21 @@ class _SellerDashboardState extends State<SellerDashboard> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]
       ),
       child: Column(
         children: [
-          Icon(Icons.list_alt, size: 60, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text(
-            "No pending orders",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-            ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: AppColors.primaryLight.withValues(alpha: 0.1), shape: BoxShape.circle),
+            child: Icon(Icons.list_alt_rounded, size: 48, color: AppColors.primary.withValues(alpha: 0.5)),
           ),
+          const SizedBox(height: 20),
+          const Text("No pending orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
           const SizedBox(height: 8),
-          Text(
-            "When buyers purchase your products, they will appear here.",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey.shade500),
-          ),
+          const Text("When buyers purchase your products, they will appear here.", textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
         ],
       ),
     );

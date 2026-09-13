@@ -15,11 +15,10 @@ class OrderConfirmationScreen extends StatefulWidget {
   });
 
   @override
-  _OrderConfirmationScreenState createState() =>
-      _OrderConfirmationScreenState();
+  State<OrderConfirmationScreen> createState() => OrderConfirmationScreenState();
 }
 
-class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
+class OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   late ConfettiController _confettiController;
 
   @override

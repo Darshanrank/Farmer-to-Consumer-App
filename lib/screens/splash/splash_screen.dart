@@ -15,17 +15,18 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-             duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
@@ -42,37 +43,35 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   void _checkUserStatus() async {
     try {
-      // Allow animation to play for 2 seconds
       await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+
       User? user = FirebaseAuth.instance.currentUser;
 
-      if (user == null) {
-        if (mounted) _navigateToScreen(const LoginScreen());
+      // Logic fix: Ensure user is signed in AND has verified their email.
+      if (user == null || !user.emailVerified) {
+        _navigateToScreen(const LoginScreen());
         return;
       }
 
-      DocumentSnapshot userDoc =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+      if (!mounted) return;
 
       if (!userDoc.exists) {
-        if (mounted) _navigateToScreen(const LoginScreen());
+        _navigateToScreen(const LoginScreen());
         return;
       }
 
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
       String role = (userData['role'] ?? '').toString().trim().toLowerCase();
 
-      if (mounted) {
-        if (role == 'buyer') {
-          _navigateToScreen(const BuyerDashboard());
-        } else if (role == 'seller') {
-          _navigateToScreen(SellerDashboard());
-        } else {
-          _navigateToScreen(const LoginScreen());
-        }
+      if (role == 'buyer') {
+        _navigateToScreen(const BuyerDashboard());
+      } else if (role == 'seller') {
+        _navigateToScreen(const SellerDashboard());
+      } else {
+        _navigateToScreen(const LoginScreen());
       }
     } catch (e) {
       debugPrint('Error in _checkUserStatus: $e');
@@ -96,57 +95,69 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: FadeTransition(
-          opacity: _animation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // KisanBazaar Logo
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.2),
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      ),
-                    ],
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.primary, AppColors.primaryLight],
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 30,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 120,
-                    height: 120,
+                  const SizedBox(height: 32),
+                  const Text(
+                    "KisanBazaar",
+                    style: TextStyle(
+                      fontSize: 36,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                Text(
-                  "KisanBazaar",
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w800,
+                  const SizedBox(height: 8),
+                  Text(
+                    "Fresh From Farmers 🌾",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Fresh From Farmers 🌾",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.5,
+                  const SizedBox(height: 60),
+                  const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 3,
                   ),
-                ),
-                const SizedBox(height: 50),
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  strokeWidth: 3,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

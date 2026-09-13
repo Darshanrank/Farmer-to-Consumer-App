@@ -1,20 +1,25 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kisanbazaar/screens/auth/login_screen.dart';
 import 'package:kisanbazaar/screens/buyer/profile_screen.dart';
 import 'package:kisanbazaar/screens/buyer/cart_screen.dart';
+import 'package:kisanbazaar/screens/buyer/search_screen.dart';
+import 'package:kisanbazaar/screens/buyer/explore_screen.dart';
+import 'package:kisanbazaar/utils/app_categories.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kisanbazaar/theme/app_colors.dart';
-import 'package:kisanbazaar/screens/buyer/product_details_screen.dart'
-    as kisanbazaar;
 import 'package:kisanbazaar/screens/buyer/my_orders_screen.dart';
 import 'package:kisanbazaar/widgets/modern_product_card.dart';
 import 'package:kisanbazaar/widgets/modern_search_bar.dart';
 import 'package:kisanbazaar/widgets/category_item.dart';
+import 'package:kisanbazaar/widgets/promo_banner_carousel.dart';
+import 'package:kisanbazaar/widgets/horizontal_product_list.dart';
+import 'package:kisanbazaar/services/auth_service.dart';
+import 'package:kisanbazaar/services/product_service.dart';
+import 'package:kisanbazaar/services/cart_service.dart';
+import 'package:kisanbazaar/models/product_model.dart';
 
 class BuyerDashboard extends StatefulWidget {
   const BuyerDashboard({super.key});
@@ -28,6 +33,7 @@ class _BuyerDashboardState extends State<BuyerDashboard> {
   int _cartCount = 0;
   bool _isInitialLoad = true;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final CartService _cartService = CartService();
 
   @override
   void initState() {
@@ -104,12 +110,8 @@ class _BuyerDashboardState extends State<BuyerDashboard> {
   void _listenToCartCount() {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
-    FirebaseFirestore.instance
-        .collection('cart')
-        .where('buyerId', isEqualTo: userId)
-        .snapshots()
-        .listen((snapshot) {
-      if (mounted) setState(() => _cartCount = snapshot.docs.length);
+    _cartService.streamCartItems(userId).listen((items) {
+      if (mounted) setState(() => _cartCount = items.length);
     });
   }
 
@@ -132,7 +134,7 @@ class _BuyerDashboardState extends State<BuyerDashboard> {
         index: _selectedIndex,
         children: [
           BuyerDashboardHome(onTabChange: _onItemTapped),
-          const Center(child: Text("Explore Categories")),
+          const ExploreScreen(),
           const CartScreen(),
           const MyOrdersScreen(),
           const ProfileScreen(),
@@ -140,77 +142,34 @@ class _BuyerDashboardState extends State<BuyerDashboard> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5)),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))]
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(0, Icons.home_rounded, "Home"),
-                _buildNavItem(1, Icons.grid_view_rounded, "Explore"),
-                _buildCartNavItem(2),
-                _buildNavItem(3, Icons.receipt_long_rounded, "Orders"),
-                _buildNavItem(4, Icons.person_rounded, "Profile"),
-              ],
+        child: NavigationBar(
+          backgroundColor: Colors.white,
+          indicatorColor: AppColors.primaryLight.withValues(alpha: 0.2),
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onItemTapped,
+          destinations: [
+            const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded, color: AppColors.primary), label: "Home"),
+            const NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view_rounded, color: AppColors.primary), label: "Explore"),
+            NavigationDestination(
+              icon: Badge(
+                label: Text('$_cartCount'),
+                isLabelVisible: _cartCount > 0,
+                backgroundColor: AppColors.primary,
+                child: const Icon(Icons.shopping_cart_outlined),
+              ),
+              selectedIcon: Badge(
+                label: Text('$_cartCount'),
+                isLabelVisible: _cartCount > 0,
+                backgroundColor: AppColors.primary,
+                child: const Icon(Icons.shopping_cart_rounded, color: AppColors.primary),
+              ),
+              label: "Cart",
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 24),
-            const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: isSelected ? AppColors.primary : AppColors.textSecondary, fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCartNavItem(int index) {
-    bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Badge(
-              label: Text('$_cartCount'),
-              isLabelVisible: _cartCount > 0,
-              backgroundColor: AppColors.primary,
-              child: Icon(Icons.shopping_cart_rounded, color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 24),
-            ),
-            const SizedBox(height: 4),
-            Text("Cart", style: TextStyle(color: isSelected ? AppColors.primary : AppColors.textSecondary, fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
+            const NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long_rounded, color: AppColors.primary), label: "Orders"),
+            const NavigationDestination(icon: Icon(Icons.person_outline_rounded), selectedIcon: Icon(Icons.person_rounded, color: AppColors.primary), label: "Profile"),
           ],
         ),
       ),
@@ -228,17 +187,12 @@ class BuyerDashboardHome extends StatefulWidget {
 
 class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
   String _selectedCategory = "All";
-  final List<Map<String, String>> _categories = [
-    {"title": "All", "emoji": "🍱"},
-    {"title": "Vegetables", "emoji": "🥦"},
-    {"title": "Fruits", "emoji": "🍎"},
-    {"title": "Dairy", "emoji": "🥛"},
-    {"title": "Grains", "emoji": "🌾"},
-    {"title": "Other", "emoji": "✨"},
-  ];
+  final List<AppCategory> _categories = AppCategories.list;
 
   String _address = "Fetching address...";
-  String _userName = "User";
+  final AuthService _authService = AuthService();
+  final ProductService _productService = ProductService();
+  final CartService _cartService = CartService();
 
   @override
   void initState() {
@@ -249,31 +203,21 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
   void _fetchUserData() {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
-      FirebaseFirestore.instance.collection('users').doc(userId).snapshots().listen((snapshot) {
-        if (snapshot.exists && mounted) {
+      _authService.streamUserModel(userId).listen((user) {
+        if (user != null && mounted) {
           setState(() {
-            _address = snapshot.data()?['address'] ?? "Add your address in profile";
-            _userName = snapshot.data()?['name'] ?? "User";
+            _address = user.address ?? (user.addresses.isNotEmpty ? user.addresses.first.address : "Add your address in profile");
           });
         }
       });
     }
   }
 
-  void addToCart(Map<String, dynamic> productData) async {
+  void addToCart(ProductModel product) async {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    QuerySnapshot existing = await firestore.collection('cart').where('buyerId', isEqualTo: userId).where('productId', isEqualTo: productData['productId']).get();
-    if (existing.docs.isNotEmpty) {
-      await existing.docs.first.reference.update({'quantity': (existing.docs.first['quantity'] ?? 0) + 1});
-    } else {
-      await firestore.collection('cart').add({
-        'buyerId': userId, 'productId': productData['productId'], 'name': productData['name'], 'price': productData['price'], 'quantity': 1, 'unit': productData['unit'],
-        'image': productData['imageUrl'] ?? productData['image'] ?? '', 'sellerName': productData['seller_name'], 'sellerId': productData['sellerId'] ?? "",
-      });
-    }
-    Fluttertoast.showToast(msg: "${productData['name']} added to cart!", backgroundColor: AppColors.primary);
+    await _cartService.addToCart(buyerId: userId, productData: product.toJson());
+    Fluttertoast.showToast(msg: "${product.name} added to cart!", backgroundColor: AppColors.primary);
   }
 
   @override
@@ -284,28 +228,28 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
         // App Bar
         SliverAppBar(
           pinned: true,
-          expandedHeight: 120,
-          backgroundColor: AppColors.surface,
+          expandedHeight: 100,
+          backgroundColor: Colors.white,
           scrolledUnderElevation: 0,
           flexibleSpace: FlexibleSpaceBar(
             background: Container(
               padding: const EdgeInsets.fromLTRB(16, 48, 16, 0),
+              color: Colors.white,
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Freshly Picked for", style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                        const SizedBox(height: 2),
-                        Row(
+                        const Row(
                           children: [
-                            const Icon(Icons.location_on_rounded, color: AppColors.primary, size: 18),
-                            const SizedBox(width: 4),
-                            Flexible(child: Text(_address, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16), maxLines: 1, overflow: TextOverflow.ellipsis)),
-                            const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary),
+                            Text("Delivery in 24 hours", style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w900)),
+                            SizedBox(width: 4),
+                            Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textPrimary, size: 20),
                           ],
                         ),
+                        const SizedBox(height: 2),
+                        Flexible(child: Text(_address, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis)),
                       ],
                     ),
                   ),
@@ -313,7 +257,7 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
                     onTap: () => widget.onTabChange?.call(4),
                     child: Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 2)),
+                      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 2)),
                       child: const CircleAvatar(backgroundColor: AppColors.lightGreenBg, child: Icon(Icons.person_outline_rounded, color: AppColors.primary)),
                     ),
                   ),
@@ -329,40 +273,11 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
           delegate: _SearchBarDelegate(),
         ),
 
-        // Promo Banner
-        SliverToBoxAdapter(
+        // Promo Banner Carousel
+        const SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: const LinearGradient(colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 10))],
-              ),
-              child: Stack(
-                children: [
-                  Positioned(right: -20, bottom: -20, child: Opacity(opacity: 0.2, child: Icon(Icons.eco_rounded, size: 150, color: AppColors.primary))),
-                  Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(8)),
-                          child: const Text("FARM FRESH", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text("20% Cash Back", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.primaryDark)),
-                        const Text("on your first organic order", style: TextStyle(fontSize: 14, color: AppColors.primaryDark, fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: PromoBannerCarousel(),
           ),
         ),
 
@@ -391,12 +306,34 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
               itemBuilder: (context, index) {
                 final cat = _categories[index];
                 return CategoryItem(
-                  title: cat['title']!,
-                  emoji: cat['emoji']!,
-                  isSelected: _selectedCategory == cat['title'],
-                  onTap: () => setState(() => _selectedCategory = cat['title']!),
+                  title: cat.title,
+                  emoji: cat.emoji,
+                  isSelected: _selectedCategory == cat.title,
+                  onTap: () => setState(() => _selectedCategory = cat.title),
                 );
               },
+            ),
+          ),
+        ),
+
+        // Trending Section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: HorizontalProductList(
+              title: "🔥 Trending Near You",
+              productStream: _productService.streamTrendingProducts(),
+            ),
+          ),
+        ),
+
+        // Deals of the Day Section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: HorizontalProductList(
+              title: "⚡ Deals of the Day",
+              productStream: _productService.streamDealsOfTheDay(),
             ),
           ),
         ),
@@ -410,14 +347,11 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
         ),
 
         // Product Grid
-        StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('products').snapshots(),
+        StreamBuilder<List<ProductModel>>(
+          stream: _selectedCategory == "All" ? _productService.streamProducts() : _productService.streamProductsByCategory(_selectedCategory),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()));
-            var products = snapshot.data!.docs.where((doc) {
-              if (_selectedCategory == "All") return true;
-              return doc['category'] == _selectedCategory;
-            }).toList();
+            var products = snapshot.data!;
 
             if (products.isEmpty) {
               return SliverToBoxAdapter(child: Center(child: Padding(padding: const EdgeInsets.all(40.0), child: Text("No products found in $_selectedCategory"))));
@@ -434,9 +368,8 @@ class _BuyerDashboardHomeState extends State<BuyerDashboardHome> {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    var data = products[index].data();
-                    data['productId'] = products[index].id;
-                    return ModernProductCard(data: data, onAdd: () => addToCart(data), index: index);
+                    var product = products[index];
+                    return ModernProductCard(data: product.toJson(), onAdd: () => addToCart(product), index: index);
                   },
                   childCount: products.length,
                 ),
@@ -455,9 +388,17 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: AppColors.surface,
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: const ModernSearchBar(),
+      child: ModernSearchBar(
+        readOnly: true,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SearchScreen()),
+          );
+        },
+      ),
     );
   }
 

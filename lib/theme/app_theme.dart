@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kisanbazaar/theme/app_colors.dart';
-import 'package:kisanbazaar/theme/app_text_styles.dart';
 
 /// Main theme configuration for KisanBazaar
 class AppTheme {
@@ -27,9 +26,6 @@ class AppTheme {
       
       error: AppColors.error,
       onError: AppColors.textLight,
-      
-      background: AppColors.background,
-      onBackground: AppColors.textPrimary,
       
       surface: AppColors.surface,
       onSurface: AppColors.textPrimary,
@@ -58,10 +54,10 @@ class AppTheme {
     
     // Card Theme
     cardTheme: CardThemeData(
-      color: AppColors.surface,
+      color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: AppColors.divider, width: 1),
       ),
       margin: const EdgeInsets.all(8),
@@ -73,12 +69,12 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textLight,
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10), // sharper borders
         ),
         textStyle: GoogleFonts.outfit(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.2,
         ),
@@ -90,13 +86,13 @@ class AppTheme {
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
         side: const BorderSide(color: AppColors.primary, width: 1.5),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10), // sharper borders
         ),
         textStyle: GoogleFonts.outfit(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
         ),
       ),
     ),
@@ -125,9 +121,9 @@ class AppTheme {
     // Navigation Bar Theme
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: AppColors.surface,
-      indicatorColor: AppColors.primary.withOpacity(0.1),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      indicatorColor: AppColors.primary.withValues(alpha: 0.1),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return GoogleFonts.outfit(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -167,7 +163,6 @@ class AppTheme {
       primary: AppColors.primaryLight,
       onPrimary: AppColors.textPrimary,
       surface: AppColors.surfaceDark,
-      background: AppColors.backgroundDark,
     ),
     scaffoldBackgroundColor: AppColors.backgroundDark,
     textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),

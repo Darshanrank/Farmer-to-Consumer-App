@@ -40,7 +40,18 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    final price = widget.data['price']?.toString() ?? '0';
+    final priceStr = widget.data['price']?.toString() ?? '0';
+    final double priceVal = double.tryParse(priceStr) ?? 0.0;
+    
+    final originalPriceStr = widget.data['originalPrice']?.toString();
+    final double? originalPriceVal = originalPriceStr != null ? double.tryParse(originalPriceStr) : null;
+    
+    bool isOnSale = originalPriceVal != null && originalPriceVal > priceVal;
+    int discountPercent = 0;
+    if (isOnSale) {
+      discountPercent = ((originalPriceVal - priceVal) / originalPriceVal * 100).toInt();
+    }
+
     final name = widget.data['name'] ?? 'Product';
     final unit = widget.data['unit'] ?? 'kg';
     final imageUrl = widget.data['imageUrl'] ?? widget.data['image'] ?? '';
@@ -54,13 +65,13 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.divider, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -73,14 +84,17 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
                     Container(
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                       ),
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                        child: KisanImage(
-                          imageSource: imageUrl,
-                          fit: BoxFit.cover,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: KisanImage(
+                            imageSource: imageUrl,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -90,12 +104,12 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.9),
+                          color: isOnSale ? Colors.red.withValues(alpha: 0.9) : AppColors.primary.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          "FRESH",
-                          style: TextStyle(
+                        child: Text(
+                          isOnSale ? "$discountPercent% OFF" : "FRESH",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -133,28 +147,49 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "₹$price",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Material(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            onTap: widget.onAdd,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              child: const Text(
-                                "ADD",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (isOnSale)
+                              Text(
+                                "₹$originalPriceStr",
+                                style: const TextStyle(
                                   fontSize: 12,
+                                  decoration: TextDecoration.lineThrough,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            Text(
+                              "₹$priceStr",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white, // AppColors.primary.withOpacity(0.1) could be used if wanted filled
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.primary, width: 1.5),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            child: InkWell(
+                              onTap: widget.onAdd,
+                              borderRadius: BorderRadius.circular(8),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                child: Text(
+                                  "ADD",
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ),
@@ -168,16 +203,6 @@ class _ModernProductCardState extends State<ModernProductCard> with SingleTicker
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return const Center(
-      child: Icon(
-        Icons.eco_outlined,
-        size: 40,
-        color: AppColors.primaryLight,
       ),
     );
   }

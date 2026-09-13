@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:kisanbazaar/theme/app_colors.dart';
 
@@ -46,11 +45,28 @@ class KisanImage extends StatelessWidget {
           );
         },
       );
+    } else if (imageSource.startsWith('assets/')) {
+      return Image.asset(
+        imageSource,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => placeholder ?? _buildPlaceholder(),
+      );
     } else {
       try {
         // Assume it's base64
+        String base64Str = imageSource;
+        if (base64Str.contains(',')) {
+          base64Str = base64Str.split(',').last;
+        }
+        base64Str = base64Str.replaceAll(RegExp(r'\s+'), '');
+        while (base64Str.length % 4 != 0) {
+          base64Str += '=';
+        }
+        
         return Image.memory(
-          base64Decode(imageSource),
+          base64Decode(base64Str),
           width: width,
           height: height,
           fit: fit,

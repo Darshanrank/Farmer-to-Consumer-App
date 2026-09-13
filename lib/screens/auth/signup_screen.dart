@@ -48,7 +48,7 @@ class _SignupScreenState extends State<SignupScreen> {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        password: _passwordController.text,
       );
 
       User? user = userCredential.user;
@@ -76,29 +76,38 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.error));
   }
 
   void _showSuccess(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.primary));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.success));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white, elevation: 0, leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary), onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen())))),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()))
+        )
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Create Account", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900)),
+              const Text("Create Account", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
               const SizedBox(height: 8),
-              Text("Join our community of farmers and buyers.", style: TextStyle(fontSize: 16, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+              const Text("Join our community of farmers and buyers.", style: TextStyle(fontSize: 16, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
               const SizedBox(height: 32),
-              const Text("I am a...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+              
+              const Text("I am a...", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary)),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -108,20 +117,31 @@ class _SignupScreenState extends State<SignupScreen> {
                 ],
               ),
               const SizedBox(height: 32),
-              _buildTextField(_fullNameController, "Full Name", Icons.person_rounded),
-              const SizedBox(height: 16),
-              _buildTextField(_emailController, "Email Address", Icons.email_rounded),
-              const SizedBox(height: 16),
-              _buildTextField(_phoneController, "Phone Number", Icons.phone_rounded, keyboardType: TextInputType.phone),
-              const SizedBox(height: 16),
-              _buildTextField(_passwordController, "Password", Icons.lock_rounded, isPassword: true),
-              const SizedBox(height: 16),
-              _buildTextField(_confirmPasswordController, "Confirm Password", Icons.lock_clock_rounded, isPassword: true),
+              
+              _buildLabel("Full Name"),
+              _buildTextField(_fullNameController, "e.g. John Doe", Icons.person_rounded),
+              const SizedBox(height: 20),
+              
+              _buildLabel("Email Address"),
+              _buildTextField(_emailController, "e.g. name@example.com", Icons.email_rounded),
+              const SizedBox(height: 20),
+              
+              _buildLabel("Phone Number"),
+              _buildTextField(_phoneController, "10-digit number", Icons.phone_rounded, keyboardType: TextInputType.phone),
+              const SizedBox(height: 20),
+              
+              _buildLabel("Password"),
+              _buildTextField(_passwordController, "At least 6 characters", Icons.lock_rounded, isPassword: true),
+              const SizedBox(height: 20),
+              
+              _buildLabel("Confirm Password"),
+              _buildTextField(_confirmPasswordController, "Re-enter your password", Icons.lock_clock_rounded, isPassword: true),
               const SizedBox(height: 40),
+              
               ElevatedButton(
                 onPressed: _isLoading ? null : signup,
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 56), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
-                child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text("CREATE ACCOUNT", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+                child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) : const Text("CREATE ACCOUNT", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2, fontSize: 16)),
               ),
               const SizedBox(height: 40),
             ],
@@ -139,34 +159,47 @@ class _SignupScreenState extends State<SignupScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.05) : AppColors.background,
+          color: isSelected ? AppColors.primaryLight.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: isSelected ? AppColors.primary : AppColors.divider, width: isSelected ? 2 : 1),
+          boxShadow: isSelected ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))] : [],
         ),
         child: Column(
           children: [
             Text(emoji, style: const TextStyle(fontSize: 32)),
-            const SizedBox(height: 8),
-            Text(role, style: TextStyle(fontWeight: FontWeight.w900, color: isSelected ? AppColors.primary : AppColors.textPrimary)),
-            Text(subtitle, style: TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+            const SizedBox(height: 12),
+            Text(role, style: TextStyle(fontWeight: FontWeight.w900, color: isSelected ? AppColors.primary : AppColors.textPrimary, fontSize: 16)),
+            const SizedBox(height: 4),
+            Text(subtitle, style: TextStyle(fontSize: 11, color: isSelected ? AppColors.primaryDark : AppColors.textSecondary, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isPassword = false, TextInputType? keyboardType}) {
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textPrimary, fontSize: 13, letterSpacing: 0.5)),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String hint, IconData icon, {bool isPassword = false, TextInputType? keyboardType}) {
     return TextField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
       keyboardType: keyboardType,
+      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
       decoration: InputDecoration(
-        labelText: label,
+        hintText: hint,
+        hintStyle: const TextStyle(color: AppColors.textHint, fontWeight: FontWeight.w500),
         prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
-        suffixIcon: isPassword ? IconButton(icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary, size: 20), onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible)) : null,
+        suffixIcon: isPassword ? IconButton(icon: Icon(_isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.textSecondary, size: 20), onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible)) : null,
         filled: true,
-        fillColor: AppColors.background.withOpacity(0.5),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.divider)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.divider)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
     );

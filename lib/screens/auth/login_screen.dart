@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        password: _passwordController.text,
       );
 
       User? user = userCredential.user;
@@ -52,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
           Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
           String role = userData['role'] ?? 'buyer';
           _navigateToDashboard(role);
+        } else {
+          _showError("User record not found. Please contact support.");
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -65,12 +67,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (role == "buyer") {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const BuyerDashboard()));
     } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SellerDashboard()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SellerDashboard()));
     }
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: AppColors.error));
   }
 
   @override
@@ -86,32 +88,34 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 100),
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(24)),
+                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24)),
                 child: const Icon(Icons.eco_rounded, size: 48, color: AppColors.primary),
               ),
               const SizedBox(height: 32),
-              const Text("Welcome to\nKisaanBazaar", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, height: 1.2)),
+              const Text("Welcome to\nKisaanBazaar", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, height: 1.2, color: AppColors.textPrimary)),
               const SizedBox(height: 8),
-              Text("Empowering farmers, serving you.", style: TextStyle(fontSize: 16, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+              const Text("Empowering farmers, serving you.", style: TextStyle(fontSize: 16, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
               const SizedBox(height: 48),
-              _buildTextField(_emailController, "Email Address", Icons.email_rounded, false),
-              const SizedBox(height: 16),
-              _buildTextField(_passwordController, "Password", Icons.lock_rounded, true),
+              _buildLabel("Email Address"),
+              _buildTextField(_emailController, "e.g. name@example.com", Icons.email_rounded, false),
+              const SizedBox(height: 20),
+              _buildLabel("Password"),
+              _buildTextField(_passwordController, "Enter your password", Icons.lock_rounded, true),
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(onPressed: () {}, child: const Text("Forgot Password?", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary))),
+                child: TextButton(onPressed: () {}, child: const Text("Forgot Password?", style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary, fontSize: 13))),
               ),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isLoading ? null : login,
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 56), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0),
-                child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text("SIGN IN", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+                child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) : const Text("SIGN IN", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2, fontSize: 16)),
               ),
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account?", style: TextStyle(color: AppColors.textSecondary)),
+                  const Text("Don't have an account?", style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
                   TextButton(onPressed: () {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SignupScreen()));
                   }, child: const Text("Join Now", style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary))),
@@ -124,17 +128,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isPassword) {
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textPrimary, fontSize: 13, letterSpacing: 0.5)),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String hint, IconData icon, bool isPassword) {
     return TextField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
+      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
       decoration: InputDecoration(
-        labelText: label,
+        hintText: hint,
+        hintStyle: const TextStyle(color: AppColors.textHint, fontWeight: FontWeight.w500),
         prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
-        suffixIcon: isPassword ? IconButton(icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary, size: 20), onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible)) : null,
+        suffixIcon: isPassword ? IconButton(icon: Icon(_isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: AppColors.textSecondary, size: 20), onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible)) : null,
         filled: true,
-        fillColor: AppColors.background.withOpacity(0.5),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.divider)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.divider)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
     );
