@@ -1,0 +1,46 @@
+{
+  "@@locale": "hi",
+  "appTitle": "एग्रोमार्केट",
+  "loading": "लोड हो रहा है...",
+  "error": "कुछ गलत हो गया",
+  "retry": "पुनः प्रयास करें",
+  "cancel": "रद्द करें",
+  "save": "सहेजें",
+  "confirm": "पुष्टि करें",
+  "delete": "हटाएं",
+  "edit": "संपादित करें",
+  "search": "खोजें",
+  "noResults": "कोई परिणाम नहीं मिला",
+  "networkError": "कृपया अपना इंटरनेट कनेक्शन जांचें",
+  "sessionExpired": "सत्र समाप्त हो गया। कृपया फिर से लॉगिन करें",
+  "login": "लॉगिन",
+  "register": "रजिस्टर",
+  "email": "ईमेल",
+  "password": "पासवर्ड",
+  "forgotPassword": "पासवर्ड भूल गए?",
+  "createAccount": "खाता बनाएं",
+  "alreadyHaveAccount": "पहले से खाता है?",
+  "dontHaveAccount": "खाता नहीं है?",
+  "emailVerification": "ईमेल सत्यापन",
+  "verifyEmailMessage": "कृपया अपना ईमेल पता सत्यापित करें। हमने {email} पर एक सत्यापन लिंक भेजा है।",
+  "@verifyEmailMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "resendVerification": "सत्यापन ईमेल पुनः भेजें",
+  "sellerDashboard": "विक्रेता डैशबोर्ड",
+  "profile": "प्रोफ़ाइल",
+  "store": "दुकान",
+  "products": "उत्पाद",
+  "orders": "ऑर्डर",
+  "inventory": "इन्वेंटरी",
+  "settings": "सेटिंग्स",
+  "logout": "लॉगआउट",
+  "requiredField": "यह फ़ील्ड आवश्यक है",
+  "invalidEmail": "कृपया एक वैध ईमेल दर्ज करें",
+  "passwordTooShort": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए",
+  "phoneInvalid": "कृपया एक वैध फ़ोन नंबर दर्ज करें"
+}

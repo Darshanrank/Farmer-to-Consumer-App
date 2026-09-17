@@ -1,0 +1,46 @@
+{
+  "@@locale": "gu",
+  "appTitle": "એગ્રોમાર્કેટ",
+  "loading": "લોડ થઈ રહ્યું છે...",
+  "error": "કંઈક ખોટું થયું",
+  "retry": "ફરી પ્રયાસ કરો",
+  "cancel": "રદ કરો",
+  "save": "સાચવો",
+  "confirm": "ખાતરી કરો",
+  "delete": "કાઢી નાખો",
+  "edit": "ફેરફાર કરો",
+  "search": "શોધો",
+  "noResults": "કોઈ પરિણામ મળ્યું નથી",
+  "networkError": "કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો",
+  "sessionExpired": "સત્ર સમાપ્ત થયું. કૃપા કરીને ફરીથી લોગિન કરો",
+  "login": "લોગિન",
+  "register": "રજિસ્ટર",
+  "email": "ઈમેઇલ",
+  "password": "પાસવર્ડ",
+  "forgotPassword": "પાસવર્ડ ભૂલી ગયા?",
+  "createAccount": "એકાઉન્ટ બનાવો",
+  "alreadyHaveAccount": "પહેલેથી એકાઉન્ટ છે?",
+  "dontHaveAccount": "એકાઉન્ટ નથી?",
+  "emailVerification": "ઈમેઇલ ચકાસણી",
+  "verifyEmailMessage": "કૃપા કરીને તમારું ઈમેઇલ સરનામું ચકાસો. અમે {email} પર ચકાસણી લિંક મોકલ્યો છે.",
+  "@verifyEmailMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "resendVerification": "ચકાસણી ઈમેઇલ ફરીથી મોકલો",
+  "sellerDashboard": "વિક્રેતા ડેશબોર્ડ",
+  "profile": "પ્રોફાઇલ",
+  "store": "દુકાન",
+  "products": "ઉત્પાદનો",
+  "orders": "ઓર્ડર",
+  "inventory": "ઇન્વેન્ટરી",
+  "settings": "સેટિંગ્સ",
+  "logout": "લોગઆઉટ",
+  "requiredField": "આ ફીલ્ડ જરૂરી છે",
+  "invalidEmail": "કૃપા કરીને માન્ય ઈમેઇલ દાખલ કરો",
+  "passwordTooShort": "પાસવર્ડ ઓછામાં ઓછા 8 અક્ષરોનો હોવો જોઈએ",
+  "phoneInvalid": "કૃપા કરીને માન્ય ફોન નંબર દાખલ કરો"
+}

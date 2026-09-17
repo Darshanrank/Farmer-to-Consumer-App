@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "192824470633",
+    "project_id": "academic-atlas-491309-s4",
+    "storage_bucket": "academic-atlas-491309-s4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192824470633:android:229a1dd1a4c413cbe9c6f8",
+        "android_client_info": {
+          "package_name": "com.example.agro_marketplace_"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXqC2vhk8pRZAn1S0spujqJxU56xywL2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

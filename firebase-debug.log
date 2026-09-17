@@ -1,0 +1,732 @@
+[debug] [2026-09-16T17:55:19.532Z] ----------------------------------------------------------------------
+[debug] [2026-09-16T17:55:19.534Z] Command:       C:\nvm4w\nodejs\node.exe C:\nvm4w\nodejs\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions firestore auth --project demo-agro-market
+[debug] [2026-09-16T17:55:19.535Z] CLI Version:   15.28.1
+[debug] [2026-09-16T17:55:19.535Z] Platform:      win32
+[debug] [2026-09-16T17:55:19.535Z] Node Version:  v24.2.0
+[debug] [2026-09-16T17:55:19.535Z] Detected Agent: antigravity
+[debug] [2026-09-16T17:55:19.535Z] Time:          Wed Sep 16 2026 23:25:19 GMT+0530 (India Standard Time)
+[debug] [2026-09-16T17:55:19.535Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-16T17:55:20.579Z] openjdk version "21.0.12" 2026-07-21 LTS
+
+[debug] [2026-09-16T17:55:20.579Z] OpenJDK Runtime Environment Temurin-21.0.12+8 (build 21.0.12+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.12+8 (build 21.0.12+8-LTS, mixed mode, sharing)
+
+[debug] [2026-09-16T17:55:20.586Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore"}}
+[info] i  emulators: Detected demo project ID "demo-agro-market", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-agro-market\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
+[debug] [2026-09-16T17:55:20.604Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.604Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.604Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.604Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.605Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-09-16T17:55:20.608Z] Found emulator hub locator: {"version":"15.28.1","origins":["http://127.0.0.1:4400","http://[::1]:4400"],"pid":952}
+[debug] [2026-09-16T17:55:20.608Z] Write emulator hub locator at C:\Users\HP\AppData\Local\Temp\hub-demo-agro-market.json
+[debug] [2026-09-16T17:55:20.619Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.619Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.619Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:55:20.619Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  firestore: Cloud Firestore Emulator does not support multiple databases yet. {"metadata":{"emulator":{"name":"firestore"},"message":"Cloud Firestore Emulator does not support multiple databases yet."}}
+[warn] !  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file. {"metadata":{"emulator":{"name":"firestore"},"message":"Did not find a Cloud Firestore rules file specified in a firebase.json config file."}}
+[warn] !  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"firestore"},"message":"The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[info] i  firestore: downloading cloud-firestore-emulator-v1.22.0.jar... {"metadata":{"emulator":{"name":"firestore"},"message":"downloading cloud-firestore-emulator-v1.22.0.jar..."}}
+[debug] [2026-09-16T17:55:20.654Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.22.0.jar 
+[debug] [2026-09-16T17:55:21.163Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.22.0.jar 200
+[debug] [2026-09-16T17:55:21.163Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/cloud-firestore-emulator-v1.22.0.jar [stream]
+[debug] [2026-09-16T17:55:37.949Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-09-16T17:55:37.949Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-09-16T17:55:37.949Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\HP\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.22.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","demo-agro-market","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\HP\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.22.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"demo-agro-market\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2026-09-16T17:55:39.464Z] Sept 16, 2026 11:25:39 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:25:39 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
+[debug] [2026-09-16T17:55:39.528Z] 
+API endpoint: http://127.0.0.1:8080
+ {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://127.0.0.1:8080\n"}}
+[debug] [2026-09-16T17:55:39.528Z] Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Database Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\r\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\r\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\r\nDev App Server is now running.\n\r\n"}}
+[info] +  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[info] i  ui: downloading ui-v1.15.0.zip... {"metadata":{"emulator":{"name":"ui"},"message":"downloading ui-v1.15.0.zip..."}}
+[debug] [2026-09-16T17:55:46.583Z] >>> [apiv2][query] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip 
+[debug] [2026-09-16T17:55:46.996Z] <<< [apiv2][status] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip 200
+[debug] [2026-09-16T17:55:46.996Z] <<< [apiv2][body] GET https://storage.googleapis.com/firebase-preview-drop/emulator/ui-v1.15.0.zip [stream]
+[debug] [2026-09-16T17:55:47.604Z] Data is 3538469
+[debug] [2026-09-16T17:55:47.605Z] [unzip] Entry: client/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.605Z] [unzip] Processing entry: client\
+[debug] [2026-09-16T17:55:47.606Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\
+[debug] [2026-09-16T17:55:47.607Z] [unzip] Entry: client/favicon-16x16.png (compressed_size=293 bytes, uncompressed_size=293 bytes)
+[debug] [2026-09-16T17:55:47.607Z] [unzip] Processing entry: client\favicon-16x16.png
+[debug] [2026-09-16T17:55:47.607Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.608Z] [unzip] Writing file: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\favicon-16x16.png
+[debug] [2026-09-16T17:55:47.610Z] [unzip] Entry: client/safari-pinned-tab.svg (compressed_size=1433 bytes, uncompressed_size=2611 bytes)
+[debug] [2026-09-16T17:55:47.610Z] [unzip] Processing entry: client\safari-pinned-tab.svg
+[debug] [2026-09-16T17:55:47.610Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.611Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\safari-pinned-tab.svg
+[debug] [2026-09-16T17:55:47.618Z] [unzip] Entry: client/favicon.ico (compressed_size=2933 bytes, uncompressed_size=13294 bytes)
+[debug] [2026-09-16T17:55:47.618Z] [unzip] Processing entry: client\favicon.ico
+[debug] [2026-09-16T17:55:47.618Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.619Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\favicon.ico
+[debug] [2026-09-16T17:55:47.620Z] [unzip] Entry: client/index.html (compressed_size=1364 bytes, uncompressed_size=3071 bytes)
+[debug] [2026-09-16T17:55:47.621Z] [unzip] Processing entry: client\index.html
+[debug] [2026-09-16T17:55:47.621Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.621Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\index.html
+[debug] [2026-09-16T17:55:47.623Z] [unzip] Entry: client/android-chrome-192x192.png (compressed_size=2684 bytes, uncompressed_size=2684 bytes)
+[debug] [2026-09-16T17:55:47.623Z] [unzip] Processing entry: client\android-chrome-192x192.png
+[debug] [2026-09-16T17:55:47.623Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.623Z] [unzip] Writing file: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\android-chrome-192x192.png
+[debug] [2026-09-16T17:55:47.624Z] [unzip] Entry: client/apple-touch-icon.png (compressed_size=2123 bytes, uncompressed_size=2152 bytes)
+[debug] [2026-09-16T17:55:47.624Z] [unzip] Processing entry: client\apple-touch-icon.png
+[debug] [2026-09-16T17:55:47.624Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.624Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\apple-touch-icon.png
+[debug] [2026-09-16T17:55:47.625Z] [unzip] Entry: client/android-chrome-512x512.png (compressed_size=5369 bytes, uncompressed_size=5411 bytes)
+[debug] [2026-09-16T17:55:47.626Z] [unzip] Processing entry: client\android-chrome-512x512.png
+[debug] [2026-09-16T17:55:47.626Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.628Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\android-chrome-512x512.png
+[debug] [2026-09-16T17:55:47.631Z] [unzip] Entry: client/manifest.json (compressed_size=245 bytes, uncompressed_size=551 bytes)
+[debug] [2026-09-16T17:55:47.632Z] [unzip] Processing entry: client\manifest.json
+[debug] [2026-09-16T17:55:47.632Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.633Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\manifest.json
+[debug] [2026-09-16T17:55:47.636Z] [unzip] Entry: client/robots.txt (compressed_size=26 bytes, uncompressed_size=26 bytes)
+[debug] [2026-09-16T17:55:47.636Z] [unzip] Processing entry: client\robots.txt
+[debug] [2026-09-16T17:55:47.636Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.637Z] [unzip] Writing file: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\robots.txt
+[debug] [2026-09-16T17:55:47.638Z] [unzip] Entry: client/mstile-150x150.png (compressed_size=2034 bytes, uncompressed_size=2034 bytes)
+[debug] [2026-09-16T17:55:47.638Z] [unzip] Processing entry: client\mstile-150x150.png
+[debug] [2026-09-16T17:55:47.638Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.639Z] [unzip] Writing file: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\mstile-150x150.png
+[debug] [2026-09-16T17:55:47.639Z] [unzip] Entry: client/assets/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.640Z] [unzip] Processing entry: client\assets\
+[debug] [2026-09-16T17:55:47.640Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\
+[debug] [2026-09-16T17:55:47.640Z] [unzip] Entry: client/assets/index-BX-A56oj.js (compressed_size=582089 bytes, uncompressed_size=2092775 bytes)
+[debug] [2026-09-16T17:55:47.640Z] [unzip] Processing entry: client\assets\index-BX-A56oj.js
+[debug] [2026-09-16T17:55:47.640Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-09-16T17:55:47.640Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-BX-A56oj.js
+[debug] [2026-09-16T17:55:47.664Z] [unzip] Entry: client/assets/index-CjB9C900.css (compressed_size=35979 bytes, uncompressed_size=298654 bytes)
+[debug] [2026-09-16T17:55:47.665Z] [unzip] Processing entry: client\assets\index-CjB9C900.css
+[debug] [2026-09-16T17:55:47.665Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-09-16T17:55:47.665Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-CjB9C900.css
+[debug] [2026-09-16T17:55:47.667Z] [unzip] Entry: client/assets/index-BX-A56oj.js.map (compressed_size=2362482 bytes, uncompressed_size=10036679 bytes)
+[debug] [2026-09-16T17:55:47.667Z] [unzip] Processing entry: client\assets\index-BX-A56oj.js.map
+[debug] [2026-09-16T17:55:47.667Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets
+[debug] [2026-09-16T17:55:47.667Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\index-BX-A56oj.js.map
+[debug] [2026-09-16T17:55:47.724Z] [unzip] Entry: client/assets/extensions/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.724Z] [unzip] Processing entry: client\assets\extensions\
+[debug] [2026-09-16T17:55:47.724Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions\
+[debug] [2026-09-16T17:55:47.724Z] [unzip] Entry: client/assets/extensions/default-extension.png (compressed_size=1646 bytes, uncompressed_size=1657 bytes)
+[debug] [2026-09-16T17:55:47.725Z] [unzip] Processing entry: client\assets\extensions\default-extension.png
+[debug] [2026-09-16T17:55:47.725Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions
+[debug] [2026-09-16T17:55:47.725Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\extensions\default-extension.png
+[debug] [2026-09-16T17:55:47.726Z] [unzip] Entry: client/assets/img/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.727Z] [unzip] Processing entry: client\assets\img\
+[debug] [2026-09-16T17:55:47.727Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\img\
+[debug] [2026-09-16T17:55:47.728Z] [unzip] Entry: client/assets/img/database.png (compressed_size=29449 bytes, uncompressed_size=29988 bytes)
+[debug] [2026-09-16T17:55:47.728Z] [unzip] Processing entry: client\assets\img\database.png
+[debug] [2026-09-16T17:55:47.728Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\img
+[debug] [2026-09-16T17:55:47.728Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\img\database.png
+[debug] [2026-09-16T17:55:47.729Z] [unzip] Entry: client/assets/provider-icons/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.729Z] [unzip] Processing entry: client\assets\provider-icons\
+[debug] [2026-09-16T17:55:47.729Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\
+[debug] [2026-09-16T17:55:47.730Z] [unzip] Entry: client/assets/provider-icons/auth_service_saml.svg (compressed_size=575 bytes, uncompressed_size=1226 bytes)
+[debug] [2026-09-16T17:55:47.730Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_saml.svg
+[debug] [2026-09-16T17:55:47.730Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.730Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_saml.svg
+[debug] [2026-09-16T17:55:47.731Z] [unzip] Entry: client/assets/provider-icons/auth_service_phone.svg (compressed_size=261 bytes, uncompressed_size=414 bytes)
+[debug] [2026-09-16T17:55:47.731Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_phone.svg
+[debug] [2026-09-16T17:55:47.731Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.732Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_phone.svg
+[debug] [2026-09-16T17:55:47.733Z] [unzip] Entry: client/assets/provider-icons/auth_service_facebook.svg (compressed_size=289 bytes, uncompressed_size=457 bytes)
+[debug] [2026-09-16T17:55:47.733Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_facebook.svg
+[debug] [2026-09-16T17:55:47.733Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.733Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_facebook.svg
+[debug] [2026-09-16T17:55:47.734Z] [unzip] Entry: client/assets/provider-icons/auth_service_game_center.svg (compressed_size=991 bytes, uncompressed_size=3921 bytes)
+[debug] [2026-09-16T17:55:47.734Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_game_center.svg
+[debug] [2026-09-16T17:55:47.735Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.735Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_game_center.svg
+[debug] [2026-09-16T17:55:47.736Z] [unzip] Entry: client/assets/provider-icons/auth_service_apple.svg (compressed_size=230 bytes, uncompressed_size=334 bytes)
+[debug] [2026-09-16T17:55:47.736Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_apple.svg
+[debug] [2026-09-16T17:55:47.736Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.737Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_apple.svg
+[debug] [2026-09-16T17:55:47.738Z] [unzip] Entry: client/assets/provider-icons/auth_service_github.svg (compressed_size=466 bytes, uncompressed_size=838 bytes)
+[debug] [2026-09-16T17:55:47.738Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_github.svg
+[debug] [2026-09-16T17:55:47.738Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.738Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_github.svg
+[debug] [2026-09-16T17:55:47.740Z] [unzip] Entry: client/assets/provider-icons/auth_service_mslive.svg (compressed_size=203 bytes, uncompressed_size=378 bytes)
+[debug] [2026-09-16T17:55:47.740Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_mslive.svg
+[debug] [2026-09-16T17:55:47.740Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.740Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_mslive.svg
+[debug] [2026-09-16T17:55:47.742Z] [unzip] Entry: client/assets/provider-icons/auth_service_yahoo.svg (compressed_size=577 bytes, uncompressed_size=1182 bytes)
+[debug] [2026-09-16T17:55:47.744Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_yahoo.svg
+[debug] [2026-09-16T17:55:47.744Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.744Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_yahoo.svg
+[debug] [2026-09-16T17:55:47.747Z] [unzip] Entry: client/assets/provider-icons/auth_service_twitter.svg (compressed_size=444 bytes, uncompressed_size=751 bytes)
+[debug] [2026-09-16T17:55:47.747Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_twitter.svg
+[debug] [2026-09-16T17:55:47.747Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.748Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_twitter.svg
+[debug] [2026-09-16T17:55:47.749Z] [unzip] Entry: client/assets/provider-icons/auth_service_play_games.svg (compressed_size=565 bytes, uncompressed_size=1173 bytes)
+[debug] [2026-09-16T17:55:47.749Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_play_games.svg
+[debug] [2026-09-16T17:55:47.750Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.750Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_play_games.svg
+[debug] [2026-09-16T17:55:47.754Z] [unzip] Entry: client/assets/provider-icons/auth_service_email.svg (compressed_size=228 bytes, uncompressed_size=326 bytes)
+[debug] [2026-09-16T17:55:47.754Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_email.svg
+[debug] [2026-09-16T17:55:47.754Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.755Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_email.svg
+[debug] [2026-09-16T17:55:47.756Z] [unzip] Entry: client/assets/provider-icons/auth_service_google.svg (compressed_size=409 bytes, uncompressed_size=720 bytes)
+[debug] [2026-09-16T17:55:47.756Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_google.svg
+[debug] [2026-09-16T17:55:47.756Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.757Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_google.svg
+[debug] [2026-09-16T17:55:47.758Z] [unzip] Entry: client/assets/provider-icons/auth_service_oidc.svg (compressed_size=414 bytes, uncompressed_size=858 bytes)
+[debug] [2026-09-16T17:55:47.758Z] [unzip] Processing entry: client\assets\provider-icons\auth_service_oidc.svg
+[debug] [2026-09-16T17:55:47.758Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons
+[debug] [2026-09-16T17:55:47.758Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\assets\provider-icons\auth_service_oidc.svg
+[debug] [2026-09-16T17:55:47.762Z] [unzip] Entry: client/browserconfig.xml (compressed_size=491 bytes, uncompressed_size=822 bytes)
+[debug] [2026-09-16T17:55:47.762Z] [unzip] Processing entry: client\browserconfig.xml
+[debug] [2026-09-16T17:55:47.762Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.763Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\browserconfig.xml
+[debug] [2026-09-16T17:55:47.764Z] [unzip] Entry: client/favicon-32x32.png (compressed_size=475 bytes, uncompressed_size=475 bytes)
+[debug] [2026-09-16T17:55:47.764Z] [unzip] Processing entry: client\favicon-32x32.png
+[debug] [2026-09-16T17:55:47.764Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client
+[debug] [2026-09-16T17:55:47.765Z] [unzip] Writing file: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\client\favicon-32x32.png
+[debug] [2026-09-16T17:55:47.765Z] [unzip] Entry: server/ (compressed_size=0 bytes, uncompressed_size=0 bytes)
+[debug] [2026-09-16T17:55:47.765Z] [unzip] Processing entry: server\
+[debug] [2026-09-16T17:55:47.765Z] [unzip] mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\server\
+[debug] [2026-09-16T17:55:47.766Z] [unzip] Entry: server/server.mjs.map (compressed_size=217845 bytes, uncompressed_size=944978 bytes)
+[debug] [2026-09-16T17:55:47.766Z] [unzip] Processing entry: server\server.mjs.map
+[debug] [2026-09-16T17:55:47.766Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\server
+[debug] [2026-09-16T17:55:47.766Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\server\server.mjs.map
+[debug] [2026-09-16T17:55:47.771Z] [unzip] Entry: server/server.mjs (compressed_size=276407 bytes, uncompressed_size=933701 bytes)
+[debug] [2026-09-16T17:55:47.771Z] [unzip] Processing entry: server\server.mjs
+[debug] [2026-09-16T17:55:47.772Z] [unzip] else mkdir: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\server
+[debug] [2026-09-16T17:55:47.772Z] [unzip] deflating: C:\Users\HP\.cache\firebase\emulators\ui-v1.15.0\server\server.mjs
+[info] i  functions: Watching "C:\Users\HP\Farmer-to-Consumer-App\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\" for Cloud Functions..."}}
+[debug] [2026-09-16T17:55:47.785Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-09-16T17:55:49.922Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
+[debug] [2026-09-16T17:55:49.922Z] Building nodejs source
+[debug] [2026-09-16T17:55:49.922Z] Failed to find version of module node: reached end of search path C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "24". Using node@24 from host. 
+[debug] [2026-09-16T17:55:49.925Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-09-16T17:55:49.932Z] Found firebase-functions binary at 'C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8627
+
+[debug] [2026-09-16T17:55:59.636Z] Got response from /__/functions.yaml {"endpoints":{"onUserCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.create","eventFilters":{"resource":"projects/demo-agro-market"},"retry":false},"labels":{},"entryPoint":"onUserCreated"},"onUserDeleted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.delete","eventFilters":{"resource":"projects/demo-agro-market"},"retry":false},"labels":{},"entryPoint":"onUserDeleted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onUserCreated, onUserDeleted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onUserCreated, onUserDeleted."}}
+[debug] [2026-09-16T17:56:02.690Z] addAuthTrigger {"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.create","resource":"projects/demo-agro-market"}}
+[info] +  functions[us-central1-onUserCreated]: auth function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mauth\u001b[22m function initialized."}}
+[debug] [2026-09-16T17:56:02.691Z] addAuthTrigger {"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.delete","resource":"projects/demo-agro-market"}}
+[info] +  functions[us-central1-onUserDeleted]: auth function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mauth\u001b[22m function initialized."}}
+[debug] [2026-09-16T17:56:02.706Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2026-09-16T17:56:13.191Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:56:13.191Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"e43f75d5-b478-4c73-b630-7a24040cf7d5","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:56:13.190Z","data":{"uid":"1GzbuVhldZtt7Up4Ko3RcJsyiJEO","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:13.188Z","lastSignInTime":"2026-09-16T17:56:13.188Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:56:13.204Z] [work-queue] {"queuedWork":["us-central1-onUserCreated-0-2026-09-16T17:56:13.204Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:13.206Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserCreated-0-2026-09-16T17:56:13.204Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:13.208Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:13.214Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:56:13.214Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:56:13.215Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:56:13.215Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:13.215Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:56:13.215Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:13.216Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0 --> us-central1-onUserCreated-0
+[debug] [2026-09-16T17:56:13.216Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:56:13.216Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:56:13.234Z] [worker-pool] addWorker(us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-onUserCreated)"}}
+[debug] [2026-09-16T17:56:13.235Z] [worker-pool] Adding worker with key us-central1-onUserCreated, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-onUserCreated, total=1"}}
+[debug] [2026-09-16T17:56:14.238Z] [runtime-status] [15336] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:14.239Z] [runtime-status] [15336] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:14.239Z] [runtime-status] [15336] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-09-16T17:56:14.240Z] [runtime-status] [15336] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:14.380Z] [runtime-status] [15336] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:14.382Z] [runtime-status] [15336] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:14.498Z] [runtime-status] [15336] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2026-09-16T17:56:14.501Z] [runtime-status] [15336] initializeApp(DEFAULT) {"storageBucket":"demo-agro-market.appspot.com","databaseURL":"https://demo-agro-market.firebaseio.com","projectId":"demo-agro-market"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] initializeApp(DEFAULT) {\"storageBucket\":\"demo-agro-market.appspot.com\",\"databaseURL\":\"https://demo-agro-market.firebaseio.com\",\"projectId\":\"demo-agro-market\"}"}}
+[debug] [2026-09-16T17:56:14.509Z] [runtime-status] [15336] Functions runtime initialized. {"cwd":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions","node_version":"24.2.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\",\"node_version\":\"24.2.0\"}"}}
+[debug] [2026-09-16T17:56:14.509Z] [runtime-status] [15336] Listening to port: \\?\pipe\fire_emu_285dd510c018ea7f {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] Listening to port: \\\\?\\pipe\\fire_emu_285dd510c018ea7f"}}
+[debug] [2026-09-16T17:56:14.561Z] [worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: IDLE"}}
+[debug] [2026-09-16T17:56:14.562Z] [worker-pool] submitRequest(triggerId=us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserCreated)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserCreated" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Beginning execution of \"us-central1-onUserCreated\""}}
+[debug] [2026-09-16T17:56:14.562Z] [worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: BUSY"}}
+[debug] [2026-09-16T17:56:14.576Z] [runtime-status] [15336] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:56:14.576Z] [runtime-status] [15336] RunBackground {"data":{"uid":"1GzbuVhldZtt7Up4Ko3RcJsyiJEO","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:13.188Z","lastSignInTime":"2026-09-16T17:56:13.188Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"e43f75d5-b478-4c73-b630-7a24040cf7d5","eventType":"providers/firebase.auth/eventTypes/user.create","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:56:13.190Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [15336] RunBackground {\"data\":{\"uid\":\"1GzbuVhldZtt7Up4Ko3RcJsyiJEO\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:56:13.188Z\",\"lastSignInTime\":\"2026-09-16T17:56:13.188Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"e43f75d5-b478-4c73-b630-7a24040cf7d5\",\"eventType\":\"providers/firebase.auth/eventTypes/user.create\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:56:13.190Z\"}}"}}
+[warn] !  functions: TypeError: Cannot read properties of undefined (reading 'serverTimestamp')
+    at C:\Users\HP\Farmer-to-Consumer-App\functions\lib\index.js:53:47
+    at C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\firebase-functions\lib\common\onInit.js:33:16
+    at cloudFunction (C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\firebase-functions\lib\v1\cloud-functions.js:81:23)
+    at C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:412:16
+    at runFunction (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:400:15)
+    at runBackground (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:411:11)
+    at processBackground (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:395:11)
+    at C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:588:27
+    at Layer.handle [as handle_request] (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\node_modules\express\lib\router\route.js:149:13) {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"TypeError: Cannot read properties of undefined (reading 'serverTimestamp')\n    at C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\lib\\index.js:53:47\n    at C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\common\\onInit.js:33:16\n    at cloudFunction (C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\cloud-functions.js:81:23)\n    at C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:412:16\n    at runFunction (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:400:15)\n    at runBackground (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:411:11)\n    at processBackground (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:395:11)\n    at C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:588:27\n    at Layer.handle [as handle_request] (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:149:13)"}}
+[warn] !  Your function was killed because it raised an unhandled error. {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Your function was killed because it raised an unhandled error."}}
+[error] i  Request to function failed: Error: socket hang up {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Request to function failed: Error: socket hang up"}}
+[debug] [2026-09-16T17:56:14.580Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:14.590Z] [worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: exited"}}
+[debug] [2026-09-16T17:56:14.590Z] [worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-94105c7e-cb73-4e19-bdcc-2bd257849cf6]: FINISHED"}}
+[debug] [2026-09-16T17:56:24.695Z] Sept 16, 2026 11:26:24 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:26:24 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[debug] [2026-09-16T17:56:25.454Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:56:25.455Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"7b6715bb-6611-4c5a-bc5a-c30583ae09b0","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:56:25.454Z","data":{"uid":"1GzbuVhldZtt7Up4Ko3RcJsyiJEO","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:13.188Z","lastSignInTime":"2026-09-16T17:56:13.188Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:56:25.457Z] [work-queue] {"queuedWork":["us-central1-onUserDeleted-0-2026-09-16T17:56:25.457Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:25.458Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserDeleted-0-2026-09-16T17:56:25.457Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:25.458Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:25.459Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:56:25.459Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:56:25.460Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:56:25.460Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:25.460Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:56:25.460Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:25.460Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0 --> us-central1-onUserDeleted-0
+[debug] [2026-09-16T17:56:25.460Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:56:25.460Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:56:25.460Z] [worker-pool] Cleaned up workers for us-central1-onUserCreated: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-onUserCreated: 1 --> 0"}}
+[debug] [2026-09-16T17:56:25.469Z] [worker-pool] addWorker(us-central1-onUserDeleted) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-onUserDeleted)"}}
+[debug] [2026-09-16T17:56:25.469Z] [worker-pool] Adding worker with key us-central1-onUserDeleted, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-onUserDeleted, total=1"}}
+[debug] [2026-09-16T17:56:26.388Z] [runtime-status] [7500] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:26.389Z] [runtime-status] [7500] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:26.390Z] [runtime-status] [7500] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-09-16T17:56:26.390Z] [runtime-status] [7500] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:26.520Z] [runtime-status] [7500] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:26.523Z] [runtime-status] [7500] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:26.655Z] [runtime-status] [7500] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2026-09-16T17:56:26.657Z] [runtime-status] [7500] initializeApp(DEFAULT) {"storageBucket":"demo-agro-market.appspot.com","databaseURL":"https://demo-agro-market.firebaseio.com","projectId":"demo-agro-market"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] initializeApp(DEFAULT) {\"storageBucket\":\"demo-agro-market.appspot.com\",\"databaseURL\":\"https://demo-agro-market.firebaseio.com\",\"projectId\":\"demo-agro-market\"}"}}
+[debug] [2026-09-16T17:56:26.664Z] [runtime-status] [7500] Functions runtime initialized. {"cwd":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions","node_version":"24.2.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\",\"node_version\":\"24.2.0\"}"}}
+[debug] [2026-09-16T17:56:26.664Z] [runtime-status] [7500] Listening to port: \\?\pipe\fire_emu_ddd1f305503a9dca {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] Listening to port: \\\\?\\pipe\\fire_emu_ddd1f305503a9dca"}}
+[debug] [2026-09-16T17:56:26.688Z] [worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE"}}
+[debug] [2026-09-16T17:56:26.688Z] [worker-pool] submitRequest(triggerId=us-central1-onUserDeleted) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserDeleted)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserDeleted" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Beginning execution of \"us-central1-onUserDeleted\""}}
+[debug] [2026-09-16T17:56:26.688Z] [worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: BUSY"}}
+[debug] [2026-09-16T17:56:26.702Z] [runtime-status] [7500] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:56:26.702Z] [runtime-status] [7500] RunBackground {"data":{"uid":"1GzbuVhldZtt7Up4Ko3RcJsyiJEO","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:13.188Z","lastSignInTime":"2026-09-16T17:56:13.188Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"7b6715bb-6611-4c5a-bc5a-c30583ae09b0","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:56:25.454Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] RunBackground {\"data\":{\"uid\":\"1GzbuVhldZtt7Up4Ko3RcJsyiJEO\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:56:13.188Z\",\"lastSignInTime\":\"2026-09-16T17:56:13.188Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"7b6715bb-6611-4c5a-bc5a-c30583ae09b0\",\"eventType\":\"providers/firebase.auth/eventTypes/user.delete\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:56:25.454Z\"}}"}}
+[debug] [2026-09-16T17:56:26.976Z] Sept 16, 2026 11:26:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:26:26 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[info] >  {"severity":"INFO","message":"User profile deleted for 1GzbuVhldZtt7Up4Ko3RcJsyiJEO"} {"user":{"severity":"INFO","message":"User profile deleted for 1GzbuVhldZtt7Up4Ko3RcJsyiJEO"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"INFO\",\"message\":\"User profile deleted for 1GzbuVhldZtt7Up4Ko3RcJsyiJEO\"}"}}
+[debug] [2026-09-16T17:56:27.090Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-onUserDeleted" in 401.685ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finished \"us-central1-onUserDeleted\" in 401.685ms"}}
+[debug] [2026-09-16T17:56:27.090Z] [worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE"}}
+[debug] [2026-09-16T17:56:27.090Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-09-16T17:56:27.090Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-09-16T17:56:27.090Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:28.512Z] Sept 16, 2026 11:26:28 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException
+WARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)
+	at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:26:28 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException\r\nWARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.\r\njava.net.SocketException: Connection reset\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)\r\n\tat io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)\r\n\tat io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)\r\n\tat io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)\r\n\tat io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)\r\n\tat io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)\r\n\tat io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)\r\n\tat io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)\r\n\tat io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)\r\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\r\n\r\n"}}
+[debug] [2026-09-16T17:56:47.863Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:56:47.863Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"3a3994f9-dc39-43f2-ae80-44b507b715bf","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:56:47.862Z","data":{"uid":"lrGKhsFIUC5lNZGQbrFz1D7RtOPg","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:47.862Z","lastSignInTime":"2026-09-16T17:56:47.862Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:56:47.866Z] [work-queue] {"queuedWork":["us-central1-onUserCreated-0-2026-09-16T17:56:47.866Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:47.866Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserCreated-0-2026-09-16T17:56:47.866Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:47.866Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:47.868Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:56:47.868Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:56:47.870Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:56:47.870Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:47.870Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:56:47.870Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:47.870Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0 --> us-central1-onUserCreated-0
+[debug] [2026-09-16T17:56:47.870Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:56:47.870Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:56:47.878Z] [worker-pool] addWorker(us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-onUserCreated)"}}
+[debug] [2026-09-16T17:56:47.878Z] [worker-pool] Adding worker with key us-central1-onUserCreated, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-onUserCreated, total=1"}}
+[debug] [2026-09-16T17:56:48.785Z] [runtime-status] [3368] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:48.786Z] [runtime-status] [3368] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:48.786Z] [runtime-status] [3368] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-09-16T17:56:48.787Z] [runtime-status] [3368] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:48.923Z] [runtime-status] [3368] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:48.925Z] [runtime-status] [3368] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:56:49.039Z] [runtime-status] [3368] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2026-09-16T17:56:49.041Z] [runtime-status] [3368] initializeApp(DEFAULT) {"storageBucket":"demo-agro-market.appspot.com","databaseURL":"https://demo-agro-market.firebaseio.com","projectId":"demo-agro-market"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] initializeApp(DEFAULT) {\"storageBucket\":\"demo-agro-market.appspot.com\",\"databaseURL\":\"https://demo-agro-market.firebaseio.com\",\"projectId\":\"demo-agro-market\"}"}}
+[debug] [2026-09-16T17:56:49.048Z] [runtime-status] [3368] Functions runtime initialized. {"cwd":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions","node_version":"24.2.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\",\"node_version\":\"24.2.0\"}"}}
+[debug] [2026-09-16T17:56:49.048Z] [runtime-status] [3368] Listening to port: \\?\pipe\fire_emu_f1889b8b131f6f45 {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] Listening to port: \\\\?\\pipe\\fire_emu_f1889b8b131f6f45"}}
+[debug] [2026-09-16T17:56:49.113Z] [worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: IDLE"}}
+[debug] [2026-09-16T17:56:49.113Z] [worker-pool] submitRequest(triggerId=us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserCreated)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserCreated" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Beginning execution of \"us-central1-onUserCreated\""}}
+[debug] [2026-09-16T17:56:49.113Z] [worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: BUSY"}}
+[debug] [2026-09-16T17:56:49.128Z] [runtime-status] [3368] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:56:49.128Z] [runtime-status] [3368] RunBackground {"data":{"uid":"lrGKhsFIUC5lNZGQbrFz1D7RtOPg","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:47.862Z","lastSignInTime":"2026-09-16T17:56:47.862Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"3a3994f9-dc39-43f2-ae80-44b507b715bf","eventType":"providers/firebase.auth/eventTypes/user.create","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:56:47.862Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [3368] RunBackground {\"data\":{\"uid\":\"lrGKhsFIUC5lNZGQbrFz1D7RtOPg\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:56:47.862Z\",\"lastSignInTime\":\"2026-09-16T17:56:47.862Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"3a3994f9-dc39-43f2-ae80-44b507b715bf\",\"eventType\":\"providers/firebase.auth/eventTypes/user.create\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:56:47.862Z\"}}"}}
+[warn] !  functions: TypeError: Cannot read properties of undefined (reading 'serverTimestamp')
+    at C:\Users\HP\Farmer-to-Consumer-App\functions\lib\index.js:53:47
+    at C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\firebase-functions\lib\common\onInit.js:33:16
+    at cloudFunction (C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\firebase-functions\lib\v1\cloud-functions.js:81:23)
+    at C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:412:16
+    at runFunction (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:400:15)
+    at runBackground (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:411:11)
+    at processBackground (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:395:11)
+    at C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:588:27
+    at Layer.handle [as handle_request] (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\HP\AppData\Local\nvm\v24.2.0\node_modules\firebase-tools\node_modules\express\lib\router\route.js:149:13) {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"TypeError: Cannot read properties of undefined (reading 'serverTimestamp')\n    at C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\lib\\index.js:53:47\n    at C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\common\\onInit.js:33:16\n    at cloudFunction (C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\cloud-functions.js:81:23)\n    at C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:412:16\n    at runFunction (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:400:15)\n    at runBackground (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:411:11)\n    at processBackground (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:395:11)\n    at C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:588:27\n    at Layer.handle [as handle_request] (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\HP\\AppData\\Local\\nvm\\v24.2.0\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:149:13)"}}
+[warn] !  Your function was killed because it raised an unhandled error. {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Your function was killed because it raised an unhandled error."}}
+[error] i  Request to function failed: Error: socket hang up {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Request to function failed: Error: socket hang up"}}
+[debug] [2026-09-16T17:56:49.132Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:49.141Z] [worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: exited"}}
+[debug] [2026-09-16T17:56:49.141Z] [worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-4776c288-9ad2-4298-870b-8d08942e4fc2]: FINISHED"}}
+[debug] [2026-09-16T17:56:51.278Z] Sept 16, 2026 11:26:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:26:51 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[debug] [2026-09-16T17:56:51.299Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:56:51.299Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"e1a4a035-0cbe-4b61-a5b0-41bd7dd5682c","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:56:51.298Z","data":{"uid":"lrGKhsFIUC5lNZGQbrFz1D7RtOPg","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:47.862Z","lastSignInTime":"2026-09-16T17:56:47.862Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:56:51.301Z] [work-queue] {"queuedWork":["us-central1-onUserDeleted-0-2026-09-16T17:56:51.301Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:51.301Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserDeleted-0-2026-09-16T17:56:51.301Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:51.302Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:51.302Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:56:51.302Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:56:51.303Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:56:51.303Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:51.303Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:56:51.303Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:56:51.303Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0 --> us-central1-onUserDeleted-0
+[debug] [2026-09-16T17:56:51.303Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:56:51.303Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:56:51.303Z] [worker-pool] Cleaned up workers for us-central1-onUserCreated: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-onUserCreated: 1 --> 0"}}
+[debug] [2026-09-16T17:56:51.303Z] [worker-pool] submitRequest(triggerId=us-central1-onUserDeleted) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserDeleted)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserDeleted" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Beginning execution of \"us-central1-onUserDeleted\""}}
+[debug] [2026-09-16T17:56:51.303Z] [worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: BUSY"}}
+[debug] [2026-09-16T17:56:51.305Z] [runtime-status] [7500] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:56:51.306Z] [runtime-status] [7500] RunBackground {"data":{"uid":"lrGKhsFIUC5lNZGQbrFz1D7RtOPg","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:56:47.862Z","lastSignInTime":"2026-09-16T17:56:47.862Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"e1a4a035-0cbe-4b61-a5b0-41bd7dd5682c","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:56:51.298Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [7500] RunBackground {\"data\":{\"uid\":\"lrGKhsFIUC5lNZGQbrFz1D7RtOPg\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:56:47.862Z\",\"lastSignInTime\":\"2026-09-16T17:56:47.862Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"e1a4a035-0cbe-4b61-a5b0-41bd7dd5682c\",\"eventType\":\"providers/firebase.auth/eventTypes/user.delete\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:56:51.298Z\"}}"}}
+[info] >  {"severity":"INFO","message":"User profile deleted for lrGKhsFIUC5lNZGQbrFz1D7RtOPg"} {"user":{"severity":"INFO","message":"User profile deleted for lrGKhsFIUC5lNZGQbrFz1D7RtOPg"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"INFO\",\"message\":\"User profile deleted for lrGKhsFIUC5lNZGQbrFz1D7RtOPg\"}"}}
+[debug] [2026-09-16T17:56:51.318Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-onUserDeleted" in 14.6557ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finished \"us-central1-onUserDeleted\" in 14.6557ms"}}
+[debug] [2026-09-16T17:56:51.318Z] [worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-8870aad2-bc69-44e1-804e-ac848f352f3e]: IDLE"}}
+[debug] [2026-09-16T17:56:51.318Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-09-16T17:56:51.318Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-09-16T17:56:51.318Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:56:54.349Z] Sept 16, 2026 11:26:54 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException
+WARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)
+	at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:26:54 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException\r\nWARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.\r\njava.net.SocketException: Connection reset\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)\r\n\tat io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)\r\n\tat io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)\r\n\tat io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)\r\n\tat io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)\r\n\tat io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)\r\n\tat io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)\r\n\tat io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)\r\n\tat io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)\r\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\r\n\r\n"}}
+[debug] [2026-09-16T17:57:17.822Z] File C:\Users\HP\Farmer-to-Consumer-App\functions\test_functions.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\test_functions.js changed, reloading triggers"}}
+[debug] [2026-09-16T17:57:18.832Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-09-16T17:57:19.592Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
+[debug] [2026-09-16T17:57:19.592Z] Building nodejs source
+[debug] [2026-09-16T17:57:19.592Z] Failed to find version of module node: reached end of search path C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "24". Using node@24 from host. 
+[debug] [2026-09-16T17:57:19.593Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-09-16T17:57:19.600Z] Found firebase-functions binary at 'C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8435
+
+[debug] [2026-09-16T17:57:48.479Z] ----------------------------------------------------------------------
+[debug] [2026-09-16T17:57:48.481Z] Command:       C:\nvm4w\nodejs\node.exe C:\nvm4w\nodejs\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions firestore auth --project demo-agro-market
+[debug] [2026-09-16T17:57:48.481Z] CLI Version:   15.28.1
+[debug] [2026-09-16T17:57:48.481Z] Platform:      win32
+[debug] [2026-09-16T17:57:48.481Z] Node Version:  v24.2.0
+[debug] [2026-09-16T17:57:48.481Z] Detected Agent: antigravity
+[debug] [2026-09-16T17:57:48.481Z] Time:          Wed Sep 16 2026 23:27:48 GMT+0530 (India Standard Time)
+[debug] [2026-09-16T17:57:48.481Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-16T17:57:49.513Z] openjdk version "21.0.12" 2026-07-21 LTS
+OpenJDK Runtime Environment Temurin-21.0.12+8 (build 21.0.12+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.12+8 (build 21.0.12+8-LTS, mixed mode, sharing)
+
+[debug] [2026-09-16T17:57:49.519Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore"}}
+[info] i  emulators: Detected demo project ID "demo-agro-market", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-agro-market\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
+[debug] [2026-09-16T17:57:49.532Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:57:49.532Z] assigned listening specs for emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-09-16T17:57:49.535Z] Found emulator hub locator: {"version":"15.28.1","origins":["http://127.0.0.1:4400","http://[::1]:4400"],"pid":13168}
+[debug] [2026-09-16T17:57:49.535Z] Write emulator hub locator at C:\Users\HP\AppData\Local\Temp\hub-demo-agro-market.json
+[debug] [2026-09-16T17:57:49.544Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:57:49.544Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-09-16T17:57:49.544Z] late-assigned ports for functions and eventarc emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  firestore: Cloud Firestore Emulator does not support multiple databases yet. {"metadata":{"emulator":{"name":"firestore"},"message":"Cloud Firestore Emulator does not support multiple databases yet."}}
+[warn] !  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file. {"metadata":{"emulator":{"name":"firestore"},"message":"Did not find a Cloud Firestore rules file specified in a firebase.json config file."}}
+[warn] !  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"firestore"},"message":"The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[debug] [2026-09-16T17:57:49.565Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-09-16T17:57:49.566Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-09-16T17:57:49.566Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\HP\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.22.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","demo-agro-market","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\HP\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.22.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"demo-agro-market\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2026-09-16T17:57:50.871Z] Sept 16, 2026 11:27:50 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:27:50 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
+[debug] [2026-09-16T17:57:50.929Z] 
+API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://"}}
+[debug] [2026-09-16T17:57:50.929Z] 127.0.0.1:8080
+Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nDatabase Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\r\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\r\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\r\nDev App Server is now running.\n\r\n"}}
+[info] +  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[info] i  functions: Watching "C:\Users\HP\Farmer-to-Consumer-App\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\" for Cloud Functions..."}}
+[debug] [2026-09-16T17:57:56.382Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-09-16T17:57:57.156Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
+[debug] [2026-09-16T17:57:57.156Z] Building nodejs source
+[debug] [2026-09-16T17:57:57.157Z] Failed to find version of module node: reached end of search path C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "24". Using node@24 from host. 
+[debug] [2026-09-16T17:57:57.158Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-09-16T17:57:57.166Z] Found firebase-functions binary at 'C:\Users\HP\Farmer-to-Consumer-App\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8531
+
+[debug] [2026-09-16T17:57:57.605Z] Got response from /__/functions.yaml {"endpoints":{"onUserCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.create","eventFilters":{"resource":"projects/demo-agro-market"},"retry":false},"labels":{},"entryPoint":"onUserCreated"},"onUserDeleted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.delete","eventFilters":{"resource":"projects/demo-agro-market"},"retry":false},"labels":{},"entryPoint":"onUserDeleted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onUserCreated, onUserDeleted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onUserCreated, onUserDeleted."}}
+[debug] [2026-09-16T17:58:00.646Z] addAuthTrigger {"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.create","resource":"projects/demo-agro-market"}}
+[info] +  functions[us-central1-onUserCreated]: auth function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mauth\u001b[22m function initialized."}}
+[debug] [2026-09-16T17:58:00.646Z] addAuthTrigger {"eventTrigger":{"eventType":"providers/firebase.auth/eventTypes/user.delete","resource":"projects/demo-agro-market"}}
+[info] +  functions[us-central1-onUserDeleted]: auth function initialized. {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mauth\u001b[22m function initialized."}}
+[debug] [2026-09-16T17:58:00.656Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2026-09-16T17:58:10.441Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:58:10.442Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"343fb9e7-8096-4b6d-b213-01234cdc9ce0","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:58:10.440Z","data":{"uid":"8sa66vNGS78bYeBoauBiALb8KocY","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:58:10.439Z","lastSignInTime":"2026-09-16T17:58:10.439Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:58:10.450Z] [work-queue] {"queuedWork":["us-central1-onUserCreated-0-2026-09-16T17:58:10.450Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:10.451Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserCreated-0-2026-09-16T17:58:10.450Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:58:10.452Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:10.456Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:58:10.456Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:58:10.457Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:58:10.457Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:10.458Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0-2026-09-16T17:58:10.457Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:58:10.458Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0 --> us-central1-onUserCreated-0
+[debug] [2026-09-16T17:58:10.458Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:58:10.458Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserCreated-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:58:10.473Z] [worker-pool] addWorker(us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-onUserCreated)"}}
+[debug] [2026-09-16T17:58:10.474Z] [worker-pool] Adding worker with key us-central1-onUserCreated, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-onUserCreated, total=1"}}
+[debug] [2026-09-16T17:58:11.348Z] [runtime-status] [14952] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:11.349Z] [runtime-status] [14952] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:11.349Z] [runtime-status] [14952] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-09-16T17:58:11.349Z] [runtime-status] [14952] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:11.478Z] [runtime-status] [14952] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:11.480Z] [runtime-status] [14952] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:11.594Z] [runtime-status] [14952] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2026-09-16T17:58:11.597Z] [runtime-status] [14952] initializeApp(DEFAULT) {"storageBucket":"demo-agro-market.appspot.com","databaseURL":"https://demo-agro-market.firebaseio.com","projectId":"demo-agro-market"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] initializeApp(DEFAULT) {\"storageBucket\":\"demo-agro-market.appspot.com\",\"databaseURL\":\"https://demo-agro-market.firebaseio.com\",\"projectId\":\"demo-agro-market\"}"}}
+[debug] [2026-09-16T17:58:11.603Z] [runtime-status] [14952] Functions runtime initialized. {"cwd":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions","node_version":"24.2.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\",\"node_version\":\"24.2.0\"}"}}
+[debug] [2026-09-16T17:58:11.603Z] [runtime-status] [14952] Listening to port: \\?\pipe\fire_emu_e93c58ca7165ad31 {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] Listening to port: \\\\?\\pipe\\fire_emu_e93c58ca7165ad31"}}
+[debug] [2026-09-16T17:58:11.681Z] [worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: IDLE"}}
+[debug] [2026-09-16T17:58:11.682Z] [worker-pool] submitRequest(triggerId=us-central1-onUserCreated) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserCreated)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserCreated" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Beginning execution of \"us-central1-onUserCreated\""}}
+[debug] [2026-09-16T17:58:11.682Z] [worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: BUSY"}}
+[debug] [2026-09-16T17:58:11.697Z] [runtime-status] [14952] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:58:11.697Z] [runtime-status] [14952] RunBackground {"data":{"uid":"8sa66vNGS78bYeBoauBiALb8KocY","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:58:10.439Z","lastSignInTime":"2026-09-16T17:58:10.439Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"343fb9e7-8096-4b6d-b213-01234cdc9ce0","eventType":"providers/firebase.auth/eventTypes/user.create","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:58:10.440Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[runtime-status] [14952] RunBackground {\"data\":{\"uid\":\"8sa66vNGS78bYeBoauBiALb8KocY\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:58:10.439Z\",\"lastSignInTime\":\"2026-09-16T17:58:10.439Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"343fb9e7-8096-4b6d-b213-01234cdc9ce0\",\"eventType\":\"providers/firebase.auth/eventTypes/user.create\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:58:10.440Z\"}}"}}
+[debug] [2026-09-16T17:58:11.979Z] Sept 16, 2026 11:28:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:28:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[info] >  {"severity":"INFO","message":"User profile created for 8sa66vNGS78bYeBoauBiALb8KocY"} {"user":{"severity":"INFO","message":"User profile created for 8sa66vNGS78bYeBoauBiALb8KocY"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"INFO\",\"message\":\"User profile created for 8sa66vNGS78bYeBoauBiALb8KocY\"}"}}
+[debug] [2026-09-16T17:58:12.703Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-onUserCreated" in 1021.2811ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Finished \"us-central1-onUserCreated\" in 1021.2811ms"}}
+[debug] [2026-09-16T17:58:12.704Z] [worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"[worker-us-central1-onUserCreated-ac930bdb-779e-4856-b4e5-4d4a79c5255f]: IDLE"}}
+[debug] [2026-09-16T17:58:12.704Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-09-16T17:58:12.704Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserCreated"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-09-16T17:58:12.704Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:13.828Z] Sept 16, 2026 11:28:13 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:28:13 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[debug] [2026-09-16T17:58:13.860Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast [none]
+[debug] [2026-09-16T17:58:13.860Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"eventId":"af31d87e-6f4d-40d9-8395-31fe85b6ceff","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":{"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2026-09-16T17:58:13.860Z","data":{"uid":"8sa66vNGS78bYeBoauBiALb8KocY","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:58:10.439Z","lastSignInTime":"2026-09-16T17:58:10.439Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]}}
+[debug] [2026-09-16T17:58:13.863Z] [work-queue] {"queuedWork":["us-central1-onUserDeleted-0-2026-09-16T17:58:13.863Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:13.863Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["us-central1-onUserDeleted-0-2026-09-16T17:58:13.863Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:58:13.864Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:13.864Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast 200
+[debug] [2026-09-16T17:58:13.864Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/demo-agro-market/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2026-09-16T17:58:13.865Z] [work-queue] {"queuedWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:58:13.865Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:13.865Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0-2026-09-16T17:58:13.865Z"],"workRunningCount":1}
+[debug] [2026-09-16T17:58:13.865Z] Accepted request POST /functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0 --> us-central1-onUserDeleted-0
+[debug] [2026-09-16T17:58:13.865Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-09-16T17:58:13.865Z] [functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/functions/projects/demo-agro-market/triggers/us-central1-onUserDeleted-0, mapping to path=/functions/projects/"}}
+[debug] [2026-09-16T17:58:13.873Z] [worker-pool] addWorker(us-central1-onUserDeleted) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-onUserDeleted)"}}
+[debug] [2026-09-16T17:58:13.873Z] [worker-pool] Adding worker with key us-central1-onUserDeleted, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-onUserDeleted, total=1"}}
+[debug] [2026-09-16T17:58:14.762Z] [runtime-status] [14848] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:14.763Z] [runtime-status] [14848] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:14.763Z] [runtime-status] [14848] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-09-16T17:58:14.764Z] [runtime-status] [14848] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:14.896Z] [runtime-status] [14848] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:14.897Z] [runtime-status] [14848] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2026-09-16T17:58:15.021Z] [runtime-status] [14848] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2026-09-16T17:58:15.024Z] [runtime-status] [14848] initializeApp(DEFAULT) {"storageBucket":"demo-agro-market.appspot.com","databaseURL":"https://demo-agro-market.firebaseio.com","projectId":"demo-agro-market"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] initializeApp(DEFAULT) {\"storageBucket\":\"demo-agro-market.appspot.com\",\"databaseURL\":\"https://demo-agro-market.firebaseio.com\",\"projectId\":\"demo-agro-market\"}"}}
+[debug] [2026-09-16T17:58:15.031Z] [runtime-status] [14848] Functions runtime initialized. {"cwd":"C:\\Users\\HP\\Farmer-to-Consumer-App\\functions","node_version":"24.2.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\HP\\\\Farmer-to-Consumer-App\\\\functions\",\"node_version\":\"24.2.0\"}"}}
+[debug] [2026-09-16T17:58:15.031Z] [runtime-status] [14848] Listening to port: \\?\pipe\fire_emu_d724a7be6b9625dd {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] Listening to port: \\\\?\\pipe\\fire_emu_d724a7be6b9625dd"}}
+[debug] [2026-09-16T17:58:15.084Z] [worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: IDLE"}}
+[debug] [2026-09-16T17:58:15.085Z] [worker-pool] submitRequest(triggerId=us-central1-onUserDeleted) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-onUserDeleted)"}}
+[info] i  functions: Beginning execution of "us-central1-onUserDeleted" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Beginning execution of \"us-central1-onUserDeleted\""}}
+[debug] [2026-09-16T17:58:15.085Z] [worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: BUSY"}}
+[debug] [2026-09-16T17:58:15.101Z] [runtime-status] [14848] ProcessBackground: lifting resource.name from resource {"name":"projects/demo-agro-market","service":"firebaseauth.googleapis.com"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] ProcessBackground: lifting resource.name from resource {\"name\":\"projects/demo-agro-market\",\"service\":\"firebaseauth.googleapis.com\"}"}}
+[debug] [2026-09-16T17:58:15.101Z] [runtime-status] [14848] RunBackground {"data":{"uid":"8sa66vNGS78bYeBoauBiALb8KocY","email":"testuser@example.com","emailVerified":false,"displayName":"Test User","metadata":{"creationTime":"2026-09-16T17:58:10.439Z","lastSignInTime":"2026-09-16T17:58:10.439Z"},"customClaims":{},"providerData":[{"rawId":"testuser@example.com","providerId":"password","displayName":"Test User","email":"testuser@example.com","federatedId":"testuser@example.com"}]},"context":{"eventId":"af31d87e-6f4d-40d9-8395-31fe85b6ceff","eventType":"providers/firebase.auth/eventTypes/user.delete","resource":"projects/demo-agro-market","params":{},"timestamp":"2026-09-16T17:58:13.860Z"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[runtime-status] [14848] RunBackground {\"data\":{\"uid\":\"8sa66vNGS78bYeBoauBiALb8KocY\",\"email\":\"testuser@example.com\",\"emailVerified\":false,\"displayName\":\"Test User\",\"metadata\":{\"creationTime\":\"2026-09-16T17:58:10.439Z\",\"lastSignInTime\":\"2026-09-16T17:58:10.439Z\"},\"customClaims\":{},\"providerData\":[{\"rawId\":\"testuser@example.com\",\"providerId\":\"password\",\"displayName\":\"Test User\",\"email\":\"testuser@example.com\",\"federatedId\":\"testuser@example.com\"}]},\"context\":{\"eventId\":\"af31d87e-6f4d-40d9-8395-31fe85b6ceff\",\"eventType\":\"providers/firebase.auth/eventTypes/user.delete\",\"resource\":\"projects/demo-agro-market\",\"params\":{},\"timestamp\":\"2026-09-16T17:58:13.860Z\"}}"}}
+[debug] [2026-09-16T17:58:15.335Z] Sept 16, 2026 11:28:15 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:28:15 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\r\nINFO: Detected HTTP/2 connection.\r\n"}}
+[info] >  {"severity":"INFO","message":"User profile deleted for 8sa66vNGS78bYeBoauBiALb8KocY"} {"user":{"severity":"INFO","message":"User profile deleted for 8sa66vNGS78bYeBoauBiALb8KocY"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"INFO\",\"message\":\"User profile deleted for 8sa66vNGS78bYeBoauBiALb8KocY\"}"}}
+[debug] [2026-09-16T17:58:15.357Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-onUserDeleted" in 271.7381ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finished \"us-central1-onUserDeleted\" in 271.7381ms"}}
+[debug] [2026-09-16T17:58:15.357Z] [worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"[worker-us-central1-onUserDeleted-1d48d1c8-9522-460d-b721-72c2854a94f1]: IDLE"}}
+[debug] [2026-09-16T17:58:15.357Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-09-16T17:58:15.357Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-onUserDeleted"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-09-16T17:58:15.357Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-09-16T17:58:16.904Z] Sept 16, 2026 11:28:16 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException
+WARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.
+java.net.SocketException: Connection reset
+	at java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)
+	at java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)
+	at io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sept 16, 2026 11:28:16 PM io.netty.channel.DefaultChannelPipeline onUnhandledInboundException\r\nWARNING: An exceptionCaught() event was fired, and it reached at the tail of the pipeline. It usually means the last handler in the pipeline did not handle the exception.\r\njava.net.SocketException: Connection reset\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)\r\n\tat java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)\r\n\tat io.netty.buffer.PooledByteBuf.setBytes(PooledByteBuf.java:255)\r\n\tat io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1132)\r\n\tat io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:356)\r\n\tat io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:156)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)\r\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)\r\n\tat io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)\r\n\tat io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)\r\n\tat io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)\r\n\tat io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)\r\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\r\n\r\n"}}

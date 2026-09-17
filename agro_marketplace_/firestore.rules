@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Function to check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Function to check if user owns the document
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    // USERS COLLECTION
+    // Users can only read and write their own profile
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      // CART ITEMS SUBCOLLECTION
+      // Users can only manage their own cart
+      match /cartItems/{itemId} {
+      	allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // PRODUCTS COLLECTION
+    // Anyone (even unauthenticated) can read active products. 
+    // Only the seller who owns the product can write/update/delete it.
+    match /products/{productId} {
+      allow read: if true; 
+      allow create: if isAuth() && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if isAuth() && resource.data.sellerId == request.auth.uid;
+    }
+    
+    // CUSTOMER ORDERS (Buyer View)
+    // Only the buyer who placed the order can read it.
+    // Allow creation if the buyerId matches the authenticated user.
+    match /customerOrders/{orderId} {
+      allow read: if isAuth() && resource.data.buyerId == request.auth.uid;
+      allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
+    }
+    
+    // SELLER ORDERS (Seller View)
+    // Sellers can read orders assigned to them.
+    // Buyers can read orders they placed (to track package status).
+    // Allow creation if the buyerId matches the authenticated user.
+    match /sellerOrders/{orderId} {
+      allow read: if isAuth() && (resource.data.sellerId == request.auth.uid || resource.data.buyerId == request.auth.uid);
+      allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
+      allow update: if isAuth() && resource.data.sellerId == request.auth.uid; // Sellers can update status
+    }
+  }
+}

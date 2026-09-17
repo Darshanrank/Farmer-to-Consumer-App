@@ -1,0 +1,70 @@
+name: agro_marketplace
+description: "Production-ready agriculture marketplace connecting farmers and consumers."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  firebase_messaging: ^16.7.0
+  firebase_app_check: ^0.4.6
+
+  # State Management
+  flutter_riverpod: ^3.4.3
+  riverpod_annotation: ^4.0.7
+
+  # Routing
+  go_router: ^18.0.1
+
+  # UI
+  cupertino_icons: ^1.0.8
+  google_fonts: ^8.2.1
+  flutter_svg: ^2.0.17
+  cached_network_image: ^4.0.0
+  shimmer: ^4.0.0
+
+  # Utilities
+  intl: ^0.20.3
+  uuid: ^4.5.1
+  equatable: ^2.0.7
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.12.0
+  logger: ^2.5.0
+  connectivity_plus: ^7.3.1
+  image_picker: ^1.1.2
+  geolocator: ^14.0.3
+  dart_geohash: ^2.0.2
+  url_launcher: ^6.3.1
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^11.2.0
+  path_provider: ^2.1.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.15
+  freezed: ^4.0.1
+  json_serializable: ^6.9.4
+  riverpod_generator: ^4.0.9
+  mockito: ^5.4.5
+  fake_cloud_firestore: ^4.2.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/l10n/

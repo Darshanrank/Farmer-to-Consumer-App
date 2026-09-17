@@ -1,0 +1,24 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "academic-atlas-491309-s4",
+          "appId": "1:192824470633:android:229a1dd1a4c413cbe9c6f8",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "academic-atlas-491309-s4",
+          "configurations": {
+            "android": "1:192824470633:android:229a1dd1a4c413cbe9c6f8"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

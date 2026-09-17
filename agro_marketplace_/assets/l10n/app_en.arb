@@ -1,0 +1,46 @@
+{
+  "@@locale": "en",
+  "appTitle": "AgroMarket",
+  "loading": "Loading...",
+  "error": "Something went wrong",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "Confirm",
+  "delete": "Delete",
+  "edit": "Edit",
+  "search": "Search",
+  "noResults": "No results found",
+  "networkError": "Please check your internet connection",
+  "sessionExpired": "Session expired. Please login again",
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot Password?",
+  "createAccount": "Create Account",
+  "alreadyHaveAccount": "Already have an account?",
+  "dontHaveAccount": "Don't have an account?",
+  "emailVerification": "Email Verification",
+  "verifyEmailMessage": "Please verify your email address. We've sent a verification link to {email}.",
+  "@verifyEmailMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "resendVerification": "Resend Verification Email",
+  "sellerDashboard": "Seller Dashboard",
+  "profile": "Profile",
+  "store": "Store",
+  "products": "Products",
+  "orders": "Orders",
+  "inventory": "Inventory",
+  "settings": "Settings",
+  "logout": "Logout",
+  "requiredField": "This field is required",
+  "invalidEmail": "Please enter a valid email",
+  "passwordTooShort": "Password must be at least 8 characters",
+  "phoneInvalid": "Please enter a valid phone number"
+}
