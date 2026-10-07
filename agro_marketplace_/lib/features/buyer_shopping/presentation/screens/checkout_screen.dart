@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../providers/checkout_controller.dart';
@@ -108,11 +109,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Delivery Fee'),
-                          Text('₹50.00'),
+                          const Text('Delivery Fee'),
+                          Text('₹${AppConstants.deliveryFee.toStringAsFixed(2)}'),
                         ],
                       ),
                       const Divider(height: 24),
@@ -124,7 +125,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           Text(
-                            '₹${(total + 50).toStringAsFixed(2)}',
+                            '₹${(total + AppConstants.deliveryFee).toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,

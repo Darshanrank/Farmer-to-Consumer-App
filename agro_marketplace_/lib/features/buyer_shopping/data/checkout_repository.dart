@@ -5,6 +5,7 @@ import '../../../../core/constants/firestore_paths.dart';
 import '../../../../core/result/result.dart';
 import '../../../../shared/services/firebase_service.dart';
 import '../domain/entities/customer_order.dart';
+import '../domain/entities/cart_item.dart';
 
 part 'checkout_repository.g.dart';
 
@@ -21,16 +22,15 @@ class CheckoutRepository {
       
       // 1. Create the main CustomerOrder document
       final customerOrderRef = _firestore.collection(FirestorePaths.customerOrders).doc(order.id);
-      batch.set(customerOrderRef, order.toJson());
 
       // 2. Group items by sellerId
-      final Map<String, List> sellerItems = {};
+      final Map<String, List<CartItem>> sellerItems = {};
       for (final item in order.items) {
-        if (!sellerItems.containsKey(item.sellerId)) {
-          sellerItems[item.sellerId] = [];
-        }
-        sellerItems[item.sellerId]!.add(item);
+        sellerItems.putIfAbsent(item.sellerId, () => []).add(item);
       }
+      final orderData = order.toJson();
+      orderData['sellerIds'] = sellerItems.keys.toList();
+      batch.set(customerOrderRef, orderData);
 
       // 3. Create a SellerOrder for each seller
       for (final entry in sellerItems.entries) {

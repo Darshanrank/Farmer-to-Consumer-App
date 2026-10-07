@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/result/result.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../data/cart_repository.dart';
 import '../../data/checkout_repository.dart';
 import '../../domain/entities/customer_order.dart';
@@ -38,7 +39,7 @@ class CheckoutController extends _$CheckoutController {
       return Result.failure(BusinessRuleException(message: 'Cannot place order with an empty cart.', originalError: ex));
     }
 
-    final totalAmount = ref.read(cartTotalProvider);
+    final totalAmount = ref.read(cartTotalProvider) + AppConstants.deliveryFee;
     final orderId = const Uuid().v4();
 
     final order = CustomerOrder(

@@ -27,11 +27,23 @@ class BuyerHomeScreen extends ConsumerWidget {
         ],
       ),
       body: productsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        error: (err, stack) => _MessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load products',
+          message: 'Check your connection and try again.',
+          action: TextButton(
+            onPressed: () => ref.invalidate(buyerProductsProvider),
+            child: const Text('Retry'),
+          ),
+        ),
         data: (products) {
           if (products.isEmpty) {
-            return const Center(child: Text('No products available right now.'));
+            return const _MessageState(
+              icon: Icons.eco_outlined,
+              title: 'No products yet',
+              message: 'New products from local sellers will appear here.',
+            );
           }
 
           return GridView.builder(
@@ -174,6 +186,49 @@ class BuyerHomeScreen extends ConsumerWidget {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _MessageState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final Widget? action;
+
+  const _MessageState({
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 56, color: AppColors.primaryLight),
+            const SizedBox(height: 16),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            if (action != null) ...[
+              const SizedBox(height: 12),
+              action!,
+            ],
+          ],
+        ),
       ),
     );
   }

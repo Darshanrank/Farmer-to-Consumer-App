@@ -38,9 +38,10 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: false,
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.onPrimary,
+      backgroundColor: AppColors.surface,
+      foregroundColor: AppColors.textPrimary,
       surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 1,
     ),
     cardTheme: CardThemeData(
       elevation: AppDimensions.cardElevation,
@@ -54,7 +55,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
-        minimumSize: const Size(double.infinity, AppDimensions.buttonHeightLg),
+        minimumSize: const Size(0, AppDimensions.buttonHeightLg),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
         ),
@@ -65,7 +66,7 @@ class AppTheme {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
-        minimumSize: const Size(double.infinity, AppDimensions.buttonHeightLg),
+        minimumSize: const Size(0, AppDimensions.buttonHeightLg),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
         ),
@@ -141,6 +142,14 @@ class AppTheme {
       unselectedItemColor: AppColors.textTertiary,
       type: BottomNavigationBarType.fixed,
       elevation: 8,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      height: AppDimensions.bottomNavHeight,
+      backgroundColor: AppColors.surface,
+      indicatorColor: AppColors.primaryContainer,
+      surfaceTintColor: Colors.transparent,
+      elevation: 4,
+      labelTextStyle: WidgetStatePropertyAll(AppTextStyles.textTheme.labelMedium),
     ),
     dialogTheme: DialogThemeData(
       shape: RoundedRectangleBorder(

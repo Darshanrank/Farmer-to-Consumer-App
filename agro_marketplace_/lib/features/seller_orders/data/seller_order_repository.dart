@@ -21,7 +21,16 @@ class SellerOrderRepository {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => SellerOrder.fromJson(doc.data())).toList();
+      return snapshot.docs.map((doc) {
+        final data = Map<String, dynamic>.from(doc.data());
+        for (final field in ['createdAt', 'updatedAt']) {
+          final value = data[field];
+          if (value is Timestamp) {
+            data[field] = value.toDate().toIso8601String();
+          }
+        }
+        return SellerOrder.fromJson(data);
+      }).toList();
     });
   }
 

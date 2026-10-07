@@ -56,6 +56,12 @@ service cloud.firestore {
     match /customerOrders/{orderId} {
       allow read: if isAuth() && resource.data.buyerId == request.auth.uid;
       allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
+      allow update: if isAuth()
+                    && request.auth.uid in resource.data.sellerIds
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['status', 'updatedAt'])
+                    && request.resource.data.status in
+                       ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
     }
     
     // SELLER ORDERS (Seller View)
@@ -65,7 +71,12 @@ service cloud.firestore {
     match /sellerOrders/{orderId} {
       allow read: if isAuth() && (resource.data.sellerId == request.auth.uid || resource.data.buyerId == request.auth.uid);
       allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
-      allow update: if isAuth() && resource.data.sellerId == request.auth.uid; // Sellers can update status
+      allow update: if isAuth()
+                    && resource.data.sellerId == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['status', 'updatedAt'])
+                    && request.resource.data.status in
+                       ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
     }
 
     // SUPPORT REQUESTS

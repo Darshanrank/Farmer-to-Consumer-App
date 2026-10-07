@@ -2,6 +2,8 @@
 class AppConstants {
   const AppConstants._();
 
+  static const double deliveryFee = 50.0;
+
   /// App name.
   static const String appName = 'AgroMarket';
 

@@ -33,10 +33,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   Future<void> _addToCart() async {
     final products = ref.read(buyerProductsProvider).value ?? [];
-    final product = products.firstWhere((p) => p.id == widget.productId);
+    final matchingProducts = products.where((p) => p.id == widget.productId);
+    if (matchingProducts.isEmpty) return;
+    final product = matchingProducts.first;
     final user = ref.read(authUserProvider).value;
 
-    if (user == null) return;
+    if (user == null || product.isOutOfStock || product.stockQuantity < product.minOrderQuantity) {
+      return;
+    }
+    if (_quantity < product.minOrderQuantity) {
+      setState(() => _quantity = product.minOrderQuantity);
+    }
+    if (_quantity > product.stockQuantity) {
+      setState(() => _quantity = product.stockQuantity);
+    }
 
     setState(() => _isAdding = true);
 
@@ -84,10 +94,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
         data: (products) {
-          final product = products.firstWhere(
-            (p) => p.id == widget.productId,
-            orElse: () => throw Exception('Product not found'),
-          );
+          final matchingProducts = products.where((p) => p.id == widget.productId);
+          if (matchingProducts.isEmpty) {
+            return const Center(child: Text('Product is no longer available.'));
+          }
+          final product = matchingProducts.first;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -197,7 +208,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.add),
-                              onPressed: _increment,
+                              onPressed: product.isOutOfStock || _quantity >= product.stockQuantity
+                                  ? null
+                                  : _increment,
                             ),
                           ],
                         ),
@@ -207,7 +220,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       // Add to Cart button
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _isAdding ? null : _addToCart,
+                          onPressed: _isAdding ||
+                                  product.isOutOfStock ||
+                                  product.stockQuantity < product.minOrderQuantity
+                              ? null
+                              : _addToCart,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             backgroundColor: AppColors.primary,
@@ -223,7 +240,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                 )
                               : Text(
-                                  'Add to Cart - ₹${(product.price * _quantity).toStringAsFixed(2)}',
+                                  product.isOutOfStock ||
+                                          product.stockQuantity < product.minOrderQuantity
+                                      ? 'Out of stock'
+                                      : 'Add to Cart - ₹${(product.price * _quantity).toStringAsFixed(2)}',
                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
                         ),

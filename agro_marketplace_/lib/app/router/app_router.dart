@@ -34,25 +34,6 @@ import 'route_names.dart';
 
 part 'app_router.g.dart';
 
-/// Placeholder screen used during Phase 1 before feature screens are built.
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-      ),
-    );
-  }
-}
-
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 @riverpod
@@ -302,8 +283,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/seller/inventory',
         name: RouteNames.sellerInventory,
-        builder: (context, state) =>
-            const _PlaceholderScreen(title: 'Seller Inventory'),
+        builder: (context, state) => const SellerProductsScreen(),
       ),
       GoRoute(
         path: '/seller/settings',
