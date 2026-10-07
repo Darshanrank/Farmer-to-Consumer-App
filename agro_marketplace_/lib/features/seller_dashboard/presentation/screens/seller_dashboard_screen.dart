@@ -188,14 +188,15 @@ class _MetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,13 +206,26 @@ class _MetricCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.shade50,
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    colors: [color.shade300, color.shade600],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color.shade600, size: 20),
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
+              if (title == 'Pending Orders' && int.tryParse(value) != null && int.parse(value) > 0)
+                 Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                   decoration: BoxDecoration(
+                     color: Colors.red.shade100,
+                     borderRadius: BorderRadius.circular(12),
+                   ),
+                   child: const Text('Action Required', style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                 )
             ],
           ),
           Column(
@@ -219,14 +233,18 @@ class _MetricCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black87,
+                      letterSpacing: -0.5,
                     ),
               ),
+              const SizedBox(height: 4),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
                     ),
               ),
             ],

@@ -39,9 +39,16 @@ class CartRepository {
           .collection('cartItems')
           .doc(item.id);
 
-      // If it exists, we could just increment, but for simplicity we'll overwrite 
-      // with the new complete state from the app.
-      await docRef.set(item.toJson());
+      final docSnap = await docRef.get();
+      if (docSnap.exists) {
+        final existingItem = CartItem.fromJson(docSnap.data()!);
+        final updatedItem = existingItem.copyWith(
+          quantity: existingItem.quantity + item.quantity,
+        );
+        await docRef.set(updatedItem.toJson());
+      } else {
+        await docRef.set(item.toJson());
+      }
     });
   }
 

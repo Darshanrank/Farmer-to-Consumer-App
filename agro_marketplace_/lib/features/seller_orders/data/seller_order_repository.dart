@@ -31,6 +31,10 @@ class SellerOrderRepository {
     required String newStatus,
   }) async {
     return Result.guard(() async {
+      final doc = await _firestore.collection('sellerOrders').doc(orderId).get();
+      if (!doc.exists) return;
+      final parentOrderId = doc.data()?['parentOrderId'] as String?;
+
       await _firestore
           .collection('sellerOrders')
           .doc(orderId)
@@ -38,9 +42,32 @@ class SellerOrderRepository {
         'status': newStatus,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      // In a real app, this might trigger a Cloud Function to check if all 
-      // SellerOrders for a CustomerOrder are completed, and then update the 
-      // parent CustomerOrder status.
+      
+      if (parentOrderId != null) {
+        final parentRef = _firestore.collection('customerOrders').doc(parentOrderId);
+        
+        final allSellerOrders = await _firestore
+            .collection('sellerOrders')
+            .where('parentOrderId', isEqualTo: parentOrderId)
+            .get();
+        
+        bool allDelivered = true;
+        
+        for (final o in allSellerOrders.docs) {
+          final currentStatus = (o.id == orderId) ? newStatus : (o.data()['status'] as String? ?? 'pending');
+          if (currentStatus != 'delivered') allDelivered = false;
+        }
+
+        String overallStatus = newStatus;
+        if (allDelivered) {
+          overallStatus = 'delivered';
+        }
+
+        await parentRef.update({
+          'status': overallStatus,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
     });
   }
 }
