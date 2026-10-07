@@ -49,23 +49,27 @@ class Bootstrap {
 
     // Initialize Firebase.
     //
-    // Android can already create the default Firebase app from the
-    // native Firebase configuration. Therefore, do not initialize
-    // another default app if one already exists.
+    // Android's native Firebase SDK can initialize the [DEFAULT] app before
+    // Dart runs (via google-services.json). We check for that by attempting
+    // to retrieve the default app — if it already exists we skip init.
     try {
-      if (Firebase.apps.isEmpty) {
-        try {
-          await Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          );
-        } on FirebaseException catch (e) {
-          if (e.code == 'duplicate-app') {
-            AppLogger.warning('Firebase [DEFAULT] app already initialized (likely hot restart)', context: 'Bootstrap');
-            await Firebase.initializeApp(); // Sync existing native app
-          } else {
-            rethrow;
-          }
-        }
+      // Try to get the existing default app first.
+      bool alreadyInitialized = false;
+      try {
+        Firebase.app(); // throws if no default app exists
+        alreadyInitialized = true;
+        AppLogger.info(
+          'Firebase [DEFAULT] app already exists — skipping initializeApp()',
+          context: 'Bootstrap',
+        );
+      } catch (_) {
+        // No default app yet — initialize now.
+      }
+
+      if (!alreadyInitialized) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
       }
 
       AppLogger.info(
@@ -81,6 +85,21 @@ class Bootstrap {
       if (config.useFirebaseEmulators) {
         await _connectToEmulators(config);
       }
+    } on FirebaseException catch (e, st) {
+      if (e.code == 'duplicate-app') {
+        AppLogger.warning(
+          'Firebase duplicate-app caught — already initialized, continuing.',
+          context: 'Bootstrap',
+        );
+      } else {
+        AppLogger.critical(
+          'Firebase initialization failed',
+          context: 'Bootstrap',
+          error: e,
+          stackTrace: st,
+        );
+        rethrow;
+      }
     } catch (e, st) {
       AppLogger.critical(
         'Firebase initialization failed',
@@ -88,18 +107,30 @@ class Bootstrap {
         error: e,
         stackTrace: st,
       );
-
       rethrow;
     }
 
     // Initialize FCM (future).
     // await _initializeNotifications();
 
-    // Initialize App Check
-    await FirebaseAppCheck.instance.activate(
-      androidProvider: AndroidProvider.debug,
-      appleProvider: AppleProvider.debug,
-    );
+    // Initialize App Check.
+    // Wrapped in try/catch — in debug builds the debug token must be
+    // registered in Firebase Console. If it isn't, App Check returns
+    // DEVELOPER_ERROR but the app must NOT crash because of it.
+    try {
+      await FirebaseAppCheck.instance.activate(
+        androidProvider: AndroidProvider.debug,
+        appleProvider: AppleProvider.debug,
+      );
+      AppLogger.info('Firebase App Check activated', context: 'Bootstrap');
+    } catch (e) {
+      AppLogger.warning(
+        'Firebase App Check activation failed — continuing without it. '
+        'Register the debug token in Firebase Console to silence this.',
+        context: 'Bootstrap',
+      );
+      // Non-fatal: app continues without App Check enforcement.
+    }
 
     AppLogger.info(
       'Bootstrap completed',

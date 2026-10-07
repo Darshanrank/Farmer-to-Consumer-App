@@ -25,13 +25,15 @@ service cloud.firestore {
       // User can read only their own profile
       allow read: if isOwner(userId);
 
-      // User can create only their own profile, but cannot set secure fields
+      // User can create only their own profile (role must be buyer or seller)
       allow create: if isOwner(userId)
-                    && !request.resource.data.keys().hasAny(['role', 'status', 'isEmailVerified']);
+                    && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role in ['buyer', 'seller'])
+                    && !request.resource.data.keys().hasAny(['status', 'isEmailVerified']);
 
-      // User can update only their own profile, but cannot change secure fields
+      // User can update only their own profile, and can switch role between buyer and seller
       allow update: if isOwner(userId)
-                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status', 'isEmailVerified']));
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'isEmailVerified']))
+                    && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role in ['buyer', 'seller']);
 
       // User can delete only their own profile
       allow delete: if isOwner(userId);

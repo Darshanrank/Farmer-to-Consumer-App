@@ -91,7 +91,7 @@ final class AppUserProvider
   }
 }
 
-String _$appUserHash() => r'a7b31199a1fbfa34f2072ac506d1f021f22609ea';
+String _$appUserHash() => r'2af05be9bca9b8cdc70293e85a6d44e2796c867e';
 
 /// Exposes the computed high-level authentication status of the application.
 
@@ -167,7 +167,7 @@ final class AuthControllerProvider
   AuthController create() => AuthController();
 }
 
-String _$authControllerHash() => r'874374204f17a186a98b7cbed9e72db18360ad34';
+String _$authControllerHash() => r'96a5941c01729a3732c1d5e5b7c238294018f7a2';
 
 /// Controller for authentication-related UI actions.
 

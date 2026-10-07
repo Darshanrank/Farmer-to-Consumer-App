@@ -35,7 +35,7 @@ final class SellerOnboardingControllerProvider
 }
 
 String _$sellerOnboardingControllerHash() =>
-    r'd15f9b891c0a9c85ff35f9e5f6e465708c77c128';
+    r'c5d319a92fecbed279e87ad800902240f37de7aa';
 
 abstract class _$SellerOnboardingController extends $AsyncNotifier<void> {
   FutureOr<void> build();

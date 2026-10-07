@@ -96,6 +96,37 @@ class AuthRepository {
       await _auth.signOut();
     });
   }
+
+  /// Re-authenticates the current user with their email and password.
+  /// Required before sensitive operations like account deletion.
+  Future<Result<void>> reauthenticate({
+    required String email,
+    required String password,
+  }) async {
+    return Result.guard(() async {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw AuthenticationException(message: 'No user is currently signed in.');
+      }
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      await user.reauthenticateWithCredential(credential);
+    });
+  }
+
+  /// Deletes the current Firebase Auth account.
+  /// Must be called after re-authentication.
+  Future<Result<void>> deleteAccount() async {
+    return Result.guard(() async {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw AuthenticationException(message: 'No user is currently signed in.');
+      }
+      await user.delete();
+    });
+  }
 }
 
 @riverpod

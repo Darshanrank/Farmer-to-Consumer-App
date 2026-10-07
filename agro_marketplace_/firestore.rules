@@ -19,14 +19,25 @@ service cloud.firestore {
     }
 
     // USERS COLLECTION
-    // Users can only read and write their own profile
+    // Users can create their own doc (on registration) and read/update it.
+    // Role and status fields are protected — cannot be changed via client update.
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      // Allow full read of own document
+      allow read: if isOwner(userId);
+      
+      // Allow create (registration) — the app sets role here once
+      allow create: if isOwner(userId);
+      
+      // Allow update: user can update profile and switch role between buyer and seller
+      allow update: if isOwner(userId)
+                    && (!request.resource.data.keys().hasAny(['role']) 
+                        || request.resource.data.role in ['buyer', 'seller'])
+                    && (!request.resource.data.keys().hasAny(['status'])
+                        || request.resource.data.status == resource.data.status);
       
       // CART ITEMS SUBCOLLECTION
-      // Users can only manage their own cart
       match /cartItems/{itemId} {
-      	allow read, write: if isOwner(userId);
+        allow read, write: if isOwner(userId);
       }
     }
     
@@ -55,6 +66,15 @@ service cloud.firestore {
       allow read: if isAuth() && (resource.data.sellerId == request.auth.uid || resource.data.buyerId == request.auth.uid);
       allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
       allow update: if isAuth() && resource.data.sellerId == request.auth.uid; // Sellers can update status
+    }
+
+    // SUPPORT REQUESTS
+    // Authenticated users can create support requests.
+    // No client reads — handled server side.
+    match /supportRequests/{requestId} {
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      allow read: if false; // admin-only
+      allow update, delete: if false;
     }
   }
 }

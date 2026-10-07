@@ -27,6 +27,9 @@ import '../../features/seller_onboarding/presentation/screens/seller_onboarding_
 import '../../features/seller_orders/presentation/screens/seller_orders_screen.dart';
 import '../../features/seller_orders/presentation/screens/seller_order_detail_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_profile_screen.dart';
+import '../../features/seller_profile/presentation/screens/business_settings_screen.dart';
+import '../../features/seller_profile/presentation/screens/seller_settings_screen.dart';
+import '../../features/seller_profile/presentation/screens/seller_help_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
@@ -81,12 +84,33 @@ GoRouter appRouter(Ref ref) {
           if (state.matchedLocation != '/email-verification') return '/email-verification';
           return null;
         case AuthStatus.authenticated:
+          // If appUser profile is not yet loaded, stay on splash screen so we don't route to the wrong role
+          if (appUser == null) {
+            return isSplash ? null : '/splash';
+          }
+
+          final isSeller = appUser.role == 'seller';
+          final isBuyer = appUser.role == 'buyer';
+
+          // When coming from splash, auth routes, or email verification, redirect to home screen
           if (isSplash || isAuthRoute || state.matchedLocation == '/email-verification') {
-            if (appUser != null && appUser.role == 'buyer') {
-              return '/buyer/home';
-            }
+            return isSeller ? '/seller/dashboard' : '/buyer/home';
+          }
+
+          final isBuyerRoute = state.matchedLocation.startsWith('/buyer');
+          final isSellerRoute = state.matchedLocation.startsWith('/seller');
+
+          // Strict role protection:
+          // A seller should NEVER see buyer screens
+          if (isSeller && isBuyerRoute) {
             return '/seller/dashboard';
           }
+
+          // A buyer should NEVER see seller screens
+          if (isBuyer && isSellerRoute) {
+            return '/buyer/home';
+          }
+
           return null;
       }
     },
@@ -284,8 +308,17 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/seller/settings',
         name: RouteNames.sellerSettings,
-        builder: (context, state) =>
-            const _PlaceholderScreen(title: 'Seller Settings'),
+        builder: (context, state) => const SellerSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/seller/business-profile',
+        name: RouteNames.sellerBusinessProfile,
+        builder: (context, state) => const BusinessSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/seller/help',
+        name: RouteNames.sellerHelp,
+        builder: (context, state) => const SellerHelpScreen(),
       ),
       GoRoute(
         path: '/edit-profile',

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../data/product_repository.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_image.dart';
 import '../providers/inventory_providers.dart';
@@ -43,6 +44,8 @@ class _AddEditProductScreenState extends ConsumerState<AddEditProductScreen> {
   final _units = ['kg', 'liter', 'piece', 'gram', 'ml', 'ton'];
   final _statuses = ['active', 'outOfStock', 'hidden'];
 
+  bool _isLoadingProduct = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,35 +55,50 @@ class _AddEditProductScreenState extends ConsumerState<AddEditProductScreen> {
     _stockController = TextEditingController();
     _brandController = TextEditingController();
     _moqController = TextEditingController(text: '1');
+
+    if (widget.productId != null) {
+      _loadProductForEdit();
+    }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.productId != null && _existingProduct == null) {
-      // Find the product from the stream provider
-      final productsAsync = ref.read(sellerProductsProvider);
-      final products = productsAsync.value ?? [];
-      
-      try {
-        _existingProduct = products.firstWhere((p) => p.id == widget.productId);
-        _nameController.text = _existingProduct!.name;
-        _descriptionController.text = _existingProduct!.description;
-        _priceController.text = _existingProduct!.price.toString();
-        _stockController.text = _existingProduct!.stockQuantity.toString();
-        _brandController.text = _existingProduct!.brand ?? '';
-        _moqController.text = _existingProduct!.minOrderQuantity.toString();
-        
-        setState(() {
-          _selectedCategory = _categories.contains(_existingProduct!.category) ? _existingProduct!.category : 'Other';
-          _selectedUnit = _units.contains(_existingProduct!.unit) ? _existingProduct!.unit : 'kg';
-          _selectedStatus = _statuses.contains(_existingProduct!.status) ? _existingProduct!.status : 'active';
-          _existingImages = List.from(_existingProduct!.images);
-        });
-      } catch (e) {
-        // Product not found (maybe deleted or link invalid)
-      }
+  Future<void> _loadProductForEdit() async {
+    setState(() => _isLoadingProduct = true);
+    // First try to find in the stream cache
+    final cached = ref.read(sellerProductsProvider).value ?? [];
+    Product? found;
+    try {
+      found = cached.firstWhere((p) => p.id == widget.productId);
+    } catch (_) {
+      found = null;
     }
+
+    if (found == null) {
+      // Fetch directly from Firestore
+      final result = await ref.read(productRepositoryProvider).getProduct(widget.productId!);
+      found = result.dataOrNull;
+    }
+
+    if (found != null && mounted) {
+      _populateForm(found);
+    }
+    if (mounted) setState(() => _isLoadingProduct = false);
+  }
+
+  void _populateForm(Product product) {
+    _existingProduct = product;
+    _nameController.text = product.name;
+    _descriptionController.text = product.description;
+    _priceController.text = product.price.toString();
+    _stockController.text = product.stockQuantity.toString();
+    _brandController.text = product.brand ?? '';
+    _moqController.text = product.minOrderQuantity.toString();
+
+    setState(() {
+      _selectedCategory = _categories.contains(product.category) ? product.category : 'Other';
+      _selectedUnit = _units.contains(product.unit) ? product.unit : 'kg';
+      _selectedStatus = _statuses.contains(product.status) ? product.status : 'active';
+      _existingImages = List.from(product.images);
+    });
   }
 
   @override
@@ -185,15 +203,75 @@ class _AddEditProductScreenState extends ConsumerState<AddEditProductScreen> {
     }
   }
 
+  Future<void> _confirmDelete(BuildContext ctx) async {
+    if (_existingProduct == null) return;
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Delete Product'),
+        content: Text(
+          'Are you sure you want to permanently delete "${_existingProduct!.name}"? This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final result = await ref.read(productRepositoryProvider).deleteProduct(_existingProduct!.id);
+    if (!mounted) return;
+
+    if (result.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('"${_existingProduct!.name}" deleted.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Delete failed: ${result.exceptionOrNull?.message ?? result.exceptionOrNull}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(productFormControllerProvider);
     final isLoading = state.isLoading;
     final isEditing = widget.productId != null;
 
+    if (_isLoadingProduct) {
+      return Scaffold(
+        appBar: AppBar(title: Text(isEditing ? 'Edit Product' : 'Add Product')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Product' : 'Add Product'),
+        actions: [
+          if (isEditing && _existingProduct != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              tooltip: 'Delete Product',
+              onPressed: isLoading ? null : () => _confirmDelete(context),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

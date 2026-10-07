@@ -27,6 +27,7 @@ class RouteNames {
   static const String sellerOrderDetail = 'sellerOrderDetail';
   static const String sellerDiscounts = 'sellerDiscounts';
   static const String sellerSettings = 'sellerSettings';
+  static const String sellerHelp = 'sellerHelp';
 
   // === Buyer (future) ===
   static const String buyerHome = 'buyerHome';

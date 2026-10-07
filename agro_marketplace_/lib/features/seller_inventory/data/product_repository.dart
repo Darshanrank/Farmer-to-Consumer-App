@@ -71,6 +71,15 @@ class ProductRepository {
       await _firestore.collection(FirestorePaths.products).doc(productId).delete();
     });
   }
+
+  /// Fetches a single product by ID.
+  Future<Result<Product?>> getProduct(String productId) async {
+    return Result.guard(() async {
+      final doc = await _firestore.collection(FirestorePaths.products).doc(productId).get();
+      if (!doc.exists || doc.data() == null) return null;
+      return Product.fromJson(doc.data()!);
+    });
+  }
 }
 
 @riverpod

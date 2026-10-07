@@ -10,21 +10,24 @@ import '../../../../shared/models/detailed_address.dart';
 import '../../../../shared/models/location.dart';
 import '../../../../shared/services/geocoding_service.dart';
 import '../../../auth/domain/entities/app_user.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/data/user_repository.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
-class EditProfileScreen extends ConsumerStatefulWidget {
-  const EditProfileScreen({super.key});
+/// Business Settings screen for sellers.
+/// Allows sellers to view and edit their business information,
+/// which persists to Firebase Firestore.
+class BusinessSettingsScreen extends ConsumerStatefulWidget {
+  const BusinessSettingsScreen({super.key});
 
   @override
-  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<BusinessSettingsScreen> createState() => _BusinessSettingsScreenState();
 }
 
-class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
+class _BusinessSettingsScreenState extends ConsumerState<BusinessSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _businessNameController = TextEditingController();
+  final _displayNameController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   // Structured address controllers
   final _line1Controller = TextEditingController();
@@ -37,26 +40,25 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _pincodeController = TextEditingController();
 
   bool _isLoading = false;
-  bool _isInitialized = false;
+  bool _hasLoaded = false;
   AppUser? _user;
 
   // Geo-location state
   double? _latitude;
   double? _longitude;
   bool _isLocating = false;
-  String _selectedRole = 'buyer';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initFromProvider();
+      _loadUserData();
     });
   }
 
-  void _initFromProvider() {
+  void _loadUserData() {
     final user = ref.read(appUserProvider).value;
-    if (user != null && !_isInitialized) {
+    if (user != null) {
       _populateForm(user);
     }
   }
@@ -64,10 +66,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _populateForm(AppUser user) {
     setState(() {
       _user = user;
-      _selectedRole = user.role;
-      _nameController.text = user.displayName ?? '';
-      _phoneController.text = user.phone ?? '';
       _businessNameController.text = user.businessName ?? '';
+      _displayNameController.text = user.displayName ?? '';
+      _phoneController.text = user.phone ?? '';
 
       // Parse structured address
       if (user.address != null) {
@@ -88,7 +89,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         }
       }
 
-      _isInitialized = true;
+      _hasLoaded = true;
     });
   }
 
@@ -217,9 +218,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
     _businessNameController.dispose();
+    _displayNameController.dispose();
+    _phoneController.dispose();
     _line1Controller.dispose();
     _line2Controller.dispose();
     _landmarkController.dispose();
@@ -231,27 +232,107 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
+  Future<void> _save() async {
+    if (_user == null) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    FocusScope.of(context).unfocus();
+    setState(() => _isLoading = true);
+
+    try {
+      // Build structured address
+      final address = Address(
+        line1: _line1Controller.text.trim().isEmpty ? null : _line1Controller.text.trim(),
+        line2: _line2Controller.text.trim().isEmpty ? null : _line2Controller.text.trim(),
+        landmark: _landmarkController.text.trim().isEmpty ? null : _landmarkController.text.trim(),
+        village: _villageController.text.trim().isEmpty ? null : _villageController.text.trim(),
+        taluka: _talukaController.text.trim().isEmpty ? null : _talukaController.text.trim(),
+        district: _districtController.text.trim().isEmpty ? null : _districtController.text.trim(),
+        state: _stateController.text.trim(),
+        pincode: _pincodeController.text.trim(),
+      );
+
+      // Preserve existing location if any
+      DetailedAddress? existingDetailed;
+      if (_user!.address != null) {
+        try {
+          existingDetailed = DetailedAddress.fromMap(_user!.address!);
+        } catch (_) {}
+      }
+
+      // Use newly picked location or preserve existing
+      GeoLocation? location;
+      if (_latitude != null && _longitude != null) {
+        location = GeoLocation(
+          latitude: _latitude!,
+          longitude: _longitude!,
+        );
+      } else {
+        location = existingDetailed?.location;
+      }
+
+      final detailedAddress = DetailedAddress(
+        address: address,
+        location: location,
+      );
+
+      final updatedUser = _user!.copyWith(
+        businessName: _businessNameController.text.trim(),
+        displayName: _displayNameController.text.trim(),
+        phone: _phoneController.text.trim(),
+        address: detailedAddress.toMap(),
+      );
+
+      final result = await ref.read(userRepositoryProvider).updateUser(updatedUser);
+
+      if (!mounted) return;
+
+      if (result.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Business settings saved successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${result.exceptionOrNull?.message ?? 'Unknown error'}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Listen to user changes and populate form if not yet initialized
+    // Listen to live updates of the user profile
     ref.listen(appUserProvider, (_, next) {
-      if (!_isInitialized && next.value != null) {
+      if (!_hasLoaded && next.value != null) {
         _populateForm(next.value!);
       }
     });
 
-    if (!_isInitialized) {
+    if (!_hasLoaded) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Profile')),
+        appBar: AppBar(title: const Text('Business Settings')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    final isSeller = _selectedRole == 'seller';
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Business Settings'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -260,51 +341,50 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Account Role Selector
-              const Text(
-                'Account Role',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              Text(
+                'Business Information',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'buyer',
-                    icon: Icon(Icons.shopping_basket),
-                    label: Text('Buyer'),
-                  ),
-                  ButtonSegment(
-                    value: 'seller',
-                    icon: Icon(Icons.store),
-                    label: Text('Seller (Farmer)'),
-                  ),
-                ],
-                selected: {_selectedRole},
-                onSelectionChanged: (Set<String> newSelection) {
-                  setState(() {
-                    _selectedRole = newSelection.first;
-                  });
-                },
+              const SizedBox(height: 4),
+              Text(
+                'This information is shown to buyers on your product listings.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[600],
+                ),
               ),
               const SizedBox(height: 24),
 
               AppTextField(
-                label: 'Full Name',
-                controller: _nameController,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                label: 'Farm / Business Name',
+                controller: _businessNameController,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
+
+              AppTextField(
+                label: 'Contact Person Name',
+                controller: _displayNameController,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+
               AppTextField(
                 label: 'Phone Number',
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) return 'Required';
+                  if (val.trim().length < 10) return 'Enter a valid phone number';
+                  return null;
+                },
               ),
               const SizedBox(height: 24),
 
               // === Address Section ===
               Text(
-                'Address',
+                'Business Address',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -315,7 +395,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 label: 'Address Line 1',
                 hint: 'House/Shop No., Street',
                 controller: _line1Controller,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -364,7 +444,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     child: AppTextField(
                       label: 'State',
                       controller: _stateController,
-                      validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                      validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -409,7 +489,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Adding your location helps with nearby product discovery.',
+                      'Adding your GPS location helps buyers find nearby products.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
                           ),
@@ -450,112 +530,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ],
                 ),
               ),
-              
-              // Only show business section for sellers
-              if (isSeller) ...[
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 16),
-                const Text(
-                  'Business Information',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                AppTextField(
-                  label: 'Farm / Business Name',
-                  controller: _businessNameController,
-                  validator: (val) => val == null || val.isEmpty ? 'Required' : null,
-                ),
-              ],
-              
               const SizedBox(height: 32),
+
               AppButton(
                 label: 'Save Changes',
                 isLoading: _isLoading,
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) return;
-                  setState(() => _isLoading = true);
-                  try {
-                    // Build structured address
-                    final address = Address(
-                      line1: _line1Controller.text.trim().isEmpty ? null : _line1Controller.text.trim(),
-                      line2: _line2Controller.text.trim().isEmpty ? null : _line2Controller.text.trim(),
-                      landmark: _landmarkController.text.trim().isEmpty ? null : _landmarkController.text.trim(),
-                      village: _villageController.text.trim().isEmpty ? null : _villageController.text.trim(),
-                      taluka: _talukaController.text.trim().isEmpty ? null : _talukaController.text.trim(),
-                      district: _districtController.text.trim().isEmpty ? null : _districtController.text.trim(),
-                      state: _stateController.text.trim(),
-                      pincode: _pincodeController.text.trim(),
-                    );
-
-                    // Preserve existing location if any
-                    DetailedAddress? existingDetailed;
-                    if (_user!.address != null) {
-                      try {
-                        existingDetailed = DetailedAddress.fromMap(_user!.address!);
-                      } catch (_) {}
-                    }
-
-                    // Use newly picked location or preserve existing
-                    GeoLocation? location;
-                    if (_latitude != null && _longitude != null) {
-                      location = GeoLocation(
-                        latitude: _latitude!,
-                        longitude: _longitude!,
-                      );
-                    } else {
-                      location = existingDetailed?.location;
-                    }
-
-                    final detailedAddress = DetailedAddress(
-                      address: address,
-                      location: location,
-                    );
-
-                    final updatedUser = _user!.copyWith(
-                      displayName: _nameController.text.trim(),
-                      phone: _phoneController.text.trim(),
-                      address: detailedAddress.toMap(),
-                      businessName: isSeller
-                          ? _businessNameController.text.trim()
-                          : _user!.businessName, // preserve existing for non-sellers
-                    );
-                    
-                    if (_selectedRole != _user!.role) {
-                      await ref.read(userRepositoryProvider).updateUserRole(_user!.uid, _selectedRole);
-                      ref.invalidate(appUserProvider);
-                    }
-
-                    final result = await ref.read(userRepositoryProvider).updateUser(updatedUser);
-                    
-                    if (!context.mounted) return;
-
-                    if (result.isSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile updated successfully'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      context.pop();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: ${result.exceptionOrNull?.message}'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
-                      );
-                    }
-                  } finally {
-                    if (mounted) setState(() => _isLoading = false);
-                  }
-                },
+                onPressed: _save,
               ),
             ],
           ),

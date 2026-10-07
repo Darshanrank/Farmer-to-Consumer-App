@@ -4,11 +4,43 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 
-class EmailVerificationScreen extends ConsumerWidget {
+class EmailVerificationScreen extends ConsumerStatefulWidget {
   const EmailVerificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
+}
+
+class _EmailVerificationScreenState
+    extends ConsumerState<EmailVerificationScreen> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    // Listen for app lifecycle changes so we can reload the user
+    // when the app returns from the browser after clicking the
+    // verification link.
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // When the user comes back to the app (e.g. after clicking the
+    // verification link in their email), reload the Firebase user
+    // to check if the email is now verified.
+    if (state == AppLifecycleState.resumed) {
+      ref.read(authControllerProvider.notifier).checkEmailVerified();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
@@ -71,9 +103,32 @@ class EmailVerificationScreen extends ConsumerWidget {
               AppButton(
                 label: 'Resend Verification Email',
                 onPressed: () {
-                  ref.read(authControllerProvider.notifier).resendVerificationEmail();
+                  ref
+                      .read(authControllerProvider.notifier)
+                      .resendVerificationEmail();
                 },
                 isLoading: isLoading,
+              ),
+              const SizedBox(height: 16),
+              AppButton(
+                label: "I've Verified My Email",
+                icon: Icons.check_circle_outline,
+                onPressed: () {
+                  ref
+                      .read(authControllerProvider.notifier)
+                      .checkEmailVerified();
+                },
+                isLoading: isLoading,
+                isOutlined: true,
+              ),
+              const SizedBox(height: 16),
+              AppButton(
+                label: 'Go to Login',
+                icon: Icons.login,
+                isOutlined: true,
+                onPressed: () {
+                  ref.read(authControllerProvider.notifier).signOut();
+                },
               ),
             ],
           ),

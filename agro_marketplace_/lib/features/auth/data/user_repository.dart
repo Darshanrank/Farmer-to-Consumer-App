@@ -14,7 +14,6 @@ class UserRepository {
 
   UserRepository(this._firestore);
 
-  /// Streams the user profile for the given [uid].
   Stream<AppUser?> streamUser(String uid) {
     return _firestore
         .collection(FirestorePaths.users)
@@ -35,9 +34,25 @@ class UserRepository {
     });
   }
   
-  /// Creates or updates a user profile.
-  /// Normally, user creation is handled by Cloud Functions for security,
-  /// but this provides an option to update user details from the client.
+  /// Creates the initial user document including role.
+  /// Called once on registration so the role ('buyer' or 'seller') is
+  /// persisted correctly before any Cloud Function can overwrite it.
+  Future<Result<void>> createUserDocument(AppUser user) async {
+    return Result.guard(() async {
+      final payload = user.toJson();
+      // Keep role on creation – this is the only time we intentionally write it.
+      payload.remove('isEmailVerified');
+      payload['createdAt'] = DateTime.now().toIso8601String();
+
+      await _firestore
+          .collection(FirestorePaths.users)
+          .doc(user.uid)
+          .set(payload, SetOptions(merge: false)); // merge: false = full create
+    });
+  }
+
+  /// Creates or updates a user profile (non-sensitive fields only).
+  /// Does NOT write role/status/isEmailVerified to protect security rules.
   Future<Result<void>> updateUser(AppUser user) async {
     return Result.guard(() async {
       // Remove secure fields from the payload to prevent Firestore permission errors
@@ -51,6 +66,24 @@ class UserRepository {
           .collection(FirestorePaths.users)
           .doc(user.uid)
           .set(payload, SetOptions(merge: true));
+    });
+  }
+
+  /// Updates the user's role directly (e.g. switching between buyer and seller).
+  Future<Result<void>> updateUserRole(String uid, String newRole) async {
+    return Result.guard(() async {
+      await _firestore
+          .collection(FirestorePaths.users)
+          .doc(uid)
+          .set({'role': newRole}, SetOptions(merge: true));
+    });
+  }
+
+  /// Deletes the user's Firestore document.
+  /// Called as part of the delete account flow.
+  Future<Result<void>> deleteUserDocument(String uid) async {
+    return Result.guard(() async {
+      await _firestore.collection(FirestorePaths.users).doc(uid).delete();
     });
   }
 }

@@ -24,7 +24,19 @@ Stream<AppUser?> appUser(Ref ref) {
   if (authUser == null) {
     return Stream.value(null);
   }
-  return ref.watch(userRepositoryProvider).streamUser(authUser.uid);
+  return ref.watch(userRepositoryProvider).streamUser(authUser.uid).map((user) {
+    if (user == null) {
+      // Document is missing, but user is authenticated. Provide a fallback.
+      return AppUser(
+        uid: authUser.uid,
+        email: authUser.email ?? '',
+        role: 'buyer', // Default safe role
+        displayName: authUser.displayName,
+        photoUrl: authUser.photoURL,
+      );
+    }
+    return user;
+  });
 }
 
 /// Exposes the computed high-level authentication status of the application.
@@ -84,19 +96,22 @@ class AuthController extends _$AuthController {
       AppLogger.error('SignUp failed for $email', error: result.exceptionOrNull, context: 'AuthController');
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
-      AppLogger.info('SignUp successful for $email (role: $role). Updating user document...', context: 'AuthController');
-      // Update role in Firestore immediately to override the default 'seller' set by Cloud Function
+      AppLogger.info('SignUp successful for $email (role: $role). Creating user document...', context: 'AuthController');
+      // Create the user document with the correct role using createUserDocument
+      // (updateUser strips the role field, so we must use createUserDocument here)
       try {
         final user = result.dataOrNull!;
-        await ref.read(userRepositoryProvider).updateUser(
+        await ref.read(userRepositoryProvider).createUserDocument(
           AppUser(
             uid: user.uid,
             email: user.email ?? email,
             role: role,
-          )
+            status: 'active',
+            createdAt: DateTime.now(),
+          ),
         );
       } catch (e, st) {
-        AppLogger.error('Failed to update user role document', error: e, stackTrace: st, context: 'AuthController');
+        AppLogger.error('Failed to create user document', error: e, stackTrace: st, context: 'AuthController');
       }
 
       await ref.read(authRepositoryProvider).sendEmailVerification();
@@ -125,12 +140,47 @@ class AuthController extends _$AuthController {
     }
   }
 
+  /// Reloads the current Firebase user to check if email has been verified.
+  /// If verified, invalidates the auth stream so the router picks up the change.
+  Future<void> checkEmailVerified() async {
+    state = const AsyncLoading();
+    final result = await ref.read(authRepositoryProvider).reloadUser();
+    if (result.isSuccess) {
+      // Invalidate the auth user stream so authStatus recalculates
+      ref.invalidate(authUserProvider);
+      state = const AsyncData(null);
+    } else {
+      state = AsyncError(result.exceptionOrNull!, StackTrace.current);
+    }
+  }
+
   Future<void> resetPassword(String email) async {
     state = const AsyncLoading();
     final result = await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
     if (result.isFailure) {
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
+      state = const AsyncData(null);
+    }
+  }
+
+  /// Switches the user's role between 'buyer' and 'seller' and persists to Firestore.
+  Future<void> switchRole(String newRole) async {
+    state = const AsyncLoading();
+    final authUser = ref.read(authUserProvider).value;
+    if (authUser == null) {
+      state = const AsyncData(null);
+      return;
+    }
+    
+    final result = await ref.read(userRepositoryProvider).updateUserRole(authUser.uid, newRole);
+    if (result.isFailure) {
+      AppLogger.error('Failed to switch role to $newRole', error: result.exceptionOrNull, context: 'AuthController');
+      state = AsyncError(result.exceptionOrNull!, StackTrace.current);
+    } else {
+      AppLogger.info('Successfully switched role to $newRole for ${authUser.uid}', context: 'AuthController');
+      // Invalidate appUserProvider so the role changes immediately in state
+      ref.invalidate(appUserProvider);
       state = const AsyncData(null);
     }
   }
