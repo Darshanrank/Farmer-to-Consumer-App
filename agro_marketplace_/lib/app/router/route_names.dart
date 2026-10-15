@@ -39,4 +39,7 @@ class RouteNames {
   static const String buyerSearch = 'buyerSearch';
   static const String buyerProfile = 'buyerProfile';
   static const String editProfile = 'editProfile';
+  static const String savedAddresses = 'savedAddresses';
+  static const String addSavedAddress = 'addSavedAddress';
+  static const String editSavedAddress = 'editSavedAddress';
 }

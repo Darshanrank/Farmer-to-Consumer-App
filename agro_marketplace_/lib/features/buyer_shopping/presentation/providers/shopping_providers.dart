@@ -5,6 +5,10 @@ import '../../../seller_inventory/domain/entities/product.dart';
 import '../../../seller_inventory/data/product_repository.dart';
 import '../../domain/entities/cart_item.dart';
 import '../../data/cart_repository.dart';
+import '../../data/checkout_repository.dart';
+import '../../../../core/commerce/product_listing_rules.dart';
+import '../../../../shared/models/detailed_address.dart';
+import '../../domain/entities/checkout_quote.dart';
 
 part 'shopping_providers.g.dart';
 
@@ -12,6 +16,49 @@ part 'shopping_providers.g.dart';
 @riverpod
 Stream<List<Product>> buyerProducts(Ref ref) {
   return ref.watch(productRepositoryProvider).streamAllActiveProducts();
+}
+
+@riverpod
+class ProductListingModeController extends _$ProductListingModeController {
+  @override
+  ProductListingMode build() => ProductListingMode.regular;
+
+  void select(ProductListingMode mode) => state = mode;
+}
+
+@riverpod
+class SelectedDeliveryAddressIndex extends _$SelectedDeliveryAddressIndex {
+  @override
+  int? build() => null;
+
+  void select(int? index) => state = index;
+}
+
+@riverpod
+DetailedAddress? selectedDeliveryAddress(Ref ref) {
+  final index = ref.watch(selectedDeliveryAddressIndexProvider);
+  final user = ref.watch(appUserProvider).value;
+  if (index == null ||
+      user == null ||
+      index < 0 ||
+      index >= user.savedAddresses.length) {
+    return null;
+  }
+  return DetailedAddress.fromMap(user.savedAddresses[index]);
+}
+
+@riverpod
+List<Product> buyerListingProducts(Ref ref) {
+  final products = ref.watch(buyerProductsProvider).value ?? [];
+  final mode = ref.watch(productListingModeControllerProvider);
+  final address = ref.watch(selectedDeliveryAddressProvider);
+  return products.where((product) {
+    return ProductListingRules.evaluate(
+      product: product,
+      mode: mode,
+      buyerAddress: address,
+    ).isEligible;
+  }).toList();
 }
 
 /// Streams the current user's cart items.
@@ -29,4 +76,22 @@ Stream<List<CartItem>> cart(Ref ref) {
 double cartTotal(Ref ref) {
   final cartItems = ref.watch(cartProvider).value ?? [];
   return cartItems.fold(0.0, (total, item) => total + item.totalPrice);
+}
+
+@riverpod
+Future<CheckoutQuote?> checkoutQuote(Ref ref) async {
+  final user = ref.watch(authUserProvider).value;
+  final address = ref.watch(selectedDeliveryAddressProvider);
+  if (user == null || address == null) return null;
+  final result = await ref
+      .watch(checkoutRepositoryProvider)
+      .quoteOrder(
+        buyerId: user.uid,
+        deliveryMode: ref.watch(productListingModeControllerProvider),
+        buyerAddress: address,
+      );
+  if (result.isFailure) {
+    throw result.exceptionOrNull!;
+  }
+  return result.dataOrNull;
 }

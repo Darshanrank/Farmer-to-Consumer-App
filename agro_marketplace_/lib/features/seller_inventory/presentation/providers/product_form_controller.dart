@@ -1,9 +1,12 @@
 import 'dart:io';
+
 import 'package:uuid/uuid.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/result/result.dart';
+import '../../../../shared/models/detailed_address.dart';
+import '../../../../shared/models/location.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/product_repository.dart';
 import '../../domain/entities/product.dart';
@@ -36,16 +39,45 @@ class ProductFormController extends _$ProductFormController {
   }) async {
     state = const AsyncLoading();
 
-    final user = ref.read(authUserProvider).value;
+    if (stockQuantity < 0) {
+      return Result.failure(
+        BusinessRuleException(message: 'Stock quantity cannot be negative.'),
+      );
+    }
+    if (minOrderQuantity <= 0) {
+      return Result.failure(
+        BusinessRuleException(
+          message: 'Minimum order quantity must be greater than zero.',
+        ),
+      );
+    }
+    if (!price.isFinite || price < 0) {
+      return Result.failure(
+        BusinessRuleException(
+          message: 'Price must be a valid non-negative number.',
+        ),
+      );
+    }
+
+    final user = ref.read(appUserProvider).value;
     if (user == null) {
       final ex = Exception('User is not authenticated');
       state = AsyncError(ex, StackTrace.current);
-      return Result.failure(AuthenticationException(message: 'User is not authenticated', originalError: ex));
+      return Result.failure(
+        AuthenticationException(
+          message: 'User is not authenticated',
+          originalError: ex,
+        ),
+      );
     }
 
     // Determine ID
     final productId = existingProduct?.id ?? const Uuid().v4();
     final sellerId = user.uid;
+    DetailedAddress? sellerAddress;
+    if (user.address != null) {
+      sellerAddress = DetailedAddress.fromMap(user.address!);
+    }
 
     final result = await Result.guard(() async {
       final productRepo = ref.read(productRepositoryProvider);
@@ -57,14 +89,16 @@ class ProductFormController extends _$ProductFormController {
         for (final file in newImagesToUpload) {
           final bytes = await file.readAsBytes();
           final imageId = const Uuid().v4();
-          
-          finalImages.add(ProductImage(
-            id: imageId,
-            data: bytes,
-            contentType: 'image/jpeg',
-            fileName: file.uri.pathSegments.last,
-            uploadedAt: DateTime.now(),
-          ));
+
+          finalImages.add(
+            ProductImage(
+              id: imageId,
+              data: bytes,
+              contentType: 'image/jpeg',
+              fileName: file.uri.pathSegments.last,
+              uploadedAt: DateTime.now(),
+            ),
+          );
         }
       }
 
@@ -83,6 +117,39 @@ class ProductFormController extends _$ProductFormController {
         attributes: attributes,
         images: finalImages,
         status: status,
+        supportsFastDelivery:
+            existingProduct?.supportsFastDelivery ?? user.fastDeliveryEnabled,
+        supportsRegularDelivery:
+            existingProduct?.supportsRegularDelivery ??
+            user.regularDeliveryEnabled,
+        sellerManagedFastDelivery:
+            existingProduct?.sellerManagedFastDelivery ??
+            user.fastDeliveryEnabled,
+        sellerCountryCode:
+            existingProduct?.sellerCountryCode ??
+            user.deliveryCountryCode ??
+            sellerAddress?.address.normalizedCountryCode,
+        sellerServiceLocation:
+            existingProduct?.sellerServiceLocation ??
+            (user.deliveryOrigin == null
+                ? sellerAddress?.location
+                : GeoLocation.fromMap(user.deliveryOrigin!)),
+        fastDeliveryMinDays:
+            existingProduct?.fastDeliveryMinDays ?? user.fastDeliveryMinDays,
+        fastDeliveryMaxDays:
+            existingProduct?.fastDeliveryMaxDays ?? user.fastDeliveryMaxDays,
+        regularDeliveryMinDays:
+            existingProduct?.regularDeliveryMinDays ??
+            user.regularDeliveryMinDays,
+        regularDeliveryMaxDays:
+            existingProduct?.regularDeliveryMaxDays ??
+            user.regularDeliveryMaxDays,
+        fastDeliveryFee:
+            existingProduct?.fastDeliveryFee ?? user.fastDeliveryFee,
+        regularDeliveryFee:
+            existingProduct?.regularDeliveryFee ?? user.regularDeliveryFee,
+        reservedQuantity: existingProduct?.reservedQuantity ?? 0,
+        soldQuantity: existingProduct?.soldQuantity ?? 0,
         createdAt: existingProduct?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -101,7 +168,7 @@ class ProductFormController extends _$ProductFormController {
     } else {
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     }
-    
+
     return result;
   }
 }

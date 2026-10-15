@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/commerce/delivery_fee.dart';
+import '../../../../core/commerce/product_listing_rules.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/shopping_providers.dart';
 
 class BuyerHomeScreen extends ConsumerWidget {
@@ -13,12 +15,59 @@ class BuyerHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(buyerProductsProvider);
+    final products = ref.watch(buyerListingProductsProvider);
+    final mode = ref.watch(productListingModeControllerProvider);
+    final user = ref.watch(appUserProvider).value;
+    final selectedAddress = ref.watch(selectedDeliveryAddressProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agro Products'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(58),
+          child: Row(
+            children: [
+              Expanded(
+                child: SegmentedButton<ProductListingMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: ProductListingMode.fast,
+                      label: Text('Fast'),
+                      icon: Icon(Icons.bolt),
+                    ),
+                    ButtonSegment(
+                      value: ProductListingMode.regular,
+                      label: Text('Regular'),
+                      icon: Icon(Icons.local_shipping_outlined),
+                    ),
+                  ],
+                  selected: {mode},
+                  onSelectionChanged: (selection) => ref
+                      .read(productListingModeControllerProvider.notifier)
+                      .select(selection.first),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Choose delivery address',
+                onPressed: user == null || user.savedAddresses.isEmpty
+                    ? null
+                    : () => _selectAddress(
+                        context,
+                        ref,
+                        user.savedAddresses.length,
+                      ),
+                icon: Icon(
+                  selectedAddress == null
+                      ? Icons.location_off_outlined
+                      : Icons.location_on_outlined,
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           IconButton(
+            tooltip: 'Search products',
             icon: const Icon(Icons.search),
             onPressed: () {
               context.pushNamed(RouteNames.buyerSearch);
@@ -27,7 +76,8 @@ class BuyerHomeScreen extends ConsumerWidget {
         ],
       ),
       body: productsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()),
         error: (err, stack) => _MessageState(
           icon: Icons.cloud_off_outlined,
           title: 'Could not load products',
@@ -37,12 +87,19 @@ class BuyerHomeScreen extends ConsumerWidget {
             child: const Text('Retry'),
           ),
         ),
-        data: (products) {
+        data: (_) {
           if (products.isEmpty) {
-            return const _MessageState(
-              icon: Icons.eco_outlined,
-              title: 'No products yet',
-              message: 'New products from local sellers will appear here.',
+            return _MessageState(
+              icon: mode == ProductListingMode.fast
+                  ? Icons.location_off_outlined
+                  : Icons.local_shipping_outlined,
+              title: 'No products available',
+              message: selectedAddress == null
+                  ? 'Choose a saved delivery address to see eligible products.'
+                  : mode == ProductListingMode.fast &&
+                        selectedAddress.location?.isValid != true
+                  ? 'Fast Delivery needs valid coordinates on the selected address.'
+                  : 'No configured sellers currently meet this delivery mode.',
             );
           }
 
@@ -50,7 +107,7 @@ class BuyerHomeScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.68,
+              childAspectRatio: 0.50,
               crossAxisSpacing: 16,
               mainAxisSpacing: 24,
             ),
@@ -95,13 +152,20 @@ class BuyerHomeScreen extends ConsumerWidget {
                                   : Container(
                                       width: double.infinity,
                                       color: Colors.grey[100],
-                                      child: const Icon(Icons.image, color: Colors.grey, size: 40),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
                                     ),
                               Positioned(
                                 top: 8,
                                 right: 8,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withValues(alpha: 0.9),
                                     borderRadius: BorderRadius.circular(12),
@@ -109,9 +173,20 @@ class BuyerHomeScreen extends ConsumerWidget {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.star, size: 12, color: Colors.amber),
+                                      const Icon(
+                                        Icons.star,
+                                        size: 12,
+                                        color: Colors.amber,
+                                      ),
                                       const SizedBox(width: 4),
-                                      Text('4.5', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey.shade800)),
+                                      Text(
+                                        '4.5',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey.shade800,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -129,6 +204,7 @@ class BuyerHomeScreen extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
@@ -143,17 +219,52 @@ class BuyerHomeScreen extends ConsumerWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
+                                      product.availabilityLabel,
+                                      style: TextStyle(
+                                        color: product.isAvailableForPurchase
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${mode == ProductListingMode.fast ? 'Fast Delivery' : 'Regular Delivery'}'
+                                      '${ProductListingRules.evaluate(product: product, mode: mode, buyerAddress: selectedAddress).deliveryWindow == null ? '' : ' • ${ProductListingRules.evaluate(product: product, mode: mode, buyerAddress: selectedAddress).deliveryWindow}'}',
+                                      style: const TextStyle(
+                                        color: AppColors.primaryDark,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'Delivery fee: ₹${deliveryFeeForMode(product: product, mode: mode).toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        color: Colors.grey[700],
+                                        fontSize: 11,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
                                       product.category,
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
@@ -167,11 +278,17 @@ class BuyerHomeScreen extends ConsumerWidget {
                                     Container(
                                       padding: const EdgeInsets.all(6),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primary.withValues(alpha: 0.1),
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(Icons.add_shopping_cart, size: 16, color: AppColors.primary),
-                                    )
+                                      child: const Icon(
+                                        Icons.add_shopping_cart,
+                                        size: 16,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -188,6 +305,29 @@ class BuyerHomeScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Future<void> _selectAddress(
+    BuildContext context,
+    WidgetRef ref,
+    int count,
+  ) async {
+    final selected = await showDialog<int>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Delivery address'),
+        children: List.generate(
+          count,
+          (index) => SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, index),
+            child: Text('Saved address ${index + 1}'),
+          ),
+        ),
+      ),
+    );
+    if (selected != null) {
+      ref.read(selectedDeliveryAddressIndexProvider.notifier).select(selected);
+    }
   }
 }
 
@@ -219,14 +359,10 @@ class _MessageState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
-            if (action != null) ...[
-              const SizedBox(height: 12),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 12), action!],
           ],
         ),
       ),

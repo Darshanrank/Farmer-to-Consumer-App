@@ -22,9 +22,16 @@ class SellerDashboardScreen extends ConsumerWidget {
         title: const Text('Dashboard'),
         actions: [
           IconButton(
+            tooltip: 'Notifications',
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          )
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Notifications will appear here.'),
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -35,21 +42,27 @@ class SellerDashboardScreen extends ConsumerWidget {
           children: [
             Text(
               'Welcome back,',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(color: Colors.grey[600]),
             ),
             Text(
               user?.displayName ?? 'Seller',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryDark,
+              ),
             ),
             const SizedBox(height: 24),
             // Warning banner if profile incomplete
-            if (user != null && (user.displayName == null || user.phone == null || user.businessName == null))
+            if (user != null &&
+                (user.displayName == null ||
+                    user.phone == null ||
+                    user.businessName == null))
               InkWell(
                 onTap: () {
-                  context.pushNamed(RouteNames.sellerOnboarding); // In the future, push to Edit Profile
+                  context.pushNamed(
+                    RouteNames.sellerOnboarding,
+                  ); // In the future, push to Edit Profile
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -61,7 +74,10 @@ class SellerDashboardScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.orange.shade700,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -69,12 +85,18 @@ class SellerDashboardScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'Complete your profile',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange.shade900),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange.shade900,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Add your business details to start selling.',
-                              style: TextStyle(color: Colors.orange.shade800, fontSize: 13),
+                              style: TextStyle(
+                                color: Colors.orange.shade800,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
@@ -119,9 +141,16 @@ class SellerDashboardScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () => context.pushNamed(RouteNames.sellerDelivery),
+              icon: const Icon(Icons.local_shipping_outlined),
+              label: const Text('Manage delivery settings'),
+            ),
+            const SizedBox(height: 16),
             Text(
               'Recent Orders',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             if (recent.isEmpty)
@@ -130,9 +159,16 @@ class SellerDashboardScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(32.0),
                   child: Column(
                     children: [
-                      Icon(Icons.receipt_long, size: 48, color: Colors.grey[400]),
+                      Icon(
+                        Icons.receipt_long,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(height: 16),
-                      Text('No recent orders', style: TextStyle(color: Colors.grey[600])),
+                      Text(
+                        'No recent orders',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
                     ],
                   ),
                 ),
@@ -149,14 +185,22 @@ class SellerDashboardScreen extends ConsumerWidget {
                     child: ListTile(
                       title: Text('Order #${order.id.substring(0, 8)}'),
                       subtitle: Text(
-                        order.createdAt != null ? DateFormat.yMMMd().format(order.createdAt!) : '',
+                        order.createdAt != null
+                            ? DateFormat.yMMMd().format(order.createdAt!)
+                            : '',
                       ),
                       trailing: Text(
                         '₹${order.totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryDark,
+                        ),
                       ),
                       onTap: () {
-                        context.pushNamed(RouteNames.sellerOrderDetail, pathParameters: {'id': order.id});
+                        context.pushNamed(
+                          RouteNames.sellerOrderDetail,
+                          pathParameters: {'id': order.id},
+                        );
                       },
                     ),
                   );
@@ -217,15 +261,27 @@ class _MetricCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: Colors.white, size: 24),
               ),
-              if (title == 'Pending Orders' && int.tryParse(value) != null && int.parse(value) > 0)
-                 Container(
-                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                   decoration: BoxDecoration(
-                     color: Colors.red.shade100,
-                     borderRadius: BorderRadius.circular(12),
-                   ),
-                   child: const Text('Action Required', style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
-                 )
+              if (title == 'Pending Orders' &&
+                  int.tryParse(value) != null &&
+                  int.parse(value) > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Action Required',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
             ],
           ),
           Column(
@@ -234,18 +290,18 @@ class _MetricCard extends StatelessWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                      letterSpacing: -0.5,
-                    ),
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black87,
+                  letterSpacing: -0.5,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/errors/error_handler.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../shared/services/firebase_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -59,7 +61,9 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
 
     if (subject.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in both subject and message.')),
+        const SnackBar(
+          content: Text('Please fill in both subject and message.'),
+        ),
       );
       return;
     }
@@ -69,11 +73,16 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
 
     try {
       final user = ref.read(appUserProvider).value;
+      if (user == null) {
+        throw const AuthenticationException(
+          message: 'Please sign in to contact support.',
+        );
+      }
       final firestore = ref.read(firebaseServiceProvider).firestore;
 
       await firestore.collection('supportRequests').add({
-        'userId': user?.uid ?? 'anonymous',
-        'email': user?.email ?? '',
+        'userId': user.uid,
+        'email': user.email,
         'subject': subject,
         'message': message,
         'status': 'open',
@@ -86,7 +95,9 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Support request submitted! We\'ll get back to you soon.'),
+          content: Text(
+            'Support request submitted! We\'ll get back to you soon.',
+          ),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 4),
         ),
@@ -95,7 +106,7 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting request: $e'),
+            content: Text(ErrorHandler.getUserMessage(e)),
             backgroundColor: Colors.red,
           ),
         );
@@ -115,9 +126,8 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
           // FAQ Section
           Text(
             'Frequently Asked Questions',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           ..._faqs.map((faq) => _FaqTile(faq: faq)),
@@ -129,14 +139,14 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
           // Contact Form
           Text(
             'Contact Support',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
             'Can\'t find your answer above? Send us a message and we\'ll help you.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 20),
 
@@ -174,7 +184,10 @@ class _SellerHelpScreenState extends ConsumerState<SellerHelpScreen> {
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Icon(Icons.send),
               label: Text(_isSubmitting ? 'Submitting...' : 'Submit Request'),

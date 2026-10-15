@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/app_message_state.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+
 import 'dart:convert';
+
 import '../../domain/entities/cart_item.dart';
 import '../../data/cart_repository.dart';
 import '../providers/shopping_providers.dart';
@@ -13,13 +16,11 @@ import '../providers/shopping_providers.dart';
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
 
-  const ProductDetailScreen({
-    super.key,
-    required this.productId,
-  });
+  const ProductDetailScreen({super.key, required this.productId});
 
   @override
-  ConsumerState<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
@@ -38,14 +39,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final product = matchingProducts.first;
     final user = ref.read(authUserProvider).value;
 
-    if (user == null || product.isOutOfStock || product.stockQuantity < product.minOrderQuantity) {
+    if (user == null ||
+        !product.isAvailableForPurchase ||
+        product.availableQuantity < product.minOrderQuantity) {
       return;
     }
     if (_quantity < product.minOrderQuantity) {
       setState(() => _quantity = product.minOrderQuantity);
     }
-    if (_quantity > product.stockQuantity) {
-      setState(() => _quantity = product.stockQuantity);
+    if (_quantity > product.availableQuantity) {
+      setState(() => _quantity = product.availableQuantity);
     }
 
     setState(() => _isAdding = true);
@@ -58,25 +61,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       price: product.price,
       unit: product.unit,
       quantity: _quantity,
-      imageBase64: product.images.isNotEmpty ? base64Encode(product.images.first.data) : null,
+      imageBase64: product.images.isNotEmpty
+          ? base64Encode(product.images.first.data)
+          : null,
       addedAt: DateTime.now(),
     );
 
-    final result = await ref.read(cartRepositoryProvider).addToCart(
-      userId: user.uid,
-      item: cartItem,
-    );
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .addToCart(userId: user.uid, item: cartItem);
 
     if (mounted) {
       setState(() => _isAdding = false);
       if (result.isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Added to cart!'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Added to cart!'),
+            backgroundColor: Colors.green,
+          ),
         );
         context.pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: ${result.exceptionOrNull?.message}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Failed: ${result.exceptionOrNull?.message}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -87,14 +97,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final productsAsync = ref.watch(buyerProductsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Details'),
-      ),
+      appBar: AppBar(title: const Text('Details')),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error: (err, _) => const AppMessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load product',
+          message: 'This product may be unavailable. Please try again.',
+        ),
         data: (products) {
-          final matchingProducts = products.where((p) => p.id == widget.productId);
+          final matchingProducts = products.where(
+            (p) => p.id == widget.productId,
+          );
           if (matchingProducts.isEmpty) {
             return const Center(child: Text('Product is no longer available.'));
           }
@@ -120,9 +134,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         Container(
                           height: 300,
                           color: Colors.grey[200],
-                          child: const Icon(Icons.image, size: 64, color: Colors.grey),
+                          child: const Icon(
+                            Icons.image,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
                         ),
-                      
+
                       Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: Column(
@@ -130,21 +148,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           children: [
                             Text(
                               product.name,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               '₹${product.price} / ${product.unit}',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: AppColors.primaryDark,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: AppColors.primaryDark,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.grey[100],
                                 borderRadius: BorderRadius.circular(8),
@@ -154,9 +175,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             const SizedBox(height: 24),
                             Text(
                               'Description',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -184,7 +204,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -5),
-                    )
+                    ),
                   ],
                 ),
                 child: SafeArea(
@@ -199,16 +219,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         child: Row(
                           children: [
                             IconButton(
+                              tooltip: 'Decrease quantity',
                               icon: const Icon(Icons.remove),
                               onPressed: _decrement,
                             ),
                             Text(
                               '$_quantity',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             IconButton(
+                              tooltip: 'Increase quantity',
                               icon: const Icon(Icons.add),
-                              onPressed: product.isOutOfStock || _quantity >= product.stockQuantity
+                              onPressed:
+                                  !product.isAvailableForPurchase ||
+                                      _quantity >= product.availableQuantity
                                   ? null
                                   : _increment,
                             ),
@@ -216,13 +243,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ),
                       ),
                       const SizedBox(width: 24),
-                      
+
                       // Add to Cart button
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _isAdding ||
-                                  product.isOutOfStock ||
-                                  product.stockQuantity < product.minOrderQuantity
+                          onPressed:
+                              _isAdding ||
+                                  !product.isAvailableForPurchase ||
+                                  product.availableQuantity <
+                                      product.minOrderQuantity
                               ? null
                               : _addToCart,
                           style: ElevatedButton.styleFrom(
@@ -237,14 +266,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 )
                               : Text(
-                                  product.isOutOfStock ||
-                                          product.stockQuantity < product.minOrderQuantity
-                                      ? 'Out of stock'
+                                  !product.isAvailableForPurchase ||
+                                          product.availableQuantity <
+                                              product.minOrderQuantity
+                                      ? product.availabilityLabel
                                       : 'Add to Cart - ₹${(product.price * _quantity).toStringAsFixed(2)}',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                         ),
                       ),

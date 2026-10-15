@@ -14,6 +14,8 @@ class Address extends Equatable {
   final String? district;
   final String state;
   final String pincode;
+  final String? countryCode;
+  final String? city;
 
   const Address({
     this.line1,
@@ -24,6 +26,8 @@ class Address extends Equatable {
     this.district,
     required this.state,
     required this.pincode,
+    this.countryCode,
+    this.city,
   });
 
   /// Creates an [Address] from a Firestore map.
@@ -37,6 +41,8 @@ class Address extends Equatable {
       district: map['district'] as String?,
       state: map['state'] as String? ?? '',
       pincode: map['pincode'] as String? ?? '',
+      countryCode: normalizeCountryCode(map['countryCode'] as String?),
+      city: map['city'] as String?,
     );
   }
 
@@ -51,8 +57,20 @@ class Address extends Equatable {
       if (district != null) 'district': district,
       'state': state,
       'pincode': pincode,
+      if (city != null) 'city': city,
+      if (normalizedCountryCode != null) 'countryCode': normalizedCountryCode,
     };
   }
+
+  /// Returns an ISO 3166-1 alpha-2 code in canonical uppercase form.
+  static String? normalizeCountryCode(String? value) {
+    final normalized = value?.trim().toUpperCase();
+    if (normalized == null || normalized.isEmpty) return null;
+    if (!RegExp(r'^[A-Z]{2}$').hasMatch(normalized)) return null;
+    return normalized;
+  }
+
+  String? get normalizedCountryCode => normalizeCountryCode(countryCode);
 
   /// Human-readable display string.
   String get displayAddress {
@@ -61,6 +79,7 @@ class Address extends Equatable {
       if (line2 != null && line2!.isNotEmpty) line2!,
       if (landmark != null && landmark!.isNotEmpty) 'Near $landmark',
       if (village != null && village!.isNotEmpty) village!,
+      if (city != null && city!.isNotEmpty) city!,
       if (taluka != null && taluka!.isNotEmpty) taluka!,
       if (district != null && district!.isNotEmpty) district!,
       if (state.isNotEmpty) state,
@@ -84,6 +103,8 @@ class Address extends Equatable {
     String? district,
     String? state,
     String? pincode,
+    String? countryCode,
+    String? city,
   }) {
     return Address(
       line1: line1 ?? this.line1,
@@ -94,10 +115,22 @@ class Address extends Equatable {
       district: district ?? this.district,
       state: state ?? this.state,
       pincode: pincode ?? this.pincode,
+      countryCode: countryCode ?? this.countryCode,
+      city: city ?? this.city,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [line1, line2, landmark, village, taluka, district, state, pincode];
+  List<Object?> get props => [
+    line1,
+    line2,
+    landmark,
+    village,
+    taluka,
+    district,
+    state,
+    pincode,
+    countryCode,
+    city,
+  ];
 }

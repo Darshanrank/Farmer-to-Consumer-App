@@ -71,13 +71,17 @@ class AuthController extends _$AuthController {
 
   Future<void> signIn(String email, String password) async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-    
+    final result = await ref
+        .read(authRepositoryProvider)
+        .signInWithEmailAndPassword(email: email, password: password);
+    if (!ref.mounted) return;
+
     if (result.isFailure) {
-      AppLogger.error('SignIn failed for $email', error: result.exceptionOrNull, context: 'AuthController');
+      AppLogger.error(
+        'SignIn failed for $email',
+        error: result.exceptionOrNull,
+        context: 'AuthController',
+      );
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
       AppLogger.info('SignIn successful for $email', context: 'AuthController');
@@ -87,35 +91,54 @@ class AuthController extends _$AuthController {
 
   Future<void> signUp(String email, String password, String role) async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).signUpWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-    
+    final result = await ref
+        .read(authRepositoryProvider)
+        .signUpWithEmailAndPassword(email: email, password: password);
+    if (!ref.mounted) return;
+
     if (result.isFailure) {
-      AppLogger.error('SignUp failed for $email', error: result.exceptionOrNull, context: 'AuthController');
+      AppLogger.error(
+        'SignUp failed for $email',
+        error: result.exceptionOrNull,
+        context: 'AuthController',
+      );
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
-      AppLogger.info('SignUp successful for $email (role: $role). Creating user document...', context: 'AuthController');
+      AppLogger.info(
+        'SignUp successful for $email (role: $role). Creating user document...',
+        context: 'AuthController',
+      );
       // Create the user document with the correct role using createUserDocument
       // (updateUser strips the role field, so we must use createUserDocument here)
       try {
         final user = result.dataOrNull!;
-        await ref.read(userRepositoryProvider).createUserDocument(
-          AppUser(
-            uid: user.uid,
-            email: user.email ?? email,
-            role: role,
-            status: 'active',
-            createdAt: DateTime.now(),
-          ),
-        );
+        await ref
+            .read(userRepositoryProvider)
+            .createUserDocument(
+              AppUser(
+                uid: user.uid,
+                email: user.email ?? email,
+                role: role,
+                status: 'active',
+                createdAt: DateTime.now(),
+              ),
+            );
+        if (!ref.mounted) return;
       } catch (e, st) {
-        AppLogger.error('Failed to create user document', error: e, stackTrace: st, context: 'AuthController');
+        AppLogger.error(
+          'Failed to create user document',
+          error: e,
+          stackTrace: st,
+          context: 'AuthController',
+        );
       }
 
       await ref.read(authRepositoryProvider).sendEmailVerification();
-      AppLogger.info('Verification email sent to $email', context: 'AuthController');
+      if (!ref.mounted) return;
+      AppLogger.info(
+        'Verification email sent to $email',
+        context: 'AuthController',
+      );
       state = const AsyncData(null);
     }
   }
@@ -123,6 +146,7 @@ class AuthController extends _$AuthController {
   Future<void> signOut() async {
     state = const AsyncLoading();
     final result = await ref.read(authRepositoryProvider).signOut();
+    if (!ref.mounted) return;
     if (result.isFailure) {
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
@@ -132,7 +156,10 @@ class AuthController extends _$AuthController {
 
   Future<void> resendVerificationEmail() async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).sendEmailVerification();
+    final result = await ref
+        .read(authRepositoryProvider)
+        .sendEmailVerification();
+    if (!ref.mounted) return;
     if (result.isFailure) {
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
@@ -145,6 +172,7 @@ class AuthController extends _$AuthController {
   Future<void> checkEmailVerified() async {
     state = const AsyncLoading();
     final result = await ref.read(authRepositoryProvider).reloadUser();
+    if (!ref.mounted) return;
     if (result.isSuccess) {
       // Invalidate the auth user stream so authStatus recalculates
       ref.invalidate(authUserProvider);
@@ -156,7 +184,10 @@ class AuthController extends _$AuthController {
 
   Future<void> resetPassword(String email) async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
+    final result = await ref
+        .read(authRepositoryProvider)
+        .sendPasswordResetEmail(email);
+    if (!ref.mounted) return;
     if (result.isFailure) {
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
@@ -172,13 +203,24 @@ class AuthController extends _$AuthController {
       state = const AsyncData(null);
       return;
     }
-    
-    final result = await ref.read(userRepositoryProvider).updateUserRole(authUser.uid, newRole);
+
+    final result = await ref
+        .read(userRepositoryProvider)
+        .updateUserRole(authUser.uid, newRole);
     if (result.isFailure) {
-      AppLogger.error('Failed to switch role to $newRole', error: result.exceptionOrNull, context: 'AuthController');
+      if (!ref.mounted) return;
+      AppLogger.error(
+        'Failed to switch role to $newRole',
+        error: result.exceptionOrNull,
+        context: 'AuthController',
+      );
       state = AsyncError(result.exceptionOrNull!, StackTrace.current);
     } else {
-      AppLogger.info('Successfully switched role to $newRole for ${authUser.uid}', context: 'AuthController');
+      if (!ref.mounted) return;
+      AppLogger.info(
+        'Successfully switched role to $newRole for ${authUser.uid}',
+        context: 'AuthController',
+      );
       // Invalidate appUserProvider so the role changes immediately in state
       ref.invalidate(appUserProvider);
       state = const AsyncData(null);

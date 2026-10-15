@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-
 import 'dart:convert';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/app_message_state.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/cart_repository.dart';
 import '../providers/shopping_providers.dart';
@@ -14,19 +14,40 @@ import '../providers/shopping_providers.dart';
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
-  Future<void> _removeItem(BuildContext context, WidgetRef ref, String itemId) async {
+  Future<void> _removeItem(
+    BuildContext context,
+    WidgetRef ref,
+    String itemId,
+  ) async {
     final user = ref.read(authUserProvider).value;
     if (user == null) return;
-    
-    final result = await ref.read(cartRepositoryProvider).removeFromCart(
-      userId: user.uid,
-      itemId: itemId,
-    );
-    
+
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .removeFromCart(userId: user.uid, itemId: itemId);
+
     if (result.isFailure && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.exceptionOrNull!.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.exceptionOrNull!.message)));
+    }
+  }
+
+  Future<void> _updateQuantity(
+    BuildContext context,
+    WidgetRef ref,
+    String itemId,
+    int quantity,
+  ) async {
+    final user = ref.read(authUserProvider).value;
+    if (user == null) return;
+    final result = await ref
+        .read(cartRepositoryProvider)
+        .updateQuantity(userId: user.uid, itemId: itemId, quantity: quantity);
+    if (result.isFailure && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.exceptionOrNull!.message)));
     }
   }
 
@@ -36,26 +57,22 @@ class CartScreen extends ConsumerWidget {
     final total = ref.watch(cartTotalProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Cart'),
-      ),
+      appBar: AppBar(title: const Text('My Cart')),
       body: cartAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error: (err, _) => AppMessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load your cart',
+          message: 'Check your connection and try again.',
+          actionLabel: 'Retry',
+          onAction: () => ref.invalidate(cartProvider),
+        ),
         data: (items) {
           if (items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your cart is empty',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 18),
-                  ),
-                ],
-              ),
+            return const AppMessageState(
+              icon: Icons.shopping_cart_outlined,
+              title: 'Your cart is empty',
+              message: 'Browse fresh products and add something you love.',
             );
           }
 
@@ -75,7 +92,9 @@ class CartScreen extends ConsumerWidget {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: item.imageBase64 != null && item.imageBase64!.isNotEmpty
+                              child:
+                                  item.imageBase64 != null &&
+                                      item.imageBase64!.isNotEmpty
                                   ? Image.memory(
                                       base64Decode(item.imageBase64!),
                                       width: 80,
@@ -86,7 +105,10 @@ class CartScreen extends ConsumerWidget {
                                       width: 80,
                                       height: 80,
                                       color: Colors.grey[200],
-                                      child: const Icon(Icons.image, color: Colors.grey),
+                                      child: const Icon(
+                                        Icons.image,
+                                        color: Colors.grey,
+                                      ),
                                     ),
                             ),
                             const SizedBox(width: 16),
@@ -96,7 +118,10 @@ class CartScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     item.name,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -105,15 +130,53 @@ class CartScreen extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        'Qty: ${item.quantity}',
-                                        style: const TextStyle(fontWeight: FontWeight.w600),
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            tooltip: 'Decrease quantity',
+                                            icon: const Icon(
+                                              Icons.remove_circle_outline,
+                                            ),
+                                            onPressed: item.quantity > 1
+                                                ? () => _updateQuantity(
+                                                    context,
+                                                    ref,
+                                                    item.id,
+                                                    item.quantity - 1,
+                                                  )
+                                                : null,
+                                          ),
+                                          Text(
+                                            '${item.quantity}',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            tooltip: 'Increase quantity',
+                                            icon: const Icon(
+                                              Icons.add_circle_outline,
+                                            ),
+                                            onPressed: () => _updateQuantity(
+                                              context,
+                                              ref,
+                                              item.id,
+                                              item.quantity + 1,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                        onPressed: () => _removeItem(context, ref, item.id),
+                                        tooltip: 'Remove item',
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () =>
+                                            _removeItem(context, ref, item.id),
                                       ),
                                     ],
                                   ),
@@ -136,7 +199,7 @@ class CartScreen extends ConsumerWidget {
                       color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -5),
-                    )
+                    ),
                   ],
                 ),
                 child: SafeArea(
@@ -146,7 +209,10 @@ class CartScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('Total', style: TextStyle(color: Colors.grey)),
+                          const Text(
+                            'Total',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                           Text(
                             '₹${total.toStringAsFixed(2)}',
                             style: const TextStyle(
@@ -163,7 +229,10 @@ class CartScreen extends ConsumerWidget {
                           context.pushNamed(RouteNames.buyerCheckout);
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -172,7 +241,10 @@ class CartScreen extends ConsumerWidget {
                         ),
                         child: const Text(
                           'Checkout',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

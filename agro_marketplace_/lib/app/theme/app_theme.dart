@@ -149,11 +149,24 @@ class AppTheme {
       indicatorColor: AppColors.primaryContainer,
       surfaceTintColor: Colors.transparent,
       elevation: 4,
-      labelTextStyle: WidgetStatePropertyAll(AppTextStyles.textTheme.labelMedium),
+      labelTextStyle: WidgetStatePropertyAll(
+        AppTextStyles.textTheme.labelMedium,
+      ),
     ),
     dialogTheme: DialogThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+      ),
+    ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: AppColors.primary,
+      linearTrackColor: AppColors.primaryContainer,
+    ),
+    listTileTheme: const ListTileThemeData(
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      minLeadingWidth: 40,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(AppDimensions.radiusMd)),
       ),
     ),
   );

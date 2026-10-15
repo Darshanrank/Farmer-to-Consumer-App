@@ -18,6 +18,22 @@ service cloud.firestore {
       return isAuth() && request.auth.uid == uid;
     }
 
+    function validSellerOrderTransition() {
+      return
+        (resource.data.status == 'pending' &&
+          request.resource.data.status in ['accepted', 'rejected', 'cancelled']) ||
+        (resource.data.status == 'accepted' &&
+          request.resource.data.status in ['preparing', 'cancelled']) ||
+        (resource.data.status == 'preparing' &&
+          request.resource.data.status in ['packed', 'cancelled']) ||
+        (resource.data.status == 'packed' &&
+          request.resource.data.status == 'ready') ||
+        (resource.data.status == 'ready' &&
+          request.resource.data.status == 'dispatched') ||
+        (resource.data.status == 'dispatched' &&
+          request.resource.data.status == 'delivered');
+    }
+
     // USERS COLLECTION
     // Users can create their own doc (on registration) and read/update it.
     // Role and status fields are protected — cannot be changed via client update.
@@ -39,6 +55,7 @@ service cloud.firestore {
       match /cartItems/{itemId} {
         allow read, write: if isOwner(userId);
       }
+
     }
     
     // PRODUCTS COLLECTION
@@ -61,7 +78,7 @@ service cloud.firestore {
                     && request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['status', 'updatedAt'])
                     && request.resource.data.status in
-                       ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+                       ['pending', 'processing', 'partially_fulfilled', 'delivered', 'cancelled'];
     }
     
     // SELLER ORDERS (Seller View)
@@ -75,8 +92,7 @@ service cloud.firestore {
                     && resource.data.sellerId == request.auth.uid
                     && request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['status', 'updatedAt'])
-                    && request.resource.data.status in
-                       ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+                    && validSellerOrderTransition();
     }
 
     // SUPPORT REQUESTS

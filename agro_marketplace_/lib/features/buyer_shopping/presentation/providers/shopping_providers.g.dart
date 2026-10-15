@@ -52,6 +52,205 @@ final class BuyerProductsProvider
 
 String _$buyerProductsHash() => r'd134dbfed55635cc6e442f9a5f8a9e2291bd00b2';
 
+@ProviderFor(ProductListingModeController)
+final productListingModeControllerProvider =
+    ProductListingModeControllerProvider._();
+
+final class ProductListingModeControllerProvider
+    extends
+        $NotifierProvider<ProductListingModeController, ProductListingMode> {
+  ProductListingModeControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'productListingModeControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$productListingModeControllerHash();
+
+  @$internal
+  @override
+  ProductListingModeController create() => ProductListingModeController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProductListingMode value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProductListingMode>(value),
+    );
+  }
+}
+
+String _$productListingModeControllerHash() =>
+    r'9f24e1965b40cf13a7fbe27188b7f7b803b8550d';
+
+abstract class _$ProductListingModeController
+    extends $Notifier<ProductListingMode> {
+  ProductListingMode build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<ProductListingMode, ProductListingMode>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ProductListingMode, ProductListingMode>,
+              ProductListingMode,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(SelectedDeliveryAddressIndex)
+final selectedDeliveryAddressIndexProvider =
+    SelectedDeliveryAddressIndexProvider._();
+
+final class SelectedDeliveryAddressIndexProvider
+    extends $NotifierProvider<SelectedDeliveryAddressIndex, int?> {
+  SelectedDeliveryAddressIndexProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedDeliveryAddressIndexProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedDeliveryAddressIndexHash();
+
+  @$internal
+  @override
+  SelectedDeliveryAddressIndex create() => SelectedDeliveryAddressIndex();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int?>(value),
+    );
+  }
+}
+
+String _$selectedDeliveryAddressIndexHash() =>
+    r'51655cb704d6fe2fbe0dc7fd818ee1493496b280';
+
+abstract class _$SelectedDeliveryAddressIndex extends $Notifier<int?> {
+  int? build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<int?, int?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int?, int?>,
+              int?,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(selectedDeliveryAddress)
+final selectedDeliveryAddressProvider = SelectedDeliveryAddressProvider._();
+
+final class SelectedDeliveryAddressProvider
+    extends
+        $FunctionalProvider<
+          DetailedAddress?,
+          DetailedAddress?,
+          DetailedAddress?
+        >
+    with $Provider<DetailedAddress?> {
+  SelectedDeliveryAddressProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedDeliveryAddressProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedDeliveryAddressHash();
+
+  @$internal
+  @override
+  $ProviderElement<DetailedAddress?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DetailedAddress? create(Ref ref) {
+    return selectedDeliveryAddress(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DetailedAddress? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DetailedAddress?>(value),
+    );
+  }
+}
+
+String _$selectedDeliveryAddressHash() =>
+    r'897285becd7184bd0f270c2a95dfe03d8a49c919';
+
+@ProviderFor(buyerListingProducts)
+final buyerListingProductsProvider = BuyerListingProductsProvider._();
+
+final class BuyerListingProductsProvider
+    extends $FunctionalProvider<List<Product>, List<Product>, List<Product>>
+    with $Provider<List<Product>> {
+  BuyerListingProductsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'buyerListingProductsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$buyerListingProductsHash();
+
+  @$internal
+  @override
+  $ProviderElement<List<Product>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  List<Product> create(Ref ref) {
+    return buyerListingProducts(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<Product> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<Product>>(value),
+    );
+  }
+}
+
+String _$buyerListingProductsHash() =>
+    r'ae888e1e040b2496c7802135e8f9f41f84fd90fa';
+
 /// Streams the current user's cart items.
 
 @ProviderFor(cart)
@@ -141,3 +340,42 @@ final class CartTotalProvider
 }
 
 String _$cartTotalHash() => r'77fbdab63ccc97557f04bd3c8eca0dc7dafba03b';
+
+@ProviderFor(checkoutQuote)
+final checkoutQuoteProvider = CheckoutQuoteProvider._();
+
+final class CheckoutQuoteProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CheckoutQuote?>,
+          CheckoutQuote?,
+          FutureOr<CheckoutQuote?>
+        >
+    with $FutureModifier<CheckoutQuote?>, $FutureProvider<CheckoutQuote?> {
+  CheckoutQuoteProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'checkoutQuoteProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$checkoutQuoteHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CheckoutQuote?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CheckoutQuote?> create(Ref ref) {
+    return checkoutQuote(ref);
+  }
+}
+
+String _$checkoutQuoteHash() => r'774e6e68da160e3af5972c9e88f279d21b71a546';

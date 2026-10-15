@@ -27,17 +27,18 @@ class SelectedCategory extends _$SelectedCategory {
 
 @riverpod
 List<Product> filteredProducts(Ref ref) {
-  final products = ref.watch(buyerProductsProvider).value ?? [];
+  final products = ref.watch(buyerListingProductsProvider);
   final query = ref.watch(searchQueryProvider).trim().toLowerCase();
   final selectedCategory = ref.watch(selectedCategoryProvider);
 
   return products.where((product) {
-    final matchesQuery = query.isEmpty || 
+    final matchesQuery =
+        query.isEmpty ||
         product.name.toLowerCase().contains(query) ||
         product.description.toLowerCase().contains(query);
-    
-    final matchesCategory = selectedCategory == null || 
-        product.category == selectedCategory;
+
+    final matchesCategory =
+        selectedCategory == null || product.category == selectedCategory;
 
     return matchesQuery && matchesCategory;
   }).toList();

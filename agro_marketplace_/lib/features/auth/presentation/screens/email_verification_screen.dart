@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/errors/error_handler.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 
@@ -13,7 +14,8 @@ class EmailVerificationScreen extends ConsumerStatefulWidget {
 }
 
 class _EmailVerificationScreenState
-    extends ConsumerState<EmailVerificationScreen> with WidgetsBindingObserver {
+    extends ConsumerState<EmailVerificationScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -44,26 +46,27 @@ class _EmailVerificationScreenState
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
-    ref.listen<AsyncValue<void>>(
-      authControllerProvider,
-      (_, state) {
-        if (!state.isLoading && state.hasError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error.toString())),
-          );
-        } else if (!state.isLoading && !state.hasError && state.hasValue) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Verification email sent!')),
-          );
-        }
-      },
-    );
+    ref.listen<AsyncValue<void>>(authControllerProvider, (_, state) {
+      if (!state.isLoading && state.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorHandler.getUserMessage(state.error!)),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else if (!state.isLoading && !state.hasError && state.hasValue) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Verification email sent!')),
+        );
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verify Email'),
         actions: [
           IconButton(
+            tooltip: 'Sign out',
             icon: const Icon(Icons.logout),
             onPressed: () {
               ref.read(authControllerProvider.notifier).signOut();
@@ -86,17 +89,15 @@ class _EmailVerificationScreenState
               const SizedBox(height: 24),
               Text(
                 'Verify Your Email',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
                 'We have sent a verification link to your email address. Please click the link to verify your account.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[700],
-                    ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: Colors.grey[700]),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),

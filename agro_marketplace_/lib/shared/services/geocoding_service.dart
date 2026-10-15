@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -13,6 +14,7 @@ class GeocodedAddress {
   final String? district;
   final String? state;
   final String? pincode;
+  final String? countryCode;
 
   const GeocodedAddress({
     this.line1,
@@ -23,6 +25,7 @@ class GeocodedAddress {
     this.district,
     this.state,
     this.pincode,
+    this.countryCode,
   });
 
   bool get isEmpty =>
@@ -73,22 +76,30 @@ class GeocodingService {
         if (placemarks.isNotEmpty) {
           final parsed = _fromPlacemark(placemarks.first);
           if (parsed.isNotEmpty) {
-            debugPrint('GeocodingService: Resolved via native geocoder: $parsed');
+            debugPrint(
+              'GeocodingService: Resolved via native geocoder: $parsed',
+            );
             return parsed;
           }
         }
       } else {
-        debugPrint('GeocodingService: Native geocoder is not present, trying OSM fallback...');
+        debugPrint(
+          'GeocodingService: Native geocoder is not present, trying OSM fallback...',
+        );
       }
     } catch (e) {
-      debugPrint('GeocodingService: Native geocoding failed ($e), trying OSM fallback...');
+      debugPrint(
+        'GeocodingService: Native geocoding failed ($e), trying OSM fallback...',
+      );
     }
 
     // 2. Second attempt: OpenStreetMap Nominatim reverse API fallback
     try {
       final fallbackAddress = await _getFromNominatim(latitude, longitude);
       if (fallbackAddress != null && fallbackAddress.isNotEmpty) {
-        debugPrint('GeocodingService: Resolved via OSM Nominatim fallback: $fallbackAddress');
+        debugPrint(
+          'GeocodingService: Resolved via OSM Nominatim fallback: $fallbackAddress',
+        );
         return fallbackAddress;
       }
     } catch (e) {
@@ -169,6 +180,7 @@ class GeocodingService {
       district: district,
       state: state,
       pincode: pincode,
+      countryCode: place.isoCountryCode?.trim().toUpperCase(),
     );
   }
 
@@ -190,7 +202,9 @@ class GeocodingService {
         'AgroMarketplaceApp/1.0 (contact: support@agromarketplace.app)',
       );
 
-      final response = await request.close().timeout(const Duration(seconds: 6));
+      final response = await request.close().timeout(
+        const Duration(seconds: 6),
+      );
       if (response.statusCode == 200) {
         final body = await response.transform(utf8.decoder).join();
         final data = jsonDecode(body) as Map<String, dynamic>;
@@ -215,24 +229,31 @@ class GeocodingService {
           final residential = (address['residential'] as String?)?.trim();
           final line2 = suburb ?? neighbourhood ?? residential;
 
-          final village = ((address['village'] ??
-                  address['town'] ??
-                  address['city'] ??
-                  address['municipality']) as String?)
-              ?.trim();
+          final village =
+              ((address['village'] ??
+                          address['town'] ??
+                          address['city'] ??
+                          address['municipality'])
+                      as String?)
+                  ?.trim();
 
-          final taluka = ((address['taluk'] ??
-                  address['tehsil'] ??
-                  address['subdistrict']) as String?)
-              ?.trim();
+          final taluka =
+              ((address['taluk'] ?? address['tehsil'] ?? address['subdistrict'])
+                      as String?)
+                  ?.trim();
 
-          final district = ((address['state_district'] ??
-                  address['district'] ??
-                  address['county']) as String?)
-              ?.trim();
+          final district =
+              ((address['state_district'] ??
+                          address['district'] ??
+                          address['county'])
+                      as String?)
+                  ?.trim();
 
           final state = (address['state'] as String?)?.trim();
           final pincode = _cleanPincode(address['postcode'] as String?);
+          final countryCode = (address['country_code'] as String?)
+              ?.trim()
+              .toUpperCase();
 
           return GeocodedAddress(
             line1: line1,
@@ -242,6 +263,7 @@ class GeocodingService {
             district: district,
             state: state,
             pincode: pincode,
+            countryCode: countryCode,
           );
         }
       }

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SellerOrder {
 
- String get id; String get parentOrderId; String get buyerId; String get sellerId; List<CartItem> get items; double get totalAmount; String get status; String get shippingAddress; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String get parentOrderId; String get buyerId; String get sellerId; List<CartItem> get items; double get totalAmount; String get status; String get shippingAddress; String? get deliveryMode; String get paymentStatus; Map<String, dynamic>? get deliveryAddressSnapshot; String? get deliveryEstimate; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of SellerOrder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $SellerOrderCopyWith<SellerOrder> get copyWith => _$SellerOrderCopyWithImpl<Sell
 @override
 bool operator ==(Object other) {
   final _this = this as SellerOrder;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerOrder&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.parentOrderId, _this.parentOrderId) || other.parentOrderId == _this.parentOrderId)&&(identical(other.buyerId, _this.buyerId) || other.buyerId == _this.buyerId)&&(identical(other.sellerId, _this.sellerId) || other.sellerId == _this.sellerId)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.totalAmount, _this.totalAmount) || other.totalAmount == _this.totalAmount)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.shippingAddress, _this.shippingAddress) || other.shippingAddress == _this.shippingAddress)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SellerOrder&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.parentOrderId, _this.parentOrderId) || other.parentOrderId == _this.parentOrderId)&&(identical(other.buyerId, _this.buyerId) || other.buyerId == _this.buyerId)&&(identical(other.sellerId, _this.sellerId) || other.sellerId == _this.sellerId)&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.totalAmount, _this.totalAmount) || other.totalAmount == _this.totalAmount)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.shippingAddress, _this.shippingAddress) || other.shippingAddress == _this.shippingAddress)&&(identical(other.deliveryMode, _this.deliveryMode) || other.deliveryMode == _this.deliveryMode)&&(identical(other.paymentStatus, _this.paymentStatus) || other.paymentStatus == _this.paymentStatus)&&const DeepCollectionEquality().equals(other.deliveryAddressSnapshot, _this.deliveryAddressSnapshot)&&(identical(other.deliveryEstimate, _this.deliveryEstimate) || other.deliveryEstimate == _this.deliveryEstimate)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as SellerOrder;
-  return Object.hash(runtimeType,_this.id,_this.parentOrderId,_this.buyerId,_this.sellerId,const DeepCollectionEquality().hash(_this.items),_this.totalAmount,_this.status,_this.shippingAddress,_this.createdAt,_this.updatedAt);
+  return Object.hash(runtimeType,_this.id,_this.parentOrderId,_this.buyerId,_this.sellerId,const DeepCollectionEquality().hash(_this.items),_this.totalAmount,_this.status,_this.shippingAddress,_this.deliveryMode,_this.paymentStatus,const DeepCollectionEquality().hash(_this.deliveryAddressSnapshot),_this.deliveryEstimate,_this.createdAt,_this.updatedAt);
 }
 
 @override
 String toString() {
   final _this = this as SellerOrder;
-  return 'SellerOrder(id: ${_this.id}, parentOrderId: ${_this.parentOrderId}, buyerId: ${_this.buyerId}, sellerId: ${_this.sellerId}, items: ${_this.items}, totalAmount: ${_this.totalAmount}, status: ${_this.status}, shippingAddress: ${_this.shippingAddress}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
+  return 'SellerOrder(id: ${_this.id}, parentOrderId: ${_this.parentOrderId}, buyerId: ${_this.buyerId}, sellerId: ${_this.sellerId}, items: ${_this.items}, totalAmount: ${_this.totalAmount}, status: ${_this.status}, shippingAddress: ${_this.shippingAddress}, deliveryMode: ${_this.deliveryMode}, paymentStatus: ${_this.paymentStatus}, deliveryAddressSnapshot: ${_this.deliveryAddressSnapshot}, deliveryEstimate: ${_this.deliveryEstimate}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $SellerOrderCopyWith<$Res>  {
   factory $SellerOrderCopyWith(SellerOrder value, $Res Function(SellerOrder) _then) = _$SellerOrderCopyWithImpl;
 @useResult
 $Res call({
- String id, String parentOrderId, String buyerId, String sellerId, List<CartItem> items, double totalAmount, String status, String shippingAddress, DateTime? createdAt, DateTime? updatedAt
+ String id, String parentOrderId, String buyerId, String sellerId, List<CartItem> items, double totalAmount, String status, String shippingAddress, String? deliveryMode, String paymentStatus, Map<String, dynamic>? deliveryAddressSnapshot, String? deliveryEstimate, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -71,7 +71,7 @@ class _$SellerOrderCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? parentOrderId = null,Object? buyerId = null,Object? sellerId = null,Object? items = null,Object? totalAmount = null,Object? status = null,Object? shippingAddress = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? parentOrderId = null,Object? buyerId = null,Object? sellerId = null,Object? items = null,Object? totalAmount = null,Object? status = null,Object? shippingAddress = null,Object? deliveryMode = freezed,Object? paymentStatus = null,Object? deliveryAddressSnapshot = freezed,Object? deliveryEstimate = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(SellerOrder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,parentOrderId: null == parentOrderId ? _self.parentOrderId : parentOrderId // ignore: cast_nullable_to_non_nullable
@@ -81,7 +81,11 @@ as String,items: null == items ? _self.items : items // ignore: cast_nullable_to
 as List<CartItem>,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as double,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,shippingAddress: null == shippingAddress ? _self.shippingAddress : shippingAddress // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,deliveryMode: freezed == deliveryMode ? _self.deliveryMode : deliveryMode // ignore: cast_nullable_to_non_nullable
+as String?,paymentStatus: null == paymentStatus ? _self.paymentStatus : paymentStatus // ignore: cast_nullable_to_non_nullable
+as String,deliveryAddressSnapshot: freezed == deliveryAddressSnapshot ? _self.deliveryAddressSnapshot : deliveryAddressSnapshot // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,deliveryEstimate: freezed == deliveryEstimate ? _self.deliveryEstimate : deliveryEstimate // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -168,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  String? deliveryMode,  String paymentStatus,  Map<String, dynamic>? deliveryAddressSnapshot,  String? deliveryEstimate,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SellerOrder() when $default != null:
-return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.deliveryMode,_that.paymentStatus,_that.deliveryAddressSnapshot,_that.deliveryEstimate,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -189,10 +193,10 @@ return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  String? deliveryMode,  String paymentStatus,  Map<String, dynamic>? deliveryAddressSnapshot,  String? deliveryEstimate,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrder():
-return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.deliveryMode,_that.paymentStatus,_that.deliveryAddressSnapshot,_that.deliveryEstimate,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +213,10 @@ return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String parentOrderId,  String buyerId,  String sellerId,  List<CartItem> items,  double totalAmount,  String status,  String shippingAddress,  String? deliveryMode,  String paymentStatus,  Map<String, dynamic>? deliveryAddressSnapshot,  String? deliveryEstimate,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SellerOrder() when $default != null:
-return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.items,_that.totalAmount,_that.status,_that.shippingAddress,_that.deliveryMode,_that.paymentStatus,_that.deliveryAddressSnapshot,_that.deliveryEstimate,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -224,7 +228,7 @@ return $default(_that.id,_that.parentOrderId,_that.buyerId,_that.sellerId,_that.
 @JsonSerializable()
 
 class _SellerOrder extends SellerOrder {
-  const _SellerOrder({required this.id, required this.parentOrderId, required this.buyerId, required this.sellerId, required  List<CartItem> items, required this.totalAmount, required this.status, required this.shippingAddress, this.createdAt, this.updatedAt}): _items = items,super._();
+  const _SellerOrder({required this.id, required this.parentOrderId, required this.buyerId, required this.sellerId, required  List<CartItem> items, required this.totalAmount, required this.status, required this.shippingAddress, this.deliveryMode, this.paymentStatus = 'pending',  Map<String, dynamic>? deliveryAddressSnapshot, this.deliveryEstimate, this.createdAt, this.updatedAt}): _items = items,_deliveryAddressSnapshot = deliveryAddressSnapshot,super._();
   factory _SellerOrder.fromJson(Map<String, dynamic> json) => _$SellerOrderFromJson(json);
 
 @override final  String id;
@@ -241,6 +245,18 @@ class _SellerOrder extends SellerOrder {
 @override final  double totalAmount;
 @override final  String status;
 @override final  String shippingAddress;
+@override final  String? deliveryMode;
+@override@JsonKey() final  String paymentStatus;
+ final  Map<String, dynamic>? _deliveryAddressSnapshot;
+@override Map<String, dynamic>? get deliveryAddressSnapshot {
+  final value = _deliveryAddressSnapshot;
+  if (value == null) return null;
+  if (_deliveryAddressSnapshot is EqualUnmodifiableMapView) return _deliveryAddressSnapshot;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+@override final  String? deliveryEstimate;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
 
@@ -257,18 +273,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.parentOrderId, parentOrderId) || other.parentOrderId == parentOrderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.shippingAddress, shippingAddress) || other.shippingAddress == shippingAddress)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SellerOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.parentOrderId, parentOrderId) || other.parentOrderId == parentOrderId)&&(identical(other.buyerId, buyerId) || other.buyerId == buyerId)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.shippingAddress, shippingAddress) || other.shippingAddress == shippingAddress)&&(identical(other.deliveryMode, deliveryMode) || other.deliveryMode == deliveryMode)&&(identical(other.paymentStatus, paymentStatus) || other.paymentStatus == paymentStatus)&&const DeepCollectionEquality().equals(other.deliveryAddressSnapshot, _deliveryAddressSnapshot)&&(identical(other.deliveryEstimate, deliveryEstimate) || other.deliveryEstimate == deliveryEstimate)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,parentOrderId,buyerId,sellerId,const DeepCollectionEquality().hash(_items),totalAmount,status,shippingAddress,createdAt,updatedAt);
+    return Object.hash(runtimeType,id,parentOrderId,buyerId,sellerId,const DeepCollectionEquality().hash(_items),totalAmount,status,shippingAddress,deliveryMode,paymentStatus,const DeepCollectionEquality().hash(_deliveryAddressSnapshot),deliveryEstimate,createdAt,updatedAt);
 }
 
 @override
 String toString() {
-    return 'SellerOrder(id: $id, parentOrderId: $parentOrderId, buyerId: $buyerId, sellerId: $sellerId, items: $items, totalAmount: $totalAmount, status: $status, shippingAddress: $shippingAddress, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'SellerOrder(id: $id, parentOrderId: $parentOrderId, buyerId: $buyerId, sellerId: $sellerId, items: $items, totalAmount: $totalAmount, status: $status, shippingAddress: $shippingAddress, deliveryMode: $deliveryMode, paymentStatus: $paymentStatus, deliveryAddressSnapshot: $deliveryAddressSnapshot, deliveryEstimate: $deliveryEstimate, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -279,7 +295,7 @@ abstract mixin class _$SellerOrderCopyWith<$Res> implements $SellerOrderCopyWith
   factory _$SellerOrderCopyWith(_SellerOrder value, $Res Function(_SellerOrder) _then) = __$SellerOrderCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String parentOrderId, String buyerId, String sellerId, List<CartItem> items, double totalAmount, String status, String shippingAddress, DateTime? createdAt, DateTime? updatedAt
+ String id, String parentOrderId, String buyerId, String sellerId, List<CartItem> items, double totalAmount, String status, String shippingAddress, String? deliveryMode, String paymentStatus, Map<String, dynamic>? deliveryAddressSnapshot, String? deliveryEstimate, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -296,7 +312,7 @@ class __$SellerOrderCopyWithImpl<$Res>
 
 /// Create a copy of SellerOrder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? parentOrderId = null,Object? buyerId = null,Object? sellerId = null,Object? items = null,Object? totalAmount = null,Object? status = null,Object? shippingAddress = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? parentOrderId = null,Object? buyerId = null,Object? sellerId = null,Object? items = null,Object? totalAmount = null,Object? status = null,Object? shippingAddress = null,Object? deliveryMode = freezed,Object? paymentStatus = null,Object? deliveryAddressSnapshot = freezed,Object? deliveryEstimate = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_SellerOrder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,parentOrderId: null == parentOrderId ? _self.parentOrderId : parentOrderId // ignore: cast_nullable_to_non_nullable
@@ -306,7 +322,11 @@ as String,items: null == items ? _self._items : items // ignore: cast_nullable_t
 as List<CartItem>,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as double,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,shippingAddress: null == shippingAddress ? _self.shippingAddress : shippingAddress // ignore: cast_nullable_to_non_nullable
-as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,deliveryMode: freezed == deliveryMode ? _self.deliveryMode : deliveryMode // ignore: cast_nullable_to_non_nullable
+as String?,paymentStatus: null == paymentStatus ? _self.paymentStatus : paymentStatus // ignore: cast_nullable_to_non_nullable
+as String,deliveryAddressSnapshot: freezed == deliveryAddressSnapshot ? _self._deliveryAddressSnapshot : deliveryAddressSnapshot // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,deliveryEstimate: freezed == deliveryEstimate ? _self.deliveryEstimate : deliveryEstimate // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

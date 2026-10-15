@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/app_message_state.dart';
 import '../../domain/entities/seller_order.dart';
 import '../providers/seller_orders_provider.dart';
 
@@ -14,7 +15,8 @@ class SellerOrdersScreen extends ConsumerStatefulWidget {
   ConsumerState<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
 }
 
-class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> with SingleTickerProviderStateMixin {
+class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -50,11 +52,34 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen> with Si
       ),
       body: ordersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => AppMessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load orders',
+          message: 'Check your connection and try again.',
+          actionLabel: 'Retry',
+          onAction: () => ref.invalidate(sellerOrdersProvider),
+        ),
         data: (orders) {
           final newOrders = orders.where((o) => o.status == 'pending').toList();
-          final activeOrders = orders.where((o) => o.status == 'processing' || o.status == 'shipped').toList();
-          final completedOrders = orders.where((o) => o.status == 'delivered' || o.status == 'cancelled').toList();
+          final activeOrders = orders
+              .where(
+                (o) => {
+                  'accepted',
+                  'preparing',
+                  'packed',
+                  'ready',
+                  'dispatched',
+                }.contains(o.status),
+              )
+              .toList();
+          final completedOrders = orders
+              .where(
+                (o) =>
+                    o.status == 'delivered' ||
+                    o.status == 'cancelled' ||
+                    o.status == 'rejected',
+              )
+              .toList();
 
           return TabBarView(
             controller: _tabController,
@@ -78,7 +103,11 @@ class _OrderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (orders.isEmpty) {
-      return const Center(child: Text('No orders found.'));
+      return const AppMessageState(
+        icon: Icons.receipt_long_outlined,
+        title: 'No orders in this view',
+        message: 'New orders and updates will appear here automatically.',
+      );
     }
 
     return ListView.builder(
@@ -133,10 +162,12 @@ class _OrderList extends StatelessWidget {
     switch (status) {
       case 'pending':
         return Colors.orange;
-      case 'processing':
+      case 'accepted':
+      case 'preparing':
+      case 'packed':
+      case 'ready':
+      case 'dispatched':
         return Colors.blue;
-      case 'shipped':
-        return Colors.purple;
       case 'delivered':
         return Colors.green;
       case 'cancelled':

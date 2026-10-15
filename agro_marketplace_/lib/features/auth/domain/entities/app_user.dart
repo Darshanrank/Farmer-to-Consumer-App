@@ -38,9 +38,22 @@ abstract class AppUser with _$AppUser {
     String? phone,
     String? photoUrl,
     String? businessName,
+
     /// Structured address stored as a map (see [DetailedAddress]).
     /// Backward compatible: old plain-string values are auto-converted via [AddressJsonConverter].
     @AddressJsonConverter() Map<String, dynamic>? address,
+    @Default(<Map<String, dynamic>>[])
+    List<Map<String, dynamic>> savedAddresses,
+    @Default(false) bool fastDeliveryEnabled,
+    @Default(false) bool regularDeliveryEnabled,
+    Map<String, dynamic>? deliveryOrigin,
+    String? deliveryCountryCode,
+    int? fastDeliveryMinDays,
+    int? fastDeliveryMaxDays,
+    int? regularDeliveryMinDays,
+    int? regularDeliveryMaxDays,
+    double? fastDeliveryFee,
+    double? regularDeliveryFee,
     @Default('active') String status,
     DateTime? createdAt,
     DateTime? lastLoginAt,
@@ -49,6 +62,6 @@ abstract class AppUser with _$AppUser {
   bool get isSeller => role == 'seller';
   bool get isBuyer => role == 'buyer';
 
-  factory AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
+  factory AppUser.fromJson(Map<String, dynamic> json) =>
+      _$AppUserFromJson(json);
 }
-

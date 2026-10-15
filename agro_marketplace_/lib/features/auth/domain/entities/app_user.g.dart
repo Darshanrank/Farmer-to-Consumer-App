@@ -16,6 +16,21 @@ _AppUser _$AppUserFromJson(Map<String, dynamic> json) => _AppUser(
   photoUrl: json['photoUrl'] as String?,
   businessName: json['businessName'] as String?,
   address: const AddressJsonConverter().fromJson(json['address']),
+  savedAddresses:
+      (json['savedAddresses'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList() ??
+      const <Map<String, dynamic>>[],
+  fastDeliveryEnabled: json['fastDeliveryEnabled'] as bool? ?? false,
+  regularDeliveryEnabled: json['regularDeliveryEnabled'] as bool? ?? false,
+  deliveryOrigin: json['deliveryOrigin'] as Map<String, dynamic>?,
+  deliveryCountryCode: json['deliveryCountryCode'] as String?,
+  fastDeliveryMinDays: (json['fastDeliveryMinDays'] as num?)?.toInt(),
+  fastDeliveryMaxDays: (json['fastDeliveryMaxDays'] as num?)?.toInt(),
+  regularDeliveryMinDays: (json['regularDeliveryMinDays'] as num?)?.toInt(),
+  regularDeliveryMaxDays: (json['regularDeliveryMaxDays'] as num?)?.toInt(),
+  fastDeliveryFee: (json['fastDeliveryFee'] as num?)?.toDouble(),
+  regularDeliveryFee: (json['regularDeliveryFee'] as num?)?.toDouble(),
   status: json['status'] as String? ?? 'active',
   createdAt: json['createdAt'] == null
       ? null
@@ -35,6 +50,17 @@ Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
   'photoUrl': instance.photoUrl,
   'businessName': instance.businessName,
   'address': const AddressJsonConverter().toJson(instance.address),
+  'savedAddresses': instance.savedAddresses,
+  'fastDeliveryEnabled': instance.fastDeliveryEnabled,
+  'regularDeliveryEnabled': instance.regularDeliveryEnabled,
+  'deliveryOrigin': instance.deliveryOrigin,
+  'deliveryCountryCode': instance.deliveryCountryCode,
+  'fastDeliveryMinDays': instance.fastDeliveryMinDays,
+  'fastDeliveryMaxDays': instance.fastDeliveryMaxDays,
+  'regularDeliveryMinDays': instance.regularDeliveryMinDays,
+  'regularDeliveryMaxDays': instance.regularDeliveryMaxDays,
+  'fastDeliveryFee': instance.fastDeliveryFee,
+  'regularDeliveryFee': instance.regularDeliveryFee,
   'status': instance.status,
   'createdAt': instance.createdAt?.toIso8601String(),
   'lastLoginAt': instance.lastLoginAt?.toIso8601String(),

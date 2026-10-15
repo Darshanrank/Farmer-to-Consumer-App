@@ -36,7 +36,10 @@ class SellerProfileScreen extends ConsumerWidget {
                 // Header
                 Container(
                   color: AppColors.primaryDark,
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 32,
+                    horizontal: 16,
+                  ),
                   child: Column(
                     children: [
                       CircleAvatar(
@@ -88,7 +91,10 @@ class SellerProfileScreen extends ConsumerWidget {
 
                 // Role Switcher Card
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
@@ -103,7 +109,10 @@ class SellerProfileScreen extends ConsumerWidget {
                           color: Colors.green.shade100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.store, color: AppColors.primaryDark),
+                        child: const Icon(
+                          Icons.store,
+                          color: AppColors.primaryDark,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -112,11 +121,17 @@ class SellerProfileScreen extends ConsumerWidget {
                           children: [
                             const Text(
                               'Account Type: Seller (Farmer)',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                             Text(
                               'Need to browse and buy farm produce?',
-                              style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -126,10 +141,17 @@ class SellerProfileScreen extends ConsumerWidget {
                         label: const Text('Buyer Mode'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primaryDark,
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        onPressed: () => _confirmSwitchRole(context, ref, 'buyer'),
+                        onPressed: () =>
+                            _confirmSwitchRole(context, ref, 'buyer'),
                       ),
                     ],
                   ),
@@ -142,7 +164,14 @@ class SellerProfileScreen extends ConsumerWidget {
                   icon: Icons.store,
                   title: 'Business Settings',
                   subtitle: user.businessName ?? 'Tap to set up your business',
-                  onTap: () => context.pushNamed(RouteNames.sellerBusinessProfile),
+                  onTap: () =>
+                      context.pushNamed(RouteNames.sellerBusinessProfile),
+                ),
+                _tile(
+                  icon: Icons.local_shipping_outlined,
+                  title: 'Delivery Settings',
+                  subtitle: 'Configure Fast and Regular Delivery',
+                  onTap: () => context.pushNamed(RouteNames.sellerDelivery),
                 ),
                 _tile(
                   icon: Icons.person_outline,
@@ -170,12 +199,16 @@ class SellerProfileScreen extends ConsumerWidget {
                   title: 'Delete Account',
                   textColor: Colors.red,
                   iconColor: Colors.red,
-                  onTap: () => _showDeleteAccountDialog(context, ref, user.email),
+                  onTap: () =>
+                      _showDeleteAccountDialog(context, ref, user.email),
                 ),
 
                 const SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
                   child: OutlinedButton.icon(
                     icon: authState.isLoading
                         ? const SizedBox(
@@ -184,11 +217,16 @@ class SellerProfileScreen extends ConsumerWidget {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.logout, color: Colors.red),
-                    label: const Text('Sign Out', style: TextStyle(color: Colors.red)),
+                    label: const Text(
+                      'Sign Out',
+                      style: TextStyle(color: Colors.red),
+                    ),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.red),
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: authState.isLoading
                         ? null
@@ -231,12 +269,11 @@ class SellerProfileScreen extends ConsumerWidget {
       leading: Icon(icon, color: iconColor ?? Colors.grey[700]),
       title: Text(
         title,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          color: textColor,
-        ),
+        style: TextStyle(fontWeight: FontWeight.w500, color: textColor),
       ),
-      subtitle: subtitle != null ? Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis) : null,
+      subtitle: subtitle != null
+          ? Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis)
+          : null,
       trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );
@@ -265,7 +302,11 @@ class SellerProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref, String email) {
+  void _showDeleteAccountDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String email,
+  ) {
     final passwordController = TextEditingController();
     bool isLoading = false;
 
@@ -311,7 +352,9 @@ class SellerProfileScreen extends ConsumerWidget {
                   : () async {
                       if (passwordController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter your password')),
+                          const SnackBar(
+                            content: Text('Please enter your password'),
+                          ),
                         );
                         return;
                       }
@@ -327,7 +370,11 @@ class SellerProfileScreen extends ConsumerWidget {
                           if (ctx.mounted) {
                             setState(() => isLoading = false);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Wrong password: ${reAuthResult.exceptionOrNull?.message}')),
+                              SnackBar(
+                                content: Text(
+                                  'Wrong password: ${reAuthResult.exceptionOrNull?.message}',
+                                ),
+                              ),
                             );
                           }
                           return;
@@ -336,7 +383,9 @@ class SellerProfileScreen extends ConsumerWidget {
                         // Step 2: Delete user Firestore document
                         final currentUser = authRepo.currentUser;
                         if (currentUser != null) {
-                          await ref.read(userRepositoryProvider).deleteUserDocument(currentUser.uid);
+                          await ref
+                              .read(userRepositoryProvider)
+                              .deleteUserDocument(currentUser.uid);
                         }
 
                         // Step 3: Delete Firebase Auth account
@@ -346,9 +395,9 @@ class SellerProfileScreen extends ConsumerWidget {
                       } catch (e) {
                         if (ctx.mounted) {
                           setState(() => isLoading = false);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
                         }
                       }
                     },
@@ -367,12 +416,18 @@ class SellerProfileScreen extends ConsumerWidget {
   }
 }
 
-Future<void> _confirmSwitchRole(BuildContext context, WidgetRef ref, String targetRole) async {
+Future<void> _confirmSwitchRole(
+  BuildContext context,
+  WidgetRef ref,
+  String targetRole,
+) async {
   final isTargetSeller = targetRole == 'seller';
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text(isTargetSeller ? 'Switch to Seller Mode?' : 'Switch to Buyer Mode?'),
+      title: Text(
+        isTargetSeller ? 'Switch to Seller Mode?' : 'Switch to Buyer Mode?',
+      ),
       content: Text(
         isTargetSeller
             ? 'You will switch to Seller mode where you can list products, manage farm inventory, and fulfill orders.'
@@ -396,7 +451,9 @@ Future<void> _confirmSwitchRole(BuildContext context, WidgetRef ref, String targ
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Switched to ${isTargetSeller ? 'Seller (Farmer)' : 'Buyer'} mode'),
+          content: Text(
+            'Switched to ${isTargetSeller ? 'Seller (Farmer)' : 'Buyer'} mode',
+          ),
           backgroundColor: Colors.green,
         ),
       );

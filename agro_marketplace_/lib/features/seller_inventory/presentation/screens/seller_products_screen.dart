@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/app_message_state.dart';
 import '../../data/product_repository.dart';
 import '../../domain/entities/product.dart';
 import '../providers/inventory_providers.dart';
@@ -16,47 +17,22 @@ class SellerProductsScreen extends ConsumerWidget {
     final productsAsync = ref.watch(sellerProductsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Products'),
-      ),
+      appBar: AppBar(title: const Text('My Products')),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 12),
-              Text('Error loading products', style: TextStyle(color: Colors.grey[700])),
-              const SizedBox(height: 8),
-              Text(err.toString(), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(sellerProductsProvider),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
+        error: (err, stack) => AppMessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load products',
+          message: 'Check your connection and try again.',
+          actionLabel: 'Retry',
+          onAction: () => ref.invalidate(sellerProductsProvider),
         ),
         data: (products) {
           if (products.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No products yet',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap the + button to add your first product.',
-                    style: TextStyle(color: Colors.grey[500]),
-                  ),
-                ],
-              ),
+            return const AppMessageState(
+              icon: Icons.inventory_2_outlined,
+              title: 'No products yet',
+              message: 'Add your first product to start selling.',
             );
           }
 
@@ -94,7 +70,11 @@ class SellerProductsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, Product product) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    Product product,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -117,7 +97,9 @@ class SellerProductsScreen extends ConsumerWidget {
 
     if (confirmed != true) return;
 
-    final result = await ref.read(productRepositoryProvider).deleteProduct(product.id);
+    final result = await ref
+        .read(productRepositoryProvider)
+        .deleteProduct(product.id);
 
     if (!context.mounted) return;
 
@@ -133,17 +115,28 @@ class SellerProductsScreen extends ConsumerWidget {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Delete failed: ${result.exceptionOrNull?.message ?? result.exceptionOrNull}'),
+          content: Text(
+            'Delete failed: ${result.exceptionOrNull?.message ?? result.exceptionOrNull}',
+          ),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  Future<void> _toggleStatus(BuildContext context, WidgetRef ref, Product product) async {
+  Future<void> _toggleStatus(
+    BuildContext context,
+    WidgetRef ref,
+    Product product,
+  ) async {
     final newStatus = product.status == 'active' ? 'hidden' : 'active';
-    final updated = product.copyWith(status: newStatus, updatedAt: DateTime.now());
-    final result = await ref.read(productRepositoryProvider).updateProduct(updated);
+    final updated = product.copyWith(
+      status: newStatus,
+      updatedAt: DateTime.now(),
+    );
+    final result = await ref
+        .read(productRepositoryProvider)
+        .updateProduct(updated);
 
     if (!context.mounted) return;
 
@@ -159,7 +152,9 @@ class SellerProductsScreen extends ConsumerWidget {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Update failed: ${result.exceptionOrNull?.message ?? result.exceptionOrNull}'),
+          content: Text(
+            'Update failed: ${result.exceptionOrNull?.message ?? result.exceptionOrNull}',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -201,7 +196,8 @@ class _ProductCard extends StatelessWidget {
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stack) => _imagePlaceholder(),
+                        errorBuilder: (context, error, stack) =>
+                            _imagePlaceholder(),
                       )
                     : _imagePlaceholder(),
               ),
@@ -233,7 +229,9 @@ class _ProductCard extends StatelessWidget {
                       spacing: 6,
                       children: [
                         _badge(
-                          product.isOutOfStock ? 'Out of Stock' : 'In Stock (${product.stockQuantity})',
+                          product.isOutOfStock
+                              ? 'Out of Stock'
+                              : 'In Stock (${product.stockQuantity})',
                           product.isOutOfStock ? Colors.red : Colors.green,
                         ),
                         if (product.status == 'hidden')
@@ -277,11 +275,17 @@ class _ProductCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          product.status == 'active' ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          product.status == 'active'
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
-                        Text(product.status == 'active' ? 'Hide Product' : 'Show Product'),
+                        Text(
+                          product.status == 'active'
+                              ? 'Hide Product'
+                              : 'Show Product',
+                        ),
                       ],
                     ),
                   ),

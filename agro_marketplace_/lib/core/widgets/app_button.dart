@@ -32,15 +32,18 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spinnerColor =
+        foregroundColor ??
+        (isOutlined
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onPrimary);
     final child = isLoading
         ? SizedBox(
             height: 20,
             width: 20,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
-              ),
+              valueColor: AlwaysStoppedAnimation<Color>(spinnerColor),
             ),
           )
         : Row(

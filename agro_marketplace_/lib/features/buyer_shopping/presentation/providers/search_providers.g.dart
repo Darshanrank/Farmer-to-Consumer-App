@@ -151,4 +151,4 @@ final class FilteredProductsProvider
   }
 }
 
-String _$filteredProductsHash() => r'4419ef93fc9ed80a1e02e3fd3b86adfc2330e5d7';
+String _$filteredProductsHash() => r'543cb162780a3d2084602fc2d12b2139bcded2ea';

@@ -1,17 +1,20 @@
 /// Delivery type for orders and seller configuration.
 enum DeliveryType {
-  instant('instant', 'Instant Delivery'),
+  fast('fast', 'Fast Delivery'),
   regular('regular', 'Regular Delivery');
 
   final String value;
   final String displayName;
   const DeliveryType(this.value, this.displayName);
 
-  static DeliveryType fromString(String value) =>
-      DeliveryType.values.firstWhere(
-        (d) => d.value == value,
-        orElse: () => DeliveryType.regular,
-      );
+  static DeliveryType fromString(String value) {
+    final normalized = value.trim().toLowerCase();
+    if (normalized == 'instant') return DeliveryType.fast;
+    return DeliveryType.values.firstWhere(
+      (d) => d.value == normalized,
+      orElse: () => DeliveryType.regular,
+    );
+  }
 }
 
 /// Seller type classification.
@@ -26,11 +29,10 @@ enum SellerType {
   final String displayName;
   const SellerType(this.value, this.displayName);
 
-  static SellerType fromString(String value) =>
-      SellerType.values.firstWhere(
-        (s) => s.value == value,
-        orElse: () => SellerType.individual,
-      );
+  static SellerType fromString(String value) => SellerType.values.firstWhere(
+    (s) => s.value == value,
+    orElse: () => SellerType.individual,
+  );
 }
 
 /// Listing status for seller product listings.
@@ -46,11 +48,8 @@ enum ListingStatus {
   final String displayName;
   const ListingStatus(this.value, this.displayName);
 
-  static ListingStatus fromString(String value) =>
-      ListingStatus.values.firstWhere(
-        (s) => s.value == value,
-        orElse: () => ListingStatus.draft,
-      );
+  static ListingStatus fromString(String value) => ListingStatus.values
+      .firstWhere((s) => s.value == value, orElse: () => ListingStatus.draft);
 }
 
 /// Inventory transaction types.

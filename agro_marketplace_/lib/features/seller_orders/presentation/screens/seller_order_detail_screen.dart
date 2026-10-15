@@ -8,25 +8,33 @@ import '../providers/order_status_controller.dart';
 class SellerOrderDetailScreen extends ConsumerWidget {
   final String orderId;
 
-  const SellerOrderDetailScreen({
-    super.key,
-    required this.orderId,
-  });
+  const SellerOrderDetailScreen({super.key, required this.orderId});
 
-  Future<void> _updateStatus(BuildContext context, WidgetRef ref, String newStatus) async {
-    final result = await ref.read(orderStatusControllerProvider.notifier).updateStatus(
-      orderId: orderId,
-      newStatus: newStatus,
-    );
-    
+  Future<void> _updateStatus(
+    BuildContext context,
+    WidgetRef ref,
+    String newStatus,
+  ) async {
+    final result = await ref
+        .read(orderStatusControllerProvider.notifier)
+        .updateStatus(orderId: orderId, newStatus: newStatus);
+
     if (context.mounted) {
       if (result.isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Status updated to $newStatus'), backgroundColor: Colors.green),
+          SnackBar(
+            content: Text('Status updated to $newStatus'),
+            backgroundColor: Colors.green,
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result.exceptionOrNull?.message ?? 'Failed to update status'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              result.exceptionOrNull?.message ?? 'Failed to update status',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -38,9 +46,7 @@ class SellerOrderDetailScreen extends ConsumerWidget {
     final isUpdating = ref.watch(orderStatusControllerProvider).isLoading;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Order Details'),
-      ),
+      appBar: AppBar(title: const Text('Order Details')),
       body: ordersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
@@ -68,10 +74,19 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                     children: [
                       Text(
                         'Order #${order.id.substring(0, 8)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text('Status: ${order.status.toUpperCase()}'),
+                      if (order.deliveryMode != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'Delivery: ${order.deliveryMode == 'fast' ? 'Fast Delivery' : 'Regular Delivery'}',
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Text(
                         'Total: ₹${order.totalAmount.toStringAsFixed(2)}',
@@ -81,6 +96,8 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                           fontSize: 16,
                         ),
                       ),
+                      if (order.deliveryEstimate != null)
+                        Text('Estimated delivery: ${order.deliveryEstimate}'),
                     ],
                   ),
                 ),
@@ -104,14 +121,21 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 16),
-                ...order.items.map((item) => Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Qty: ${item.quantity}  |  ₹${item.price} / ${item.unit}'),
-                        trailing: Text('₹${item.totalPrice.toStringAsFixed(2)}'),
+                ...order.items.map(
+                  (item) => Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text(
+                        item.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    )),
+                      subtitle: Text(
+                        'Qty: ${item.quantity}  |  ₹${item.price} / ${item.unit}',
+                      ),
+                      trailing: Text('₹${item.totalPrice.toStringAsFixed(2)}'),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 // Actions
@@ -120,25 +144,48 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                 else ...[
                   if (order.status == 'pending')
                     ElevatedButton(
-                      onPressed: () => _updateStatus(context, ref, 'processing'),
-                      child: const Text('Accept & Start Processing'),
+                      onPressed: () => _updateStatus(context, ref, 'accepted'),
+                      child: const Text('Accept Order'),
                     ),
-                  if (order.status == 'processing')
+                  if (order.status == 'accepted')
                     ElevatedButton(
-                      onPressed: () => _updateStatus(context, ref, 'shipped'),
-                      child: const Text('Mark as Shipped'),
+                      onPressed: () => _updateStatus(context, ref, 'preparing'),
+                      child: const Text('Start Preparing'),
                     ),
-                  if (order.status == 'shipped')
+                  if (order.status == 'preparing')
+                    ElevatedButton(
+                      onPressed: () => _updateStatus(context, ref, 'packed'),
+                      child: const Text('Mark as Packed'),
+                    ),
+                  if (order.status == 'packed')
+                    ElevatedButton(
+                      onPressed: () => _updateStatus(context, ref, 'ready'),
+                      child: const Text('Ready for Dispatch'),
+                    ),
+                  if (order.status == 'ready')
+                    ElevatedButton(
+                      onPressed: () =>
+                          _updateStatus(context, ref, 'dispatched'),
+                      child: const Text('Dispatch Order'),
+                    ),
+                  if (order.status == 'dispatched')
                     ElevatedButton(
                       onPressed: () => _updateStatus(context, ref, 'delivered'),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text('Mark as Delivered'),
                     ),
-                  if (order.status == 'pending') ...[
+                  if (order.status == 'pending' ||
+                      order.status == 'accepted' ||
+                      order.status == 'preparing') ...[
                     const SizedBox(height: 12),
                     OutlinedButton(
                       onPressed: () => _updateStatus(context, ref, 'cancelled'),
-                      style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
                       child: const Text('Decline Order'),
                     ),
                   ],

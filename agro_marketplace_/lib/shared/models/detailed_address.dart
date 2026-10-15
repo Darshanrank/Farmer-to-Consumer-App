@@ -14,10 +14,14 @@ import 'location.dart';
 class DetailedAddress extends Equatable {
   final Address address;
   final GeoLocation? location;
+  final String? recipientName;
+  final String? phoneNumber;
 
   const DetailedAddress({
     required this.address,
     this.location,
+    this.recipientName,
+    this.phoneNumber,
   });
 
   /// Creates a [DetailedAddress] from a Firestore map.
@@ -32,6 +36,8 @@ class DetailedAddress extends Equatable {
     return DetailedAddress(
       address: address,
       location: locationData != null ? GeoLocation.fromMap(locationData) : null,
+      recipientName: map['recipientName'] as String?,
+      phoneNumber: map['phoneNumber'] as String?,
     );
   }
 
@@ -41,11 +47,7 @@ class DetailedAddress extends Equatable {
   /// that stored address as a single string field.
   factory DetailedAddress.fromString(String addressString) {
     return DetailedAddress(
-      address: Address(
-        line1: addressString,
-        state: '',
-        pincode: '',
-      ),
+      address: Address(line1: addressString, state: '', pincode: ''),
     );
   }
 
@@ -57,6 +59,8 @@ class DetailedAddress extends Equatable {
     return {
       ...address.toMap(),
       if (location != null) 'location': location!.toMap(),
+      if (recipientName != null) 'recipientName': recipientName,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
     };
   }
 
@@ -72,15 +76,19 @@ class DetailedAddress extends Equatable {
   DetailedAddress copyWith({
     Address? address,
     GeoLocation? location,
+    String? recipientName,
+    String? phoneNumber,
   }) {
     return DetailedAddress(
       address: address ?? this.address,
       location: location ?? this.location,
+      recipientName: recipientName ?? this.recipientName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 
   @override
-  List<Object?> get props => [address, location];
+  List<Object?> get props => [address, location, recipientName, phoneNumber];
 
   @override
   String toString() =>

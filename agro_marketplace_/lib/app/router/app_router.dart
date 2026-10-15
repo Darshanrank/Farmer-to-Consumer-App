@@ -15,6 +15,8 @@ import '../../features/buyer_shopping/presentation/screens/cart_screen.dart';
 import '../../features/buyer_shopping/presentation/screens/checkout_screen.dart';
 import '../../features/buyer_shopping/presentation/screens/product_detail_screen.dart';
 import '../../features/buyer_profile/presentation/screens/buyer_profile_screen.dart';
+import '../../features/buyer_profile/presentation/screens/saved_addresses_screen.dart';
+import '../../features/buyer_profile/presentation/screens/saved_address_form_screen.dart';
 import '../../features/profile_management/presentation/screens/edit_profile_screen.dart';
 import '../../features/buyer_shopping/presentation/screens/buyer_search_screen.dart';
 import '../../features/buyer_shopping/presentation/screens/buyer_orders_screen.dart';
@@ -28,6 +30,7 @@ import '../../features/seller_orders/presentation/screens/seller_orders_screen.d
 import '../../features/seller_orders/presentation/screens/seller_order_detail_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_profile_screen.dart';
 import '../../features/seller_profile/presentation/screens/business_settings_screen.dart';
+import '../../features/seller_profile/presentation/screens/delivery_settings_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_settings_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_help_screen.dart';
 import 'route_names.dart';
@@ -56,13 +59,17 @@ GoRouter appRouter(Ref ref) {
       switch (authStatus) {
         case AuthStatus.initial:
         case AuthStatus.authenticating:
-          if (authStatus == AuthStatus.initial && !isSplash) return '/splash';
+          if (authStatus == AuthStatus.initial && !isSplash) {
+            return '/splash';
+          }
           return null;
         case AuthStatus.unauthenticated:
           if (!isAuthRoute) return '/login';
           return null;
         case AuthStatus.emailUnverified:
-          if (state.matchedLocation != '/email-verification') return '/email-verification';
+          if (state.matchedLocation != '/email-verification') {
+            return '/email-verification';
+          }
           return null;
         case AuthStatus.authenticated:
           // If appUser profile is not yet loaded, stay on splash screen so we don't route to the wrong role
@@ -74,7 +81,9 @@ GoRouter appRouter(Ref ref) {
           final isBuyer = appUser.role == 'buyer';
 
           // When coming from splash, auth routes, or email verification, redirect to home screen
-          if (isSplash || isAuthRoute || state.matchedLocation == '/email-verification') {
+          if (isSplash ||
+              isAuthRoute ||
+              state.matchedLocation == '/email-verification') {
             return isSeller ? '/seller/dashboard' : '/buyer/home';
           }
 
@@ -296,6 +305,11 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) => const BusinessSettingsScreen(),
       ),
       GoRoute(
+        path: '/seller/delivery',
+        name: RouteNames.sellerDelivery,
+        builder: (context, state) => const DeliverySettingsScreen(),
+      ),
+      GoRoute(
         path: '/seller/help',
         name: RouteNames.sellerHelp,
         builder: (context, state) => const SellerHelpScreen(),
@@ -304,6 +318,25 @@ GoRouter appRouter(Ref ref) {
         path: '/edit-profile',
         name: RouteNames.editProfile,
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/buyer/saved-addresses',
+        name: RouteNames.savedAddresses,
+        builder: (context, state) => const SavedAddressesScreen(),
+        routes: [
+          GoRoute(
+            path: 'add',
+            name: RouteNames.addSavedAddress,
+            builder: (context, state) => const SavedAddressFormScreen(),
+          ),
+          GoRoute(
+            path: ':index/edit',
+            name: RouteNames.editSavedAddress,
+            builder: (context, state) => SavedAddressFormScreen(
+              index: int.tryParse(state.pathParameters['index'] ?? ''),
+            ),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

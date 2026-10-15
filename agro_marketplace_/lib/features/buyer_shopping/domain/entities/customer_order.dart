@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'cart_item.dart';
 
 part 'customer_order.freezed.dart';
@@ -15,9 +16,14 @@ abstract class CustomerOrder with _$CustomerOrder {
     required double totalAmount,
     required String status, // pending, confirmed, shipped, delivered, cancelled
     required String shippingAddress,
+    String? deliveryMode,
+    @Default('pending') String paymentStatus,
+    Map<String, dynamic>? deliveryAddressSnapshot,
+    String? deliveryEstimate,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _CustomerOrder;
 
-  factory CustomerOrder.fromJson(Map<String, dynamic> json) => _$CustomerOrderFromJson(json);
+  factory CustomerOrder.fromJson(Map<String, dynamic> json) =>
+      _$CustomerOrderFromJson(json);
 }

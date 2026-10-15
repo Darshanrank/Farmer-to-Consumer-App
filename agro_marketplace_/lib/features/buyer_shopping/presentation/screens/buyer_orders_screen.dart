@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/widgets/app_message_state.dart';
 import '../../../seller_orders/domain/entities/seller_order.dart';
 import '../providers/buyer_orders_provider.dart';
 
@@ -15,7 +16,8 @@ class BuyerOrdersScreen extends ConsumerStatefulWidget {
   ConsumerState<BuyerOrdersScreen> createState() => _BuyerOrdersScreenState();
 }
 
-class _BuyerOrdersScreenState extends ConsumerState<BuyerOrdersScreen> with SingleTickerProviderStateMixin {
+class _BuyerOrdersScreenState extends ConsumerState<BuyerOrdersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -50,10 +52,22 @@ class _BuyerOrdersScreenState extends ConsumerState<BuyerOrdersScreen> with Sing
       ),
       body: ordersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => AppMessageState(
+          icon: Icons.cloud_off_outlined,
+          title: 'Could not load orders',
+          message: 'Check your connection and try again.',
+          actionLabel: 'Retry',
+          onAction: () => ref.invalidate(buyerOrdersProvider),
+        ),
         data: (orders) {
-          final activeOrders = orders.where((o) => ['pending', 'processing', 'shipped'].contains(o.status)).toList();
-          final completedOrders = orders.where((o) => ['delivered', 'cancelled'].contains(o.status)).toList();
+          final activeOrders = orders
+              .where(
+                (o) => ['pending', 'processing', 'shipped'].contains(o.status),
+              )
+              .toList();
+          final completedOrders = orders
+              .where((o) => ['delivered', 'cancelled'].contains(o.status))
+              .toList();
 
           return TabBarView(
             controller: _tabController,
@@ -76,7 +90,11 @@ class _OrderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (orders.isEmpty) {
-      return const Center(child: Text('No orders found.'));
+      return const AppMessageState(
+        icon: Icons.receipt_long_outlined,
+        title: 'No orders here yet',
+        message: 'Your order updates will appear here after checkout.',
+      );
     }
 
     return ListView.builder(
@@ -104,12 +122,19 @@ class _OrderList extends StatelessWidget {
                     children: [
                       Text(
                         'Package #${order.id.substring(0, 8)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(order.status).withValues(alpha: 0.1),
+                          color: _getStatusColor(order.status)
+                              .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -132,10 +157,16 @@ class _OrderList extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${order.items.length} items from Seller', style: TextStyle(color: Colors.grey[800])),
+                      Text(
+                        '${order.items.length} items from Seller',
+                        style: TextStyle(color: Colors.grey[800]),
+                      ),
                       Text(
                         '₹${order.totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryDark,
+                        ),
                       ),
                     ],
                   ),
@@ -150,12 +181,18 @@ class _OrderList extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'pending': return Colors.orange;
-      case 'processing': return Colors.blue;
-      case 'shipped': return Colors.purple;
-      case 'delivered': return Colors.green;
-      case 'cancelled': return Colors.red;
-      default: return Colors.grey;
+      case 'pending':
+        return Colors.orange;
+      case 'processing':
+        return Colors.blue;
+      case 'shipped':
+        return Colors.purple;
+      case 'delivered':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 }

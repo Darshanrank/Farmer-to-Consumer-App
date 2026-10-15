@@ -16,6 +16,11 @@ _CustomerOrder _$CustomerOrderFromJson(Map<String, dynamic> json) =>
       totalAmount: (json['totalAmount'] as num).toDouble(),
       status: json['status'] as String,
       shippingAddress: json['shippingAddress'] as String,
+      deliveryMode: json['deliveryMode'] as String?,
+      paymentStatus: json['paymentStatus'] as String? ?? 'pending',
+      deliveryAddressSnapshot:
+          json['deliveryAddressSnapshot'] as Map<String, dynamic>?,
+      deliveryEstimate: json['deliveryEstimate'] as String?,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -32,6 +37,10 @@ Map<String, dynamic> _$CustomerOrderToJson(_CustomerOrder instance) =>
       'totalAmount': instance.totalAmount,
       'status': instance.status,
       'shippingAddress': instance.shippingAddress,
+      'deliveryMode': instance.deliveryMode,
+      'paymentStatus': instance.paymentStatus,
+      'deliveryAddressSnapshot': instance.deliveryAddressSnapshot,
+      'deliveryEstimate': instance.deliveryEstimate,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

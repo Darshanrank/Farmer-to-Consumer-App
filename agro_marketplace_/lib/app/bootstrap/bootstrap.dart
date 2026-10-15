@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
@@ -42,9 +43,7 @@ class Bootstrap {
     AppLogger.info(
       'Bootstrap started',
       context: 'Bootstrap',
-      data: {
-        'environment': config.environment.name,
-      },
+      data: {'environment': config.environment.name},
     );
 
     // Initialize Firebase.
@@ -119,8 +118,12 @@ class Bootstrap {
     // DEVELOPER_ERROR but the app must NOT crash because of it.
     try {
       await FirebaseAppCheck.instance.activate(
-        androidProvider: AndroidProvider.debug,
-        appleProvider: AppleProvider.debug,
+        providerAndroid: kDebugMode
+            ? const AndroidDebugProvider()
+            : const AndroidPlayIntegrityProvider(),
+        providerApple: kDebugMode
+            ? const AppleDebugProvider()
+            : const AppleDeviceCheckProvider(),
       );
       AppLogger.info('Firebase App Check activated', context: 'Bootstrap');
     } catch (e) {
@@ -132,16 +135,11 @@ class Bootstrap {
       // Non-fatal: app continues without App Check enforcement.
     }
 
-    AppLogger.info(
-      'Bootstrap completed',
-      context: 'Bootstrap',
-    );
+    AppLogger.info('Bootstrap completed', context: 'Bootstrap');
   }
 
   /// Connects Firebase SDK to local emulators for development.
-  static Future<void> _connectToEmulators(
-    EnvironmentConfig config,
-  ) async {
+  static Future<void> _connectToEmulators(EnvironmentConfig config) async {
     // Firestore emulator.
     // FirebaseFirestore.instance.useFirestoreEmulator(
     //   config.firestoreEmulatorHost,
@@ -166,8 +164,7 @@ class Bootstrap {
       data: {
         'firestore':
             '${config.firestoreEmulatorHost}:${config.firestoreEmulatorPort}',
-        'auth':
-            '${config.authEmulatorHost}:${config.authEmulatorPort}',
+        'auth': '${config.authEmulatorHost}:${config.authEmulatorPort}',
         'storage':
             '${config.storageEmulatorHost}:${config.storageEmulatorPort}',
       },
