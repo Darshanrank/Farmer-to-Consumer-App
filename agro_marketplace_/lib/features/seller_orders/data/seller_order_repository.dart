@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/result/result.dart';
-import '../../../../core/commerce/order_lifecycle.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/result/result.dart';
 import '../../../../shared/services/firebase_service.dart';
 import '../domain/entities/seller_order.dart';
 
@@ -12,8 +12,13 @@ part 'seller_order_repository.g.dart';
 /// Repository for handling seller order operations in Firestore.
 class SellerOrderRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
-  SellerOrderRepository(this._firestore);
+  SellerOrderRepository(
+    this._firestore, {
+    FirebaseFunctions? functions,
+  }) : _functions =
+           functions ?? FirebaseFunctions.instanceFor(region: 'asia-south1');
 
   /// Streams all orders assigned to a specific seller.
   Stream<List<SellerOrder>> streamSellerOrders(String sellerId) {
@@ -42,47 +47,79 @@ class SellerOrderRepository {
     required String newStatus,
   }) async {
     return Result.guard(() async {
-      final sellerOrderRef = _firestore.collection('sellerOrders').doc(orderId);
-      final doc = await sellerOrderRef.get();
-      if (!doc.exists) {
-        throw BusinessRuleException(message: 'Order was not found.');
+      await _firestore.collection('sellerOrders').doc(orderId).update({
+        'status': newStatus,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    });
+  }
+
+  Future<Result<void>> assignTransport({
+    required String orderId,
+    required Map<String, dynamic> transport,
+  }) async {
+    return Result.guard(() async {
+      final callable = _functions.httpsCallable('assignSellerTransport');
+      await callable.call({
+        'sellerOrderId': orderId,
+        'transport': transport,
+      });
+    });
+  }
+
+  Future<Result<void>> updateDeliveryStage({
+    required String orderId,
+    required String stage,
+  }) async {
+    return Result.guard(() async {
+      const stages = {
+        'assigned',
+        'picked_up',
+        'in_transit',
+        'delivered',
+        'failed',
+        'returned',
+      };
+      if (!stages.contains(stage)) {
+        throw BusinessRuleException(message: 'Delivery stage is invalid.');
       }
-      final currentStatus = doc.data()?['status'] as String? ?? 'pending';
-      if (!OrderLifecycle.canTransition(
-        from: currentStatus,
-        to: newStatus,
-        actor: OrderActor.seller,
-      )) {
-        throw BusinessRuleException(
-          message: 'Cannot move an order from $currentStatus to $newStatus.',
-        );
-      }
+      final orderRef = _firestore.collection('sellerOrders').doc(orderId);
       await _firestore.runTransaction((transaction) async {
-        final current = await transaction.get(sellerOrderRef);
-        final latestStatus = current.data()?['status'] as String? ?? 'pending';
-        if (!OrderLifecycle.canTransition(
-          from: latestStatus,
-          to: newStatus,
-          actor: OrderActor.seller,
-        )) {
+        final snapshot = await transaction.get(orderRef);
+        final order = snapshot.data();
+        if (!snapshot.exists || order == null) {
+          throw BusinessRuleException(message: 'Seller order was not found.');
+        }
+        final current = order['deliveryStage'] as String? ?? 'assigned';
+        const transitions = {
+          'assigned': {'picked_up', 'failed'},
+          'picked_up': {'in_transit', 'failed'},
+          'in_transit': {'delivered', 'failed'},
+          'delivered': <String>{},
+          'failed': {'returned'},
+          'returned': <String>{},
+        };
+        if (!transitions[current]!.contains(stage)) {
           throw BusinessRuleException(
-            message: 'Order status changed. Refresh and try again.',
+            message: 'Cannot move delivery from $current to $stage.',
           );
         }
-        transaction.update(sellerOrderRef, {
-          'status': newStatus,
+        transaction.update(orderRef, {
+          'deliveryStage': stage,
           'updatedAt': FieldValue.serverTimestamp(),
+          if (stage == 'delivered') ...{
+            'fulfilmentStatus': 'delivered',
+            'status': 'delivered',
+            'deliveredAt': FieldValue.serverTimestamp(),
+          },
         });
       });
-
-      // Parent status aggregation requires reading every seller package.
-      // Rules prevent a seller from reading packages assigned to other
-      // sellers, so trusted backend processing must perform that aggregation.
     });
   }
 }
 
 @riverpod
 SellerOrderRepository sellerOrderRepository(Ref ref) {
-  return SellerOrderRepository(ref.watch(firebaseServiceProvider).firestore);
+  final firebase = ref.watch(firebaseServiceProvider);
+  return SellerOrderRepository(firebase.firestore);
 }

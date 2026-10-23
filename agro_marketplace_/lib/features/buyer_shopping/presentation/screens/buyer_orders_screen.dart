@@ -62,7 +62,14 @@ class _BuyerOrdersScreenState extends ConsumerState<BuyerOrdersScreen>
         data: (orders) {
           final activeOrders = orders
               .where(
-                (o) => ['pending', 'processing', 'shipped'].contains(o.status),
+                (o) => [
+                  'pending',
+                  'accepted',
+                  'preparing',
+                  'packed',
+                  'ready',
+                  'dispatched',
+                ].contains(o.status),
               )
               .toList();
           final completedOrders = orders
@@ -138,7 +145,7 @@ class _OrderList extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          order.status.toUpperCase(),
+                          _displayStatus(order),
                           style: TextStyle(
                             color: _getStatusColor(order.status),
                             fontWeight: FontWeight.bold,
@@ -184,6 +191,11 @@ class _OrderList extends StatelessWidget {
       case 'pending':
         return Colors.orange;
       case 'processing':
+      case 'accepted':
+      case 'preparing':
+      case 'packed':
+      case 'ready':
+      case 'dispatched':
         return Colors.blue;
       case 'shipped':
         return Colors.purple;
@@ -194,5 +206,15 @@ class _OrderList extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  String _displayStatus(SellerOrder order) {
+    if (order.deliveryStage != null) {
+      return order.deliveryStage!
+          .split('_')
+          .map((part) => part[0].toUpperCase() + part.substring(1))
+          .join(' ');
+    }
+    return order.status.toUpperCase();
   }
 }

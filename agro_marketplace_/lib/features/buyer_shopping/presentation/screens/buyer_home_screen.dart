@@ -94,10 +94,11 @@ class BuyerHomeScreen extends ConsumerWidget {
                   ? Icons.location_off_outlined
                   : Icons.local_shipping_outlined,
               title: 'No products available',
-              message: selectedAddress == null
+              message:
+                  mode == ProductListingMode.fast && selectedAddress == null
                   ? 'Choose a saved delivery address to see eligible products.'
                   : mode == ProductListingMode.fast &&
-                        selectedAddress.location?.isValid != true
+                        selectedAddress?.location?.isValid != true
                   ? 'Fast Delivery needs valid coordinates on the selected address.'
                   : 'No configured sellers currently meet this delivery mode.',
             );

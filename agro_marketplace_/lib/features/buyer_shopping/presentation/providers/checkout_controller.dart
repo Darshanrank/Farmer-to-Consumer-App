@@ -48,29 +48,39 @@ class CheckoutController extends _$CheckoutController {
       );
     }
     final cartSnapshot = ref.read(cartProvider).value ?? const [];
+    final addressIndex = ref.read(selectedDeliveryAddressIndexProvider);
+    if (addressIndex == null) {
+      _submissionInProgress = false;
+      final error = BusinessRuleException(
+        message: 'Select a saved delivery address before checkout.',
+      );
+      state = AsyncError(error, StackTrace.current);
+      return Result.failure(error);
+    }
 
     final orderId = _pendingOrderId ??= const Uuid().v4();
 
-    final order = CustomerOrder(
-      id: orderId,
-      buyerId: user.uid,
-      items: const [],
-      totalAmount: 0,
-      status: 'pending',
-      shippingAddress: shippingAddress,
-      deliveryMode: ref.read(productListingModeControllerProvider).name,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-
     final result = await Result.guard(() async {
-      // The repository re-reads the cart, address, products, prices, stock and
-      // delivery eligibility before writing the parent and seller orders.
+      final deliveryMode = ref.read(productListingModeControllerProvider);
       final placeResult = await ref
           .read(checkoutRepositoryProvider)
           .placeOrder(
-            order,
-            deliveryMode: ref.read(productListingModeControllerProvider),
+            CustomerOrder(
+              id: orderId,
+              buyerId: user.uid,
+              items: cartSnapshot,
+              totalAmount: cartSnapshot.fold(
+                0,
+                (total, item) => total + item.totalPrice,
+              ),
+              status: 'pending',
+              shippingAddress: shippingAddress,
+              deliveryMode: deliveryMode.name,
+              deliveryAddressSnapshot: buyerAddress.toMap(),
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+            deliveryMode: deliveryMode,
             buyerAddress: buyerAddress,
           );
       if (placeResult.isFailure) throw placeResult.exceptionOrNull!;

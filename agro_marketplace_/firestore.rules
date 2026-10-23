@@ -34,6 +34,20 @@ service cloud.firestore {
           request.resource.data.status == 'delivered');
     }
 
+    function validDeliveryStageTransition() {
+      return
+        (!resource.data.keys().hasAny(['deliveryStage']) &&
+          request.resource.data.deliveryStage in ['assigned', 'failed']) ||
+        (resource.data.deliveryStage == 'assigned' &&
+          request.resource.data.deliveryStage in ['picked_up', 'failed']) ||
+        (resource.data.deliveryStage == 'picked_up' &&
+          request.resource.data.deliveryStage in ['in_transit', 'failed']) ||
+        (resource.data.deliveryStage == 'in_transit' &&
+          request.resource.data.deliveryStage in ['delivered', 'failed']) ||
+        (resource.data.deliveryStage == 'failed' &&
+          request.resource.data.deliveryStage == 'returned');
+    }
+
     // USERS COLLECTION
     // Users can create their own doc (on registration) and read/update it.
     // Role and status fields are protected — cannot be changed via client update.
@@ -72,8 +86,11 @@ service cloud.firestore {
     // Allow creation if the buyerId matches the authenticated user.
     match /customerOrders/{orderId} {
       allow read: if isAuth() && resource.data.buyerId == request.auth.uid;
-      allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
+      allow create: if isAuth()
+                    && request.resource.data.buyerId == request.auth.uid
+                    && !request.resource.data.keys().hasAny(['schemaVersion']);
       allow update: if isAuth()
+                    && !resource.data.keys().hasAny(['schemaVersion'])
                     && request.auth.uid in resource.data.sellerIds
                     && request.resource.data.diff(resource.data).affectedKeys()
                        .hasOnly(['status', 'updatedAt'])
@@ -87,12 +104,38 @@ service cloud.firestore {
     // Allow creation if the buyerId matches the authenticated user.
     match /sellerOrders/{orderId} {
       allow read: if isAuth() && (resource.data.sellerId == request.auth.uid || resource.data.buyerId == request.auth.uid);
-      allow create: if isAuth() && request.resource.data.buyerId == request.auth.uid;
+      allow create: if isAuth()
+                    && request.resource.data.buyerId == request.auth.uid
+                    && !request.resource.data.keys().hasAny(['schemaVersion']);
       allow update: if isAuth()
+                    && !resource.data.keys().hasAny(['schemaVersion'])
                     && resource.data.sellerId == request.auth.uid
-                    && request.resource.data.diff(resource.data).affectedKeys()
-                       .hasOnly(['status', 'updatedAt'])
-                    && validSellerOrderTransition();
+                    && (
+                      (
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['status', 'updatedAt'])
+                        && validSellerOrderTransition()
+                      ) ||
+                      (
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['transportAssignment', 'deliveryStage', 'updatedAt'])
+                        && request.resource.data.deliveryStage == 'assigned'
+                        && resource.data.status in ['accepted', 'preparing', 'packed', 'ready']
+                      ) ||
+                      (
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['deliveryStage', 'updatedAt'])
+                        && validDeliveryStageTransition()
+                      ) ||
+                      (
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['deliveryStage', 'fulfilmentStatus', 'status', 'deliveredAt', 'updatedAt'])
+                        && request.resource.data.deliveryStage == 'delivered'
+                        && request.resource.data.fulfilmentStatus == 'delivered'
+                        && request.resource.data.status == 'delivered'
+                        && validDeliveryStageTransition()
+                      )
+                    );
     }
 
     // SUPPORT REQUESTS
@@ -102,6 +145,24 @@ service cloud.firestore {
       allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
       allow read: if false; // admin-only
       allow update, delete: if false;
+    }
+
+    // Trusted commerce collections. Client writes are denied; the Admin SDK
+    // used by Cloud Functions bypasses these client rules.
+    match /checkoutRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /inventoryReservations/{reservationId} {
+      allow read, write: if false;
+    }
+
+    match /orderEvents/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /paymentEvents/{eventId} {
+      allow read, write: if false;
     }
   }
 }

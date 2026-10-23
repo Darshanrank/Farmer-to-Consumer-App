@@ -84,26 +84,12 @@ class ProductListingRules {
         reason: 'Seller does not offer Regular Delivery.',
       );
     }
-    final buyerCountry = buyerAddress?.address.normalizedCountryCode;
-    if (buyerCountry == null) {
-      return const ProductListingEligibility(
-        isEligible: false,
-        reason: 'Select a saved address with a country code.',
-      );
-    }
     final minDays = product.regularDeliveryMinDays;
     final maxDays = product.regularDeliveryMaxDays;
     if (!_validWindow(minDays, maxDays, maximum: 7)) {
       return const ProductListingEligibility(
         isEligible: false,
         reason: 'Seller Regular Delivery window is not configured.',
-      );
-    }
-    if (product.sellerCountryCode == null ||
-        AddressCountry.normalized(product.sellerCountryCode!) != buyerCountry) {
-      return const ProductListingEligibility(
-        isEligible: false,
-        reason: 'Seller country does not match the selected address.',
       );
     }
     return ProductListingEligibility(

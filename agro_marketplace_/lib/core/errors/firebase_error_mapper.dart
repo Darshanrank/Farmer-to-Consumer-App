@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 import 'app_exception.dart';
 
@@ -14,51 +15,51 @@ class FirebaseErrorMapper {
   static AppException mapAuthException(firebase_auth.FirebaseAuthException e) {
     return switch (e.code) {
       'user-not-found' => const AuthenticationException(
-          message: 'No account found with this email.',
-          code: 'user_not_found',
-        ),
+        message: 'No account found with this email.',
+        code: 'user_not_found',
+      ),
       'wrong-password' => const AuthenticationException(
-          message: 'Incorrect password. Please try again.',
-          code: 'wrong_password',
-        ),
+        message: 'Incorrect password. Please try again.',
+        code: 'wrong_password',
+      ),
       'invalid-credential' => const AuthenticationException(
-          message: 'Invalid credentials. Please try again.',
-          code: 'invalid_credential',
-        ),
+        message: 'Invalid credentials. Please try again.',
+        code: 'invalid_credential',
+      ),
       'email-already-in-use' => const AuthenticationException(
-          message: 'An account already exists with this email.',
-          code: 'email_already_in_use',
-        ),
+        message: 'An account already exists with this email.',
+        code: 'email_already_in_use',
+      ),
       'weak-password' => const AuthenticationException(
-          message: 'Password is too weak. Use at least 8 characters.',
-          code: 'weak_password',
-        ),
+        message: 'Password is too weak. Use at least 8 characters.',
+        code: 'weak_password',
+      ),
       'invalid-email' => const ValidationException(
-          message: 'Please enter a valid email address.',
-          code: 'invalid_email',
-        ),
+        message: 'Please enter a valid email address.',
+        code: 'invalid_email',
+      ),
       'user-disabled' => const AuthenticationException(
-          message: 'This account has been disabled. Contact support.',
-          code: 'user_disabled',
-        ),
+        message: 'This account has been disabled. Contact support.',
+        code: 'user_disabled',
+      ),
       'too-many-requests' => const AuthenticationException(
-          message: 'Too many attempts. Please try again later.',
-          code: 'too_many_requests',
-        ),
+        message: 'Too many attempts. Please try again later.',
+        code: 'too_many_requests',
+      ),
       'operation-not-allowed' => const AuthenticationException(
-          message: 'This sign-in method is not enabled.',
-          code: 'operation_not_allowed',
-        ),
+        message: 'This sign-in method is not enabled.',
+        code: 'operation_not_allowed',
+      ),
       'requires-recent-login' => const AuthenticationException(
-          message: 'Please log in again to perform this action.',
-          code: 'requires_recent_login',
-        ),
+        message: 'Please log in again to perform this action.',
+        code: 'requires_recent_login',
+      ),
       'network-request-failed' => const NetworkException(),
       _ => AuthenticationException(
-          message: 'Authentication error. Please try again.',
-          code: e.code,
-          originalError: e,
-        ),
+        message: 'Authentication error. Please try again.',
+        code: e.code,
+        originalError: e,
+      ),
     };
   }
 
@@ -68,37 +69,78 @@ class FirebaseErrorMapper {
       'permission-denied' => const AuthorizationException(),
       'not-found' => const NotFoundException(),
       'already-exists' => const ConflictException(
-          message: 'This resource already exists.',
-        ),
+        message: 'This resource already exists.',
+      ),
       'resource-exhausted' => const ServerException(
-          message: 'Service is temporarily overloaded. Please try again.',
-        ),
+        message: 'Service is temporarily overloaded. Please try again.',
+      ),
       'failed-precondition' => BusinessRuleException(
-          message: e.message ?? 'Operation cannot be performed in the current state.',
-        ),
+        message:
+            e.message ?? 'Operation cannot be performed in the current state.',
+      ),
       'aborted' => const ConflictException(
-          message: 'Operation was aborted due to a conflict. Please retry.',
-        ),
+        message: 'Operation was aborted due to a conflict. Please retry.',
+      ),
       'unavailable' => const NetworkException(
-          message: 'Service is temporarily unavailable. Please try again.',
-        ),
+        message: 'Service is temporarily unavailable. Please try again.',
+      ),
       'deadline-exceeded' => const TimeoutException(),
       'cancelled' => const AppCancelledException(),
       'unauthenticated' => const AuthenticationException(
-          message: 'Please log in to continue.',
-          code: 'unauthenticated',
-        ),
+        message: 'Please log in to continue.',
+        code: 'unauthenticated',
+      ),
       _ => FirebaseServiceException(
-          message: 'An error occurred. Please try again.',
-          code: e.code,
-          originalError: e,
-        ),
+        message: 'An error occurred. Please try again.',
+        code: e.code,
+        originalError: e,
+      ),
     };
   }
 
   /// Generic exception mapper — catches any exception and maps to [AppException].
   static AppException mapException(dynamic error, [StackTrace? stackTrace]) {
     if (error is AppException) return error;
+
+    if (error is FirebaseFunctionsException) {
+      return switch (error.code) {
+        'permission-denied' => AuthorizationException(
+          message: error.message ?? 'You do not have permission to perform this action.',
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+        'failed-precondition' => BusinessRuleException(
+          message: error.message ?? 'Operation cannot be performed in the current state.',
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+        'unauthenticated' => AuthenticationException(
+          message: error.message ?? 'Please log in to continue.',
+          code: 'unauthenticated',
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+        'not-found' => FirebaseServiceException(
+          message: 'The order service is not available. Please deploy the checkout service and try again.',
+          code: 'order_service_unavailable',
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+        'unavailable' => NetworkException(
+          message: error.message ?? 'The order service is temporarily unavailable. Please try again.',
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+        _ => FirebaseServiceException(
+          message:
+              error.message ??
+              'The order service is unavailable. Please try again.',
+          code: error.code,
+          originalError: error,
+          stackTrace: stackTrace,
+        ),
+      };
+    }
 
     if (error is firebase_auth.FirebaseAuthException) {
       return mapAuthException(error);
@@ -116,9 +158,6 @@ class FirebaseErrorMapper {
       );
     }
 
-    return UnknownException(
-      originalError: error,
-      stackTrace: stackTrace,
-    );
+    return UnknownException(originalError: error, stackTrace: stackTrace);
   }
 }

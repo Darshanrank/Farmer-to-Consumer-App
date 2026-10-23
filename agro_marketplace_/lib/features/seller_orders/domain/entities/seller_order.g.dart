@@ -22,6 +22,8 @@ _SellerOrder _$SellerOrderFromJson(Map<String, dynamic> json) => _SellerOrder(
   deliveryAddressSnapshot:
       json['deliveryAddressSnapshot'] as Map<String, dynamic>?,
   deliveryEstimate: json['deliveryEstimate'] as String?,
+  deliveryStage: json['deliveryStage'] as String?,
+  transportAssignment: json['transportAssignment'] as Map<String, dynamic>?,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -44,6 +46,8 @@ Map<String, dynamic> _$SellerOrderToJson(_SellerOrder instance) =>
       'paymentStatus': instance.paymentStatus,
       'deliveryAddressSnapshot': instance.deliveryAddressSnapshot,
       'deliveryEstimate': instance.deliveryEstimate,
+      'deliveryStage': instance.deliveryStage,
+      'transportAssignment': instance.transportAssignment,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

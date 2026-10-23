@@ -130,7 +130,7 @@ class _OrderList extends StatelessWidget {
                 Text('${order.items.length} items'),
                 const SizedBox(height: 4),
                 Text(
-                  'Status: ${order.status.toUpperCase()}',
+                  'Status: ${_displayStatus(order)}',
                   style: TextStyle(
                     color: _getStatusColor(order.status),
                     fontWeight: FontWeight.w600,
@@ -175,5 +175,13 @@ class _OrderList extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  String _displayStatus(SellerOrder order) {
+    final value = order.deliveryStage ?? order.status;
+    return value
+        .split('_')
+        .map((part) => part[0].toUpperCase() + part.substring(1))
+        .join(' ');
   }
 }

@@ -29,7 +29,10 @@ class ProductListingModeController extends _$ProductListingModeController {
 @riverpod
 class SelectedDeliveryAddressIndex extends _$SelectedDeliveryAddressIndex {
   @override
-  int? build() => null;
+  int? build() {
+    final user = ref.watch(appUserProvider).value;
+    return user != null && user.savedAddresses.isNotEmpty ? 0 : null;
+  }
 
   void select(int? index) => state = index;
 }
@@ -52,7 +55,11 @@ List<Product> buyerListingProducts(Ref ref) {
   final products = ref.watch(buyerProductsProvider).value ?? [];
   final mode = ref.watch(productListingModeControllerProvider);
   final address = ref.watch(selectedDeliveryAddressProvider);
+  final buyerId = ref.watch(authUserProvider).value?.uid;
   return products.where((product) {
+    // A seller viewing the buyer experience must not buy or browse their own
+    // catalogue. This also applies immediately after switching roles.
+    if (buyerId != null && product.sellerId == buyerId) return false;
     return ProductListingRules.evaluate(
       product: product,
       mode: mode,

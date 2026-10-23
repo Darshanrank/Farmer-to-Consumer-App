@@ -80,28 +80,31 @@ void main() {
     expect(missing.reason, contains('coordinates'));
   });
 
-  test('requires seller mode support and matching regular country', () {
-    final disabled = ProductListingRules.evaluate(
-      product: product(regular: false),
-      mode: ProductListingMode.regular,
-      buyerAddress: address(),
-    );
-    expect(disabled.isEligible, isFalse);
+  test(
+    'requires seller mode support but not a buyer address for regular delivery',
+    () {
+      final disabled = ProductListingRules.evaluate(
+        product: product(regular: false),
+        mode: ProductListingMode.regular,
+        buyerAddress: address(),
+      );
+      expect(disabled.isEligible, isFalse);
 
-    final mismatch = ProductListingRules.evaluate(
-      product: product(regular: true, country: 'US'),
-      mode: ProductListingMode.regular,
-      buyerAddress: address(),
-    );
-    expect(mismatch.isEligible, isFalse);
+      final mismatch = ProductListingRules.evaluate(
+        product: product(regular: true, country: 'US'),
+        mode: ProductListingMode.regular,
+        buyerAddress: address(),
+      );
+      expect(mismatch.isEligible, isTrue);
 
-    final eligible = ProductListingRules.evaluate(
-      product: product(regular: true),
-      mode: ProductListingMode.regular,
-      buyerAddress: address(),
-    );
-    expect(eligible.isEligible, isTrue);
-  });
+      final eligible = ProductListingRules.evaluate(
+        product: product(regular: true),
+        mode: ProductListingMode.regular,
+        buyerAddress: null,
+      );
+      expect(eligible.isEligible, isTrue);
+    },
+  );
 
   test('supports a product eligible for either mode', () {
     final item = product(fast: true, regular: true, sellerManaged: true);

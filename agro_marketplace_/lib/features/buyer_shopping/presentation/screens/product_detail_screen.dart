@@ -40,6 +40,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final user = ref.read(authUserProvider).value;
 
     if (user == null ||
+        product.sellerId == user.uid ||
         !product.isAvailableForPurchase ||
         product.availableQuantity < product.minOrderQuantity) {
       return;
@@ -113,6 +114,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             return const Center(child: Text('Product is no longer available.'));
           }
           final product = matchingProducts.first;
+          final currentUser = ref.watch(authUserProvider).value;
+          if (currentUser != null && product.sellerId == currentUser.uid) {
+            return const AppMessageState(
+              icon: Icons.storefront_outlined,
+              title: 'This is your product',
+              message: 'Your own products are not available for purchase.',
+            );
+          }
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

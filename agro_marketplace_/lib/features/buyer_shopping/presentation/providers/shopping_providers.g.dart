@@ -249,7 +249,7 @@ final class BuyerListingProductsProvider
 }
 
 String _$buyerListingProductsHash() =>
-    r'ae888e1e040b2496c7802135e8f9f41f84fd90fa';
+    r'e40287ceff95f3f9616e7fcaafe552fd39220630';
 
 /// Streams the current user's cart items.
 

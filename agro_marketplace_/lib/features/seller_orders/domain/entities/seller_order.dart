@@ -23,6 +23,8 @@ abstract class SellerOrder with _$SellerOrder {
     @Default('pending') String paymentStatus,
     Map<String, dynamic>? deliveryAddressSnapshot,
     String? deliveryEstimate,
+    String? deliveryStage,
+    Map<String, dynamic>? transportAssignment,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _SellerOrder;
