@@ -316,6 +316,55 @@ type SellerFulfilmentRequest = {
   status?: unknown;
 };
 
+type SellerInventoryRequest = {
+  productId?: unknown;
+  stockQuantity?: unknown;
+};
+
+export const updateSellerInventory = onCall<SellerInventoryRequest>(
+  { region: "asia-south1", enforceAppCheck: false },
+  async (request) => {
+    const sellerId = request.auth?.uid;
+    if (!sellerId) throw new HttpsError("unauthenticated", "Authentication is required.");
+    const productId = stringValue(request.data.productId, "productId");
+    const stockQuantity = request.data.stockQuantity;
+    if (typeof stockQuantity !== "number" ||
+        !Number.isSafeInteger(stockQuantity) || stockQuantity < 0) {
+      throw new HttpsError("invalid-argument", "stockQuantity must be a non-negative integer.");
+    }
+
+    const productRef = db.collection("products").doc(productId);
+    const now = new Date();
+    await db.runTransaction(async (transaction) => {
+      const snapshot = await transaction.get(productRef);
+      const product = snapshot.data() as Record<string, unknown> | undefined;
+      if (!snapshot.exists || !product) {
+        throw new HttpsError("not-found", "Product was not found.");
+      }
+      if (product.sellerId !== sellerId) {
+        throw new HttpsError("permission-denied", "Product is not owned by you.");
+      }
+      const reserved = product.reservedQuantity;
+      const sold = product.soldQuantity;
+      if (![reserved, sold].every((value) =>
+        typeof value === "number" && Number.isSafeInteger(value) && value >= 0)) {
+        throw new HttpsError("failed-precondition", "Product inventory is invalid.");
+      }
+      if (stockQuantity < (reserved as number) + (sold as number)) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Stock cannot be lower than reserved and sold quantities.",
+        );
+      }
+      transaction.update(productRef, {
+        stockQuantity,
+        updatedAt: now,
+      });
+    });
+    return { schemaVersion, productId, stockQuantity };
+  },
+);
+
 export const updateTrustedSellerFulfilment = onCall<SellerFulfilmentRequest>(
   { region: "asia-south1", enforceAppCheck: false },
   async (request) => {
@@ -559,6 +608,62 @@ export const updateSellerDeliveryStage = onCall<UpdateDeliveryStageRequest>(
       const currentStage = (order.deliveryStage as string | undefined) ?? "assigned";
       if (!deliveryStageTransition(currentStage, nextStage)) {
         throw new HttpsError("failed-precondition", `Cannot move delivery from ${currentStage} to ${nextStage}.`);
+      }
+      if (nextStage === "delivered") {
+        const reservationsSnapshot = await transaction.get(
+          db.collection("inventoryReservations")
+            .where("parentOrderId", "==", order.parentOrderId)
+            .where("sellerId", "==", sellerId)
+            .where("state", "==", "active"),
+        );
+        const reservationData: Array<{
+          ref: DocumentReference;
+          productRef: DocumentReference;
+          quantity: number;
+          product: Record<string, unknown>;
+        }> = [];
+        for (const reservationSnapshot of reservationsSnapshot.docs) {
+          const reservation = reservationSnapshot.data() as Record<string, unknown>;
+          const quantity = reservation.quantity;
+          if (typeof quantity !== "number" ||
+              !Number.isSafeInteger(quantity) || quantity <= 0) {
+            throw new HttpsError("failed-precondition", "Reservation quantity is invalid.");
+          }
+          const productRef = db.collection("products").doc(
+            stringValue(reservation.productId, "productId"),
+          );
+          const productSnapshot = await transaction.get(productRef);
+          const product = productSnapshot.data() as Record<string, unknown> | undefined;
+          if (!productSnapshot.exists || !product) {
+            throw new HttpsError("failed-precondition", "Reserved product was not found.");
+          }
+          reservationData.push({
+            ref: reservationSnapshot.ref,
+            productRef,
+            quantity,
+            product,
+          });
+        }
+        for (const reservation of reservationData) {
+          const reserved = reservation.product.reservedQuantity;
+          const sold = reservation.product.soldQuantity;
+          if (typeof reserved !== "number" || !Number.isSafeInteger(reserved) ||
+              typeof sold !== "number" || !Number.isSafeInteger(sold) ||
+              reserved < reservation.quantity) {
+            throw new HttpsError("failed-precondition", "Product inventory is inconsistent.");
+          }
+          transaction.update(reservation.productRef, {
+            reservedQuantity: reserved - reservation.quantity,
+            soldQuantity: sold + reservation.quantity,
+            inventoryVersion: (reservation.product.inventoryVersion as number | undefined ?? 0) + 1,
+            updatedAt: now,
+          });
+          transaction.update(reservation.ref, {
+            state: "committed",
+            processedBy: sellerId,
+            processedAt: now,
+          });
+        }
       }
       const update: Record<string, unknown> = {
         deliveryStage: nextStage,

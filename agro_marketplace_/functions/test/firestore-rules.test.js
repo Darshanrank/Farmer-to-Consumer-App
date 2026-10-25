@@ -96,3 +96,26 @@ test("seller can read but cannot directly write trusted transport fields", async
     transportAssignment: { driverName: "Changed" },
   }));
 });
+
+test("seller cannot directly mutate inventory counters", async () => {
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "products", "inventory-1"), {
+      sellerId: "seller-1",
+      name: "Tomatoes",
+      stockQuantity: 10,
+      reservedQuantity: 2,
+      soldQuantity: 1,
+    });
+  });
+
+  const seller = testEnvironment.authenticatedContext("seller-1").firestore();
+  await assertFails(updateDoc(doc(seller, "products", "inventory-1"), {
+    stockQuantity: 20,
+  }));
+  await assertFails(updateDoc(doc(seller, "products", "inventory-1"), {
+    reservedQuantity: 0,
+  }));
+  await assertFails(updateDoc(doc(seller, "products", "inventory-1"), {
+    soldQuantity: 0,
+  }));
+});

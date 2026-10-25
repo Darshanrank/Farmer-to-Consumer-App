@@ -15,25 +15,26 @@ class UserRepository {
   UserRepository(this._firestore);
 
   Stream<AppUser?> streamUser(String uid) {
-    return _firestore
-        .collection(FirestorePaths.users)
-        .doc(uid)
-        .snapshots()
-        .map((snapshot) {
-      if (!snapshot.exists || snapshot.data() == null) return null;
-      return AppUser.fromJson(snapshot.data()!);
-    });
+    return _firestore.collection(FirestorePaths.users).doc(uid).snapshots().map(
+      (snapshot) {
+        if (!snapshot.exists || snapshot.data() == null) return null;
+        return AppUser.fromJson(snapshot.data()!);
+      },
+    );
   }
 
   /// Fetches a user profile synchronously.
   Future<Result<AppUser?>> getUser(String uid) async {
     return Result.guard(() async {
-      final snapshot = await _firestore.collection(FirestorePaths.users).doc(uid).get();
+      final snapshot = await _firestore
+          .collection(FirestorePaths.users)
+          .doc(uid)
+          .get();
       if (!snapshot.exists || snapshot.data() == null) return null;
       return AppUser.fromJson(snapshot.data()!);
     });
   }
-  
+
   /// Creates the initial user document including role.
   /// Called once on registration so the role ('buyer' or 'seller') is
   /// persisted correctly before any Cloud Function can overwrite it.
@@ -66,16 +67,6 @@ class UserRepository {
           .collection(FirestorePaths.users)
           .doc(user.uid)
           .set(payload, SetOptions(merge: true));
-    });
-  }
-
-  /// Updates the user's role directly (e.g. switching between buyer and seller).
-  Future<Result<void>> updateUserRole(String uid, String newRole) async {
-    return Result.guard(() async {
-      await _firestore
-          .collection(FirestorePaths.users)
-          .doc(uid)
-          .set({'role': newRole}, SetOptions(merge: true));
     });
   }
 

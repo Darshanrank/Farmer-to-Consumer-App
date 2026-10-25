@@ -3,6 +3,19 @@
 /// All application-level exceptions extend [AppException].
 /// Firebase errors are mapped to these via [FirebaseErrorMapper].
 /// UI/error handlers consume these to show safe, user-facing messages.
+enum ExceptionCategory {
+  network,
+  authentication,
+  authorization,
+  validation,
+  businessRule,
+  notFound,
+  conflict,
+  server,
+  cancelled,
+  unknown,
+}
+
 sealed class AppException implements Exception {
   final String message;
   final String? code;
@@ -15,6 +28,29 @@ sealed class AppException implements Exception {
     this.originalError,
     this.stackTrace,
   });
+
+  ExceptionCategory get category => switch (this) {
+    NetworkException() => ExceptionCategory.network,
+    AuthenticationException() => ExceptionCategory.authentication,
+    AuthorizationException() => ExceptionCategory.authorization,
+    ValidationException() => ExceptionCategory.validation,
+    BusinessRuleException() => ExceptionCategory.businessRule,
+    NotFoundException() => ExceptionCategory.notFound,
+    ConflictException() => ExceptionCategory.conflict,
+    FirebaseServiceException() => ExceptionCategory.server,
+    AppCancelledException() => ExceptionCategory.cancelled,
+    TimeoutException() => ExceptionCategory.network,
+    ServerException() => ExceptionCategory.server,
+    UnknownException() => ExceptionCategory.unknown,
+  };
+
+  bool get isRetryable => switch (this) {
+    NetworkException() ||
+    ConflictException() ||
+    TimeoutException() ||
+    ServerException() => true,
+    _ => false,
+  };
 
   @override
   String toString() => 'AppException($code): $message';

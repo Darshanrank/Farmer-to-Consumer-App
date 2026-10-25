@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/constants/firestore_paths.dart';
@@ -11,8 +12,23 @@ part 'product_repository.g.dart';
 /// Repository for handling Firestore product operations.
 class ProductRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
-  ProductRepository(this._firestore);
+  ProductRepository(this._firestore, {FirebaseFunctions? functions})
+    : _functions =
+          functions ?? FirebaseFunctions.instanceFor(region: 'asia-south1');
+
+  Future<Result<void>> updateSellerInventory({
+    required String productId,
+    required int stockQuantity,
+  }) async {
+    return Result.guard(() async {
+      await _functions.httpsCallable('updateSellerInventory').call({
+        'productId': productId,
+        'stockQuantity': stockQuantity,
+      });
+    });
+  }
 
   /// Streams all active products globally (for buyers).
   Stream<List<Product>> streamAllActiveProducts() {

@@ -285,7 +285,12 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                     ),
                   if (order.status == 'dispatched')
                     ElevatedButton(
-                      onPressed: () => _updateStatus(context, ref, 'delivered'),
+                      onPressed: () => _updateDeliveryStage(
+                        context,
+                        ref,
+                        order.id,
+                        'delivered',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,

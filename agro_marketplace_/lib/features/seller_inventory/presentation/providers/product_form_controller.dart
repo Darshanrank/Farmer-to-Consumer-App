@@ -158,8 +158,17 @@ class ProductFormController extends _$ProductFormController {
         final res = await productRepo.createProduct(product);
         if (res.isFailure) throw res.exceptionOrNull!;
       } else {
-        final res = await productRepo.updateProduct(product);
+        final res = await productRepo.updateProduct(
+          product.copyWith(stockQuantity: existingProduct.stockQuantity),
+        );
         if (res.isFailure) throw res.exceptionOrNull!;
+        if (stockQuantity != existingProduct.stockQuantity) {
+          final inventoryResult = await productRepo.updateSellerInventory(
+            productId: product.id,
+            stockQuantity: stockQuantity,
+          );
+          if (inventoryResult.isFailure) throw inventoryResult.exceptionOrNull!;
+        }
       }
     });
 

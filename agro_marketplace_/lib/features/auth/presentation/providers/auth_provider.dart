@@ -194,36 +194,4 @@ class AuthController extends _$AuthController {
       state = const AsyncData(null);
     }
   }
-
-  /// Switches the user's role between 'buyer' and 'seller' and persists to Firestore.
-  Future<void> switchRole(String newRole) async {
-    state = const AsyncLoading();
-    final authUser = ref.read(authUserProvider).value;
-    if (authUser == null) {
-      state = const AsyncData(null);
-      return;
-    }
-
-    final result = await ref
-        .read(userRepositoryProvider)
-        .updateUserRole(authUser.uid, newRole);
-    if (result.isFailure) {
-      if (!ref.mounted) return;
-      AppLogger.error(
-        'Failed to switch role to $newRole',
-        error: result.exceptionOrNull,
-        context: 'AuthController',
-      );
-      state = AsyncError(result.exceptionOrNull!, StackTrace.current);
-    } else {
-      if (!ref.mounted) return;
-      AppLogger.info(
-        'Successfully switched role to $newRole for ${authUser.uid}',
-        context: 'AuthController',
-      );
-      // Invalidate appUserProvider so the role changes immediately in state
-      ref.invalidate(appUserProvider);
-      state = const AsyncData(null);
-    }
-  }
 }

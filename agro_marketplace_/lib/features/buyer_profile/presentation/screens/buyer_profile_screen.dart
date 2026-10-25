@@ -645,16 +645,12 @@ Future<void> _confirmSwitchRole(
   );
 
   if (confirmed == true && context.mounted) {
-    await ref.read(authControllerProvider.notifier).switchRole(targetRole);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Switched to ${isTargetSeller ? 'Seller (Farmer)' : 'Buyer'} mode',
-          ),
-          backgroundColor: Colors.green,
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Account roles are fixed after registration. Create the other account type separately.',
         ),
-      );
-    }
+      ),
+    );
   }
 }

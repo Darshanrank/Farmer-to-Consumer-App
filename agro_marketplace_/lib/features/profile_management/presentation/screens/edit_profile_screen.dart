@@ -44,7 +44,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   double? _latitude;
   double? _longitude;
   bool _isLocating = false;
-  String _selectedRole = 'buyer';
 
   @override
   void initState() {
@@ -64,7 +63,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _populateForm(AppUser user) {
     setState(() {
       _user = user;
-      _selectedRole = user.role;
       _nameController.text = user.displayName ?? '';
       _phoneController.text = user.phone ?? '';
       _businessNameController.text = user.businessName ?? '';
@@ -99,7 +97,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Location services are disabled. Please enable them.'),
+              content: Text(
+                'Location services are disabled. Please enable them.',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -127,7 +127,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Location permissions are permanently denied. Please enable in settings.'),
+              content: Text(
+                'Location permissions are permanently denied. Please enable in settings.',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -247,12 +249,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       );
     }
 
-    final isSeller = _selectedRole == 'seller';
+    final isSeller = _user!.isSeller;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
+      appBar: AppBar(title: const Text('Edit Profile')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -260,54 +260,27 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Account Role Selector
-              const Text(
-                'Account Role',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'buyer',
-                    icon: Icon(Icons.shopping_basket),
-                    label: Text('Buyer'),
-                  ),
-                  ButtonSegment(
-                    value: 'seller',
-                    icon: Icon(Icons.store),
-                    label: Text('Seller (Farmer)'),
-                  ),
-                ],
-                selected: {_selectedRole},
-                onSelectionChanged: (Set<String> newSelection) {
-                  setState(() {
-                    _selectedRole = newSelection.first;
-                  });
-                },
-              ),
-              const SizedBox(height: 24),
-
               AppTextField(
                 label: 'Full Name',
                 controller: _nameController,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               AppTextField(
                 label: 'Phone Number',
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 24),
 
               // === Address Section ===
               Text(
                 'Address',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
 
@@ -315,7 +288,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 label: 'Address Line 1',
                 hint: 'House/Shop No., Street',
                 controller: _line1Controller,
-                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -352,10 +326,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: 16),
 
-              AppTextField(
-                label: 'District',
-                controller: _districtController,
-              ),
+              AppTextField(label: 'District', controller: _districtController),
               const SizedBox(height: 16),
 
               Row(
@@ -364,7 +335,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     child: AppTextField(
                       label: 'State',
                       controller: _stateController,
-                      validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                      validator: (val) =>
+                          val == null || val.isEmpty ? 'Required' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -374,7 +346,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       controller: _pincodeController,
                       keyboardType: TextInputType.number,
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) return 'Required';
+                        if (val == null || val.trim().isEmpty) {
+                          return 'Required';
+                        }
                         if (val.trim().length != 6) return '6-digit pincode';
                         return null;
                       },
@@ -397,22 +371,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.my_location, color: Theme.of(context).primaryColor),
+                        Icon(
+                          Icons.my_location,
+                          color: Theme.of(context).primaryColor,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'GPS Location (Optional)',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Adding your location helps with nearby product discovery.',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 12),
                     if (_latitude != null && _longitude != null)
@@ -420,11 +395,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         padding: const EdgeInsets.only(bottom: 12.0),
                         child: Row(
                           children: [
-                            const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               '${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: Colors.green[700],
                                   ),
@@ -444,13 +424,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       label: Text(
                         _isLocating
                             ? 'Fetching Address...'
-                            : (_latitude != null ? 'Update Location & Address' : 'Pick Current Location'),
+                            : (_latitude != null
+                                  ? 'Update Location & Address'
+                                  : 'Pick Current Location'),
                       ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Only show business section for sellers
               if (isSeller) ...[
                 const SizedBox(height: 16),
@@ -464,10 +446,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 AppTextField(
                   label: 'Farm / Business Name',
                   controller: _businessNameController,
-                  validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? 'Required' : null,
                 ),
               ],
-              
+
               const SizedBox(height: 32),
               AppButton(
                 label: 'Save Changes',
@@ -478,12 +461,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   try {
                     // Build structured address
                     final address = Address(
-                      line1: _line1Controller.text.trim().isEmpty ? null : _line1Controller.text.trim(),
-                      line2: _line2Controller.text.trim().isEmpty ? null : _line2Controller.text.trim(),
-                      landmark: _landmarkController.text.trim().isEmpty ? null : _landmarkController.text.trim(),
-                      village: _villageController.text.trim().isEmpty ? null : _villageController.text.trim(),
-                      taluka: _talukaController.text.trim().isEmpty ? null : _talukaController.text.trim(),
-                      district: _districtController.text.trim().isEmpty ? null : _districtController.text.trim(),
+                      line1: _line1Controller.text.trim().isEmpty
+                          ? null
+                          : _line1Controller.text.trim(),
+                      line2: _line2Controller.text.trim().isEmpty
+                          ? null
+                          : _line2Controller.text.trim(),
+                      landmark: _landmarkController.text.trim().isEmpty
+                          ? null
+                          : _landmarkController.text.trim(),
+                      village: _villageController.text.trim().isEmpty
+                          ? null
+                          : _villageController.text.trim(),
+                      taluka: _talukaController.text.trim().isEmpty
+                          ? null
+                          : _talukaController.text.trim(),
+                      district: _districtController.text.trim().isEmpty
+                          ? null
+                          : _districtController.text.trim(),
                       state: _stateController.text.trim(),
                       pincode: _pincodeController.text.trim(),
                     );
@@ -492,7 +487,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     DetailedAddress? existingDetailed;
                     if (_user!.address != null) {
                       try {
-                        existingDetailed = DetailedAddress.fromMap(_user!.address!);
+                        existingDetailed = DetailedAddress.fromMap(
+                          _user!.address!,
+                        );
                       } catch (_) {}
                     }
 
@@ -520,14 +517,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           ? _businessNameController.text.trim()
                           : _user!.businessName, // preserve existing for non-sellers
                     );
-                    
-                    if (_selectedRole != _user!.role) {
-                      await ref.read(userRepositoryProvider).updateUserRole(_user!.uid, _selectedRole);
-                      ref.invalidate(appUserProvider);
-                    }
 
-                    final result = await ref.read(userRepositoryProvider).updateUser(updatedUser);
-                    
+                    final result = await ref
+                        .read(userRepositoryProvider)
+                        .updateUser(updatedUser);
+
                     if (!context.mounted) return;
 
                     if (result.isSuccess) {
@@ -541,16 +535,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error: ${result.exceptionOrNull?.message}'),
+                          content: Text(
+                            'Error: ${result.exceptionOrNull?.message}',
+                          ),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
-                      );
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('Error: $e')));
                     }
                   } finally {
                     if (mounted) setState(() => _isLoading = false);

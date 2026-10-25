@@ -19,8 +19,7 @@ import '../domain/entities/customer_order.dart';
 part 'checkout_repository.g.dart';
 
 /// Revalidates the buyer's cart and creates one parent order plus seller
-/// packages. Product stock is checked here, but is not decremented because
-/// buyers are not authorized to update product documents.
+/// packages using Firestore.
 class CheckoutRepository {
   final FirebaseFirestore _firestore;
 
@@ -49,7 +48,6 @@ class CheckoutRepository {
       final customerOrderRef = _firestore
           .collection(FirestorePaths.customerOrders)
           .doc(requestedOrder.id);
-
       final validation = await _validateCheckout(
         buyerId: requestedOrder.buyerId,
         deliveryMode: deliveryMode,
@@ -57,9 +55,7 @@ class CheckoutRepository {
       );
       final quote = validation.quote;
       final sellerItems = CheckoutPricing.groupBySeller(quote.items);
-
       final order = requestedOrder.copyWith(
-        buyerId: requestedOrder.buyerId,
         items: quote.items,
         totalAmount: quote.total,
         shippingAddress: buyerAddress.displayAddress,
@@ -69,34 +65,29 @@ class CheckoutRepository {
         deliveryEstimate: validation.deliveryEstimate,
       );
       final batch = _firestore.batch();
-      final orderData = order.toJson();
-      orderData['items'] = quote.items.map((item) => item.toJson()).toList();
-      orderData['sellerIds'] = sellerItems.keys.toList();
-      orderData['subtotal'] = quote.subtotal;
-      orderData['discount'] = quote.discount;
-      orderData['tax'] = quote.tax;
-      orderData['handlingFee'] = quote.handlingFee;
-      orderData['deliveryFee'] = quote.deliveryFee;
+      final orderData = order.toJson()
+        ..['items'] = quote.items.map((item) => item.toJson()).toList()
+        ..['sellerIds'] = sellerItems.keys.toList()
+        ..['subtotal'] = quote.subtotal
+        ..['discount'] = quote.discount
+        ..['tax'] = quote.tax
+        ..['handlingFee'] = quote.handlingFee
+        ..['deliveryFee'] = quote.deliveryFee;
       batch.set(customerOrderRef, orderData);
-
       for (final entry in sellerItems.entries) {
-        // Seller packages are created by the buyer in the current rules.
-        // Use create-only IDs so retries cannot turn into unauthorized
-        // buyer updates of an existing seller-owned package.
         final sellerOrderRef = _firestore
             .collection(FirestorePaths.sellerOrders)
             .doc();
-        final sellerTotal = entry.value.fold<double>(
-          0,
-          (total, item) => total + item.totalPrice,
-        );
         batch.set(sellerOrderRef, {
           'id': sellerOrderRef.id,
           'parentOrderId': order.id,
           'buyerId': order.buyerId,
           'sellerId': entry.key,
           'items': entry.value.map((item) => item.toJson()).toList(),
-          'totalAmount': sellerTotal,
+          'totalAmount': entry.value.fold<double>(
+            0,
+            (total, item) => total + item.totalPrice,
+          ),
           'status': 'pending',
           'paymentStatus': 'pending',
           'shippingAddress': order.shippingAddress,
@@ -209,8 +200,7 @@ class CheckoutRepository {
       buyerAddress: buyerAddress,
     );
     final sellerEstimates = <String, String>{};
-    final cart = quote.items;
-    for (final item in cart) {
+    for (final item in quote.items) {
       final snapshot = await _firestore
           .collection(FirestorePaths.products)
           .doc(item.productId)

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
@@ -12,13 +11,8 @@ part 'seller_order_repository.g.dart';
 /// Repository for handling seller order operations in Firestore.
 class SellerOrderRepository {
   final FirebaseFirestore _firestore;
-  final FirebaseFunctions _functions;
 
-  SellerOrderRepository(
-    this._firestore, {
-    FirebaseFunctions? functions,
-  }) : _functions =
-           functions ?? FirebaseFunctions.instanceFor(region: 'asia-south1');
+  SellerOrderRepository(this._firestore);
 
   /// Streams all orders assigned to a specific seller.
   Stream<List<SellerOrder>> streamSellerOrders(String sellerId) {
@@ -47,9 +41,70 @@ class SellerOrderRepository {
     required String newStatus,
   }) async {
     return Result.guard(() async {
-      await _firestore.collection('sellerOrders').doc(orderId).update({
-        'status': newStatus,
-        'updatedAt': FieldValue.serverTimestamp(),
+      final orderRef = _firestore.collection('sellerOrders').doc(orderId);
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(orderRef);
+        final order = snapshot.data();
+        if (!snapshot.exists || order == null) {
+          throw BusinessRuleException(message: 'Seller order was not found.');
+        }
+        final currentStatus = order['status'] as String? ?? 'pending';
+        final items = order['items'];
+        final shouldReduceStock =
+            currentStatus == 'pending' && newStatus == 'accepted';
+        final shouldRestoreStock =
+            currentStatus == 'accepted' && newStatus == 'cancelled';
+        if (shouldReduceStock || shouldRestoreStock) {
+          if (items is! List) {
+            throw BusinessRuleException(message: 'Order items are invalid.');
+          }
+          final productRefs = <DocumentReference<Map<String, dynamic>>>[];
+          final quantities = <int>[];
+          for (final item in items) {
+            if (item is! Map) {
+              throw BusinessRuleException(message: 'Order items are invalid.');
+            }
+            final productId = item['productId'];
+            final quantity = item['quantity'];
+            if (productId is! String ||
+                quantity is! num ||
+                quantity <= 0 ||
+                quantity != quantity.truncateToDouble()) {
+              throw BusinessRuleException(message: 'Order items are invalid.');
+            }
+            productRefs.add(_firestore.collection('products').doc(productId));
+            quantities.add(quantity.toInt());
+          }
+          final productSnapshots = <DocumentSnapshot<Map<String, dynamic>>>[];
+          for (final productRef in productRefs) {
+            productSnapshots.add(await transaction.get(productRef));
+          }
+          for (var index = 0; index < productSnapshots.length; index++) {
+            final product = productSnapshots[index].data();
+            if (!productSnapshots[index].exists || product == null) {
+              throw BusinessRuleException(message: 'Product was not found.');
+            }
+            final sold = product['soldQuantity'];
+            if (sold is! num || sold < 0 || sold != sold.truncateToDouble()) {
+              throw BusinessRuleException(message: 'Product inventory is invalid.');
+            }
+            final nextSold = sold.toInt() +
+                (shouldReduceStock ? quantities[index] : -quantities[index]);
+            if (nextSold < 0) {
+              throw BusinessRuleException(
+                message: 'Product inventory is inconsistent.',
+              );
+            }
+            transaction.update(productRefs[index], {
+              'soldQuantity': nextSold,
+              'updatedAt': FieldValue.serverTimestamp(),
+            });
+          }
+        }
+        transaction.update(orderRef, {
+          'status': newStatus,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
       });
     });
   }
@@ -59,10 +114,17 @@ class SellerOrderRepository {
     required Map<String, dynamic> transport,
   }) async {
     return Result.guard(() async {
-      final callable = _functions.httpsCallable('assignSellerTransport');
-      await callable.call({
-        'sellerOrderId': orderId,
-        'transport': transport,
+      final orderRef = _firestore.collection('sellerOrders').doc(orderId);
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(orderRef);
+        if (!snapshot.exists || snapshot.data() == null) {
+          throw BusinessRuleException(message: 'Seller order was not found.');
+        }
+        transaction.update(orderRef, {
+          'transportAssignment': transport,
+          'deliveryStage': 'assigned',
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
       });
     });
   }
@@ -99,7 +161,8 @@ class SellerOrderRepository {
           'failed': {'returned'},
           'returned': <String>{},
         };
-        if (!transitions[current]!.contains(stage)) {
+        if (!transitions.containsKey(current) ||
+            !transitions[current]!.contains(stage)) {
           throw BusinessRuleException(
             message: 'Cannot move delivery from $current to $stage.',
           );

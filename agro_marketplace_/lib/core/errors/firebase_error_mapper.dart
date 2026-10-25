@@ -120,9 +120,8 @@ class FirebaseErrorMapper {
           originalError: error,
           stackTrace: stackTrace,
         ),
-        'not-found' => FirebaseServiceException(
-          message: 'The order service is not available. Please deploy the checkout service and try again.',
-          code: 'order_service_unavailable',
+        'not-found' => NotFoundException(
+          message: error.message ?? 'The requested service or resource was not found.',
           originalError: error,
           stackTrace: stackTrace,
         ),
@@ -134,7 +133,7 @@ class FirebaseErrorMapper {
         _ => FirebaseServiceException(
           message:
               error.message ??
-              'The order service is unavailable. Please try again.',
+              'The requested operation is unavailable. Please try again.',
           code: error.code,
           originalError: error,
           stackTrace: stackTrace,

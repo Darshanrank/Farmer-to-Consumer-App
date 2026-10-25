@@ -58,10 +58,10 @@ service cloud.firestore {
       // Allow create (registration) — the app sets role here once
       allow create: if isOwner(userId);
       
-      // Allow update: user can update profile and switch role between buyer and seller
+      // Role is assigned at registration and cannot be changed by the client.
       allow update: if isOwner(userId)
-                    && (!request.resource.data.keys().hasAny(['role']) 
-                        || request.resource.data.role in ['buyer', 'seller'])
+                    && (!request.resource.data.keys().hasAny(['role'])
+                        || request.resource.data.role == resource.data.role)
                     && (!request.resource.data.keys().hasAny(['status'])
                         || request.resource.data.status == resource.data.status);
       
@@ -78,7 +78,19 @@ service cloud.firestore {
     match /products/{productId} {
       allow read: if true; 
       allow create: if isAuth() && request.resource.data.sellerId == request.auth.uid;
-      allow update, delete: if isAuth() && resource.data.sellerId == request.auth.uid;
+      allow update: if isAuth()
+                    && resource.data.sellerId == request.auth.uid
+                    && request.resource.data.sellerId == resource.data.sellerId
+                    && request.resource.data.stockQuantity is int
+                    && request.resource.data.reservedQuantity is int
+                    && request.resource.data.soldQuantity is int
+                    && request.resource.data.stockQuantity >= 0
+                    && request.resource.data.reservedQuantity >= 0
+                    && request.resource.data.soldQuantity >= 0
+                    && request.resource.data.stockQuantity >=
+                       request.resource.data.reservedQuantity +
+                       request.resource.data.soldQuantity;
+      allow delete: if isAuth() && resource.data.sellerId == request.auth.uid;
     }
     
     // CUSTOMER ORDERS (Buyer View)
