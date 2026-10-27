@@ -117,15 +117,18 @@ class Bootstrap {
     // registered in Firebase Console. If it isn't, App Check returns
     // DEVELOPER_ERROR but the app must NOT crash because of it.
     try {
-      await FirebaseAppCheck.instance.activate(
-        providerAndroid: kDebugMode
-            ? const AndroidDebugProvider()
-            : const AndroidPlayIntegrityProvider(),
-        providerApple: kDebugMode
-            ? const AppleDebugProvider()
-            : const AppleDeviceCheckProvider(),
-      );
-      AppLogger.info('Firebase App Check activated', context: 'Bootstrap');
+      if (kDebugMode) {
+        AppLogger.info(
+          'Skipping Firebase App Check in debug because callable functions do not enforce it.',
+          context: 'Bootstrap',
+        );
+      } else {
+        await FirebaseAppCheck.instance.activate(
+          providerAndroid: const AndroidPlayIntegrityProvider(),
+          providerApple: const AppleDeviceCheckProvider(),
+        );
+        AppLogger.info('Firebase App Check activated', context: 'Bootstrap');
+      }
     } catch (e) {
       AppLogger.warning(
         'Firebase App Check activation failed — continuing without it. '

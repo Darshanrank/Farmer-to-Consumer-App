@@ -715,15 +715,17 @@ class MockUser extends _i1.Mock implements _i4.User {
   ) as _i5.Future<void>);
 
   @override
-  _i5.Future<void> updateProfile({String? displayName, String? photoURL}) =>
-      (super.noSuchMethod(
-        Invocation.method(#updateProfile, [], {
-          #displayName: displayName,
-          #photoURL: photoURL,
-        }),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+  _i5.Future<void> updateProfile({
+    String? displayName = '<unchanged>',
+    String? photoURL = '<unchanged>',
+  }) => (super.noSuchMethod(
+    Invocation.method(#updateProfile, [], {
+      #displayName: displayName,
+      #photoURL: photoURL,
+    }),
+    returnValue: _i5.Future<void>.value(),
+    returnValueForMissingStub: _i5.Future<void>.value(),
+  ) as _i5.Future<void>);
 
   @override
   _i5.Future<void> verifyBeforeUpdateEmail(

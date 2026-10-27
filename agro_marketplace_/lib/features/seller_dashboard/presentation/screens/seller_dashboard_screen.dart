@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
+import '../../../seller_orders/presentation/providers/seller_orders_provider.dart';
 import '../providers/seller_dashboard_provider.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
@@ -16,6 +18,7 @@ class SellerDashboardScreen extends ConsumerWidget {
     final user = ref.watch(appUserProvider).value;
     final metrics = ref.watch(sellerDashboardMetricsProvider);
     final recent = ref.watch(recentOrdersProvider);
+    ref.watch(sellerOrdersProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,14 +26,17 @@ class SellerDashboardScreen extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: 'Notifications',
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notifications will appear here.'),
-                ),
-              );
-            },
+            icon: Badge(
+              isLabelVisible:
+                  ref.watch(unreadNotificationCountProvider) > 0,
+              label: Text(
+                ref.watch(unreadNotificationCountProvider) > 99
+                    ? '99+'
+                    : '${ref.watch(unreadNotificationCountProvider)}',
+              ),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            onPressed: () => context.pushNamed(RouteNames.notifications),
           ),
         ],
       ),
@@ -145,6 +151,23 @@ class SellerDashboardScreen extends ConsumerWidget {
               onPressed: () => context.pushNamed(RouteNames.sellerDelivery),
               icon: const Icon(Icons.local_shipping_outlined),
               label: const Text('Manage delivery settings'),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => context.pushNamed(RouteNames.sellerProducts),
+                  icon: const Icon(Icons.storefront_outlined),
+                  label: const Text('Products'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => context.pushNamed(RouteNames.sellerOrders),
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  label: const Text('Orders'),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Text(

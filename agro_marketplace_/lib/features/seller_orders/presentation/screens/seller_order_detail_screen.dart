@@ -217,14 +217,46 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                 else ...[
                   if (order.status == 'ready' &&
                       order.transportAssignment == null)
-                    OutlinedButton(
+                    FilledButton.icon(
                       onPressed: () => _assignTransport(
                         context,
                         ref,
                         order.id,
                         order.deliveryMode == 'fast',
                       ),
-                      child: const Text('Assign transport'),
+                      icon: const Icon(Icons.local_shipping_outlined),
+                      label: const Text('Delivery'),
+                    ),
+                  if (order.status == 'ready' &&
+                      order.transportAssignment != null &&
+                      order.deliveryStage == 'assigned')
+                    FilledButton.icon(
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) => AlertDialog(
+                            title: const Text('Direct dispatch?'),
+                            content: const Text(
+                              'This starts fulfilment dispatch and cannot be undone.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dialogContext, false),
+                                child: const Text('Cancel'),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.pop(dialogContext, true),
+                                child: const Text('Dispatch'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true && context.mounted) {
+                          await _updateStatus(context, ref, 'dispatched');
+                        }
+                      },
+                      icon: const Icon(Icons.outbox_outlined),
+                      label: const Text('Direct Dispatch'),
                     ),
                   if (order.transportAssignment != null &&
                       order.deliveryStage == 'assigned')
@@ -277,11 +309,11 @@ class SellerOrderDetailScreen extends ConsumerWidget {
                       onPressed: () => _updateStatus(context, ref, 'ready'),
                       child: const Text('Ready for Dispatch'),
                     ),
-                  if (order.status == 'ready')
+                  if (order.status == 'ready' &&
+                      order.transportAssignment == null)
                     ElevatedButton(
-                      onPressed: () =>
-                          _updateStatus(context, ref, 'dispatched'),
-                      child: const Text('Dispatch Order'),
+                      onPressed: null,
+                      child: const Text('Assign delivery before dispatch'),
                     ),
                   if (order.status == 'dispatched')
                     ElevatedButton(

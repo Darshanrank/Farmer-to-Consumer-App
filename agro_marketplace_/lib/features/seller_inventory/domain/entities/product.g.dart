@@ -37,6 +37,8 @@ _Product _$ProductFromJson(Map<String, dynamic> json) => _Product(
   soldQuantity: json['soldQuantity'] == null
       ? 0
       : _parseInventoryInt(json['soldQuantity']),
+  ratingAverage: (json['ratingAverage'] as num?)?.toDouble() ?? 0,
+  ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
   sellerServiceLocation: _locationFromJson(json['sellerServiceLocation']),
   fastDeliveryMinDays: (json['fastDeliveryMinDays'] as num?)?.toInt(),
   fastDeliveryMaxDays: (json['fastDeliveryMaxDays'] as num?)?.toInt(),
@@ -72,6 +74,8 @@ Map<String, dynamic> _$ProductToJson(_Product instance) => <String, dynamic>{
   'sellerCountryCode': instance.sellerCountryCode,
   'reservedQuantity': instance.reservedQuantity,
   'soldQuantity': instance.soldQuantity,
+  'ratingAverage': instance.ratingAverage,
+  'ratingCount': instance.ratingCount,
   'sellerServiceLocation': _locationToJson(instance.sellerServiceLocation),
   'fastDeliveryMinDays': instance.fastDeliveryMinDays,
   'fastDeliveryMaxDays': instance.fastDeliveryMaxDays,

@@ -70,6 +70,28 @@ service cloud.firestore {
         allow read, write: if isOwner(userId);
       }
 
+      // Notifications are private, user-scoped application data. Business
+      // events may also be recorded by the authenticated owner after a
+      // successful client operation when Functions are unavailable.
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasOnly([
+            'title', 'message', 'type', 'isRead', 'createdAt',
+            'entityId', 'entityType'
+          ])
+          && request.resource.data.title is string
+          && request.resource.data.message is string
+          && request.resource.data.type is string
+          && request.resource.data.isRead == false
+          && request.resource.data.createdAt is timestamp;
+        allow delete: if false;
+        allow update: if isOwner(userId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['isRead'])
+          && request.resource.data.isRead is bool;
+      }
+
     }
     
     // PRODUCTS COLLECTION
@@ -171,6 +193,11 @@ service cloud.firestore {
 
     match /orderEvents/{eventId} {
       allow read, write: if false;
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if isAuth();
+      allow write: if false;
     }
 
     match /paymentEvents/{eventId} {

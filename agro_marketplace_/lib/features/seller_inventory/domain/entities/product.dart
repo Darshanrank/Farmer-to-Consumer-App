@@ -56,6 +56,8 @@ abstract class Product with _$Product {
     String? sellerCountryCode,
     @JsonKey(fromJson: _parseInventoryInt) @Default(0) int reservedQuantity,
     @JsonKey(fromJson: _parseInventoryInt) @Default(0) int soldQuantity,
+    @Default(0) double ratingAverage,
+    @Default(0) int ratingCount,
     @JsonKey(fromJson: _locationFromJson, toJson: _locationToJson)
     GeoLocation? sellerServiceLocation,
     int? fastDeliveryMinDays,

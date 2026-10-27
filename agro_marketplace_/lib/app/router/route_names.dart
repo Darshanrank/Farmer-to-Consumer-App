@@ -42,4 +42,7 @@ class RouteNames {
   static const String savedAddresses = 'savedAddresses';
   static const String addSavedAddress = 'addSavedAddress';
   static const String editSavedAddress = 'editSavedAddress';
+  static const String notifications = 'notifications';
+  static const String sellerSalesReport = 'sellerSalesReport';
+  static const String sellerStockReport = 'sellerStockReport';
 }

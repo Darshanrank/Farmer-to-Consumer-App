@@ -33,6 +33,8 @@ import '../../features/seller_profile/presentation/screens/business_settings_scr
 import '../../features/seller_profile/presentation/screens/delivery_settings_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_settings_screen.dart';
 import '../../features/seller_profile/presentation/screens/seller_help_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/seller_reports/presentation/screens/seller_reports_screen.dart';
 import 'route_names.dart';
 
 part 'app_router.g.dart';
@@ -337,6 +339,21 @@ GoRouter appRouter(Ref ref) {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/notifications',
+        name: RouteNames.notifications,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/seller/reports/sales',
+        name: RouteNames.sellerSalesReport,
+        builder: (context, state) => const SellerSalesReportScreen(),
+      ),
+      GoRoute(
+        path: '/seller/reports/stock',
+        name: RouteNames.sellerStockReport,
+        builder: (context, state) => const SellerStockReportScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

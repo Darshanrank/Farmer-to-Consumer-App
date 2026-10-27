@@ -7,6 +7,26 @@ initializeApp();
 const db = getFirestore();
 const schemaVersion = 2;
 const reservationMinutes = 30;
+async function createInAppNotification(input: {
+  userId: string;
+  eventId: string;
+  title: string;
+  message: string;
+  type: string;
+  entityId: string;
+  entityType: string;
+}): Promise<void> {
+  await db.collection("users").doc(input.userId)
+    .collection("notifications").doc(input.eventId).set({
+      title: input.title,
+      message: input.message,
+      type: input.type,
+      entityId: input.entityId,
+      entityType: input.entityType,
+      isRead: false,
+      createdAt: new Date(),
+    }, { merge: false });
+}
 const deliveryStages = [
   "assigned",
   "picked_up",
@@ -190,7 +210,7 @@ async function applyReservationAction(
   actorId: string,
 ): Promise<{ parentOrderId: string; state: ReservationAction }> {
   const reservationRef = db.collection("inventoryReservations").doc(reservationId);
-  return db.runTransaction(async (transaction) => {
+  const result = await db.runTransaction(async (transaction) => {
     const reservationSnapshot = await transaction.get(reservationRef);
     const reservation = reservationSnapshot.data() as Record<string, unknown> | undefined;
     if (!reservationSnapshot.exists || !reservation) {
@@ -250,6 +270,7 @@ async function applyReservationAction(
       state: action,
     };
   });
+  return result;
 }
 
 type ReservationActionRequest = {
@@ -375,6 +396,7 @@ export const updateTrustedSellerFulfilment = onCall<SellerFulfilmentRequest>(
     const orderRef = db.collection("sellerOrders").doc(sellerOrderId);
     const eventRef = db.collection("orderEvents").doc();
     const now = new Date();
+    let buyerId: string | null = null;
     await db.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(orderRef);
       const order = snapshot.data() as Record<string, unknown> | undefined;
@@ -388,6 +410,7 @@ export const updateTrustedSellerFulfilment = onCall<SellerFulfilmentRequest>(
         order.fulfilmentStatus ?? order.status,
         "fulfilmentStatus",
       );
+      buyerId = stringValue(order.buyerId, "buyerId");
 
       if (!fulfilmentTransitions[currentStatus]?.includes(nextStatus)) {
         throw new HttpsError(
@@ -412,6 +435,17 @@ export const updateTrustedSellerFulfilment = onCall<SellerFulfilmentRequest>(
         createdAt: now,
       });
     });
+    if (buyerId) {
+      await createInAppNotification({
+        userId: buyerId,
+        eventId: `fulfilment_${sellerOrderId}_${nextStatus}`,
+        title: "Order status updated",
+        message: `Your order is now ${nextStatus}.`,
+        type: "order_status",
+        entityId: sellerOrderId,
+        entityType: "sellerOrder",
+      });
+    }
     return { schemaVersion, sellerOrderId, status: nextStatus };
   },
 );
@@ -546,6 +580,7 @@ export const assignSellerTransport = onCall<AssignTransportRequest>(
     const eventRef = db.collection("orderEvents").doc();
     const now = new Date();
     const assignment = transportAssignment(request.data.transport as Record<string, unknown>);
+    let buyerId: string | null = null;
     await db.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(orderRef);
       const order = snapshot.data() as Record<string, unknown> | undefined;
@@ -553,6 +588,7 @@ export const assignSellerTransport = onCall<AssignTransportRequest>(
         throw new HttpsError("permission-denied", "Seller order is not assigned to you.");
       }
       const fulfilmentStatus = order.fulfilmentStatus ?? order.status;
+      buyerId = stringValue(order.buyerId, "buyerId");
       if (!["accepted", "preparing", "packed", "ready"].includes(fulfilmentStatus as string)) {
         throw new HttpsError("failed-precondition", "Transport can be assigned after the order is accepted.");
       }
@@ -577,6 +613,17 @@ export const assignSellerTransport = onCall<AssignTransportRequest>(
         createdAt: now,
       });
     });
+    if (buyerId) {
+      await createInAppNotification({
+        userId: buyerId,
+        eventId: `transport_${sellerOrderId}_assigned`,
+        title: "Delivery assigned",
+        message: "The seller has assigned delivery for your order.",
+        type: "delivery",
+        entityId: sellerOrderId,
+        entityType: "sellerOrder",
+      });
+    }
     return { schemaVersion, sellerOrderId, deliveryStage: "assigned" };
   },
 );
@@ -599,6 +646,7 @@ export const updateSellerDeliveryStage = onCall<UpdateDeliveryStageRequest>(
     const orderRef = db.collection("sellerOrders").doc(sellerOrderId);
     const eventRef = db.collection("orderEvents").doc();
     const now = new Date();
+    let buyerId: string | null = null;
     await db.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(orderRef);
       const order = snapshot.data() as Record<string, unknown> | undefined;
@@ -606,6 +654,7 @@ export const updateSellerDeliveryStage = onCall<UpdateDeliveryStageRequest>(
         throw new HttpsError("permission-denied", "Seller order is not assigned to you.");
       }
       const currentStage = (order.deliveryStage as string | undefined) ?? "assigned";
+      buyerId = stringValue(order.buyerId, "buyerId");
       if (!deliveryStageTransition(currentStage, nextStage)) {
         throw new HttpsError("failed-precondition", `Cannot move delivery from ${currentStage} to ${nextStage}.`);
       }
@@ -687,6 +736,17 @@ export const updateSellerDeliveryStage = onCall<UpdateDeliveryStageRequest>(
         createdAt: now,
       });
     });
+    if (buyerId) {
+      await createInAppNotification({
+        userId: buyerId,
+        eventId: `delivery_${sellerOrderId}_${nextStage}`,
+        title: "Delivery progress updated",
+        message: `Your delivery is now ${nextStage.replace("_", " ")}.`,
+        type: "delivery",
+        entityId: sellerOrderId,
+        entityType: "sellerOrder",
+      });
+    }
     return { schemaVersion, sellerOrderId, deliveryStage: nextStage };
   },
 );
@@ -722,7 +782,7 @@ export const createTrustedCheckout = onCall<CheckoutRequest>(
     const now = new Date();
     const expiresAt = new Date(now.getTime() + reservationMinutes * 60_000);
 
-    return db.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
       const requestSnapshot = await transaction.get(requestRef);
       if (requestSnapshot.exists) {
         const previous = requestSnapshot.data() as Record<string, unknown>;
@@ -940,5 +1000,15 @@ export const createTrustedCheckout = onCall<CheckoutRequest>(
         paymentStatus: "pending",
       };
     });
+    await createInAppNotification({
+      userId: buyerId,
+      eventId: `checkout_${result.parentOrderId}`,
+      title: "Order placed",
+      message: "Your order was placed successfully.",
+      type: "order_created",
+      entityId: result.parentOrderId,
+      entityType: "customerOrder",
+    });
+    return { ...result, paymentStatus: "pending" as const };
   },
 );

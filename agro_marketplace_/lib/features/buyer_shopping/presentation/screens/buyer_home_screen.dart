@@ -7,6 +7,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../core/commerce/delivery_fee.dart';
 import '../../../../core/commerce/product_listing_rules.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../providers/shopping_providers.dart';
 
 class BuyerHomeScreen extends ConsumerWidget {
@@ -66,6 +67,13 @@ class BuyerHomeScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            icon: _NotificationIcon(
+              unreadCount: ref.watch(unreadNotificationCountProvider),
+            ),
+            onPressed: () => context.pushNamed(RouteNames.notifications),
+          ),
           IconButton(
             tooltip: 'Search products',
             icon: const Icon(Icons.search),
@@ -181,7 +189,9 @@ class BuyerHomeScreen extends ConsumerWidget {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        '4.5',
+                                        product.ratingCount == 0
+                                            ? 'New'
+                                            : product.ratingAverage.toStringAsFixed(1),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
@@ -329,6 +339,21 @@ class BuyerHomeScreen extends ConsumerWidget {
     if (selected != null) {
       ref.read(selectedDeliveryAddressIndexProvider.notifier).select(selected);
     }
+  }
+}
+
+class _NotificationIcon extends StatelessWidget {
+  final int unreadCount;
+
+  const _NotificationIcon({required this.unreadCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return Badge(
+      isLabelVisible: unreadCount > 0,
+      label: Text(unreadCount > 99 ? '99+' : '$unreadCount'),
+      child: const Icon(Icons.notifications_outlined),
+    );
   }
 }
 

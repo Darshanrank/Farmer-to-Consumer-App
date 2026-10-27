@@ -55,4 +55,4 @@ final class SellerOrderRepositoryProvider
 }
 
 String _$sellerOrderRepositoryHash() =>
-    r'281aa9d11864dd090cee1fd688303a1104301da9';
+    r'f328d0dd23f5716805b9bfb33cebac623e85c4f6';

@@ -49,12 +49,16 @@ class ProductRepository {
     return _firestore
         .collection(FirestorePaths.products)
         .where('sellerId', isEqualTo: sellerId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
+          final products = snapshot.docs
               .map((doc) => Product.fromJson(doc.data()))
               .toList();
+          products.sort(
+            (a, b) => (b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+                .compareTo(a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
+          );
+          return products;
         });
   }
 

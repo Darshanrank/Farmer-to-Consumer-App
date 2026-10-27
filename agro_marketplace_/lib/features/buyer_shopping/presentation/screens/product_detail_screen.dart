@@ -12,6 +12,7 @@ import 'dart:convert';
 import '../../domain/entities/cart_item.dart';
 import '../../data/cart_repository.dart';
 import '../providers/shopping_providers.dart';
+import '../../../reviews/presentation/widgets/product_reviews_section.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -195,6 +196,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 height: 1.5,
                               ),
                             ),
+                            const SizedBox(height: 24),
+                            ProductReviewsSection(productId: product.id),
                           ],
                         ),
                       ),
@@ -303,4 +306,5 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
     );
   }
+
 }

@@ -66,7 +66,10 @@ class FirebaseErrorMapper {
   /// Maps a [FirebaseException] (Firestore, Storage, etc.) to an [AppException].
   static AppException mapFirebaseException(FirebaseException e) {
     return switch (e.code) {
-      'permission-denied' => const AuthorizationException(),
+      'permission-denied' => const AuthorizationException(
+        message:
+            'Only the seller assigned to this order can update its delivery. Sign in with that seller account.',
+      ),
       'not-found' => const NotFoundException(),
       'already-exists' => const ConflictException(
         message: 'This resource already exists.',
@@ -146,6 +149,15 @@ class FirebaseErrorMapper {
     }
 
     if (error is FirebaseException) {
+      if (error.code == 'not-found') {
+        return NotFoundException(
+          message: error.message?.trim().isNotEmpty == true
+              ? error.message!
+              : 'Firebase could not find the requested service or database. Check the Firebase configuration.',
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       return mapFirebaseException(error);
     }
 

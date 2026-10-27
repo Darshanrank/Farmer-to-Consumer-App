@@ -45,60 +45,74 @@ class CheckoutRepository {
     required DetailedAddress buyerAddress,
   }) async {
     return Result.guard(() async {
-      final customerOrderRef = _firestore
-          .collection(FirestorePaths.customerOrders)
-          .doc(requestedOrder.id);
-      final validation = await _validateCheckout(
-        buyerId: requestedOrder.buyerId,
-        deliveryMode: deliveryMode,
-        buyerAddress: buyerAddress,
-      );
-      final quote = validation.quote;
-      final sellerItems = CheckoutPricing.groupBySeller(quote.items);
-      final order = requestedOrder.copyWith(
-        items: quote.items,
-        totalAmount: quote.total,
-        shippingAddress: buyerAddress.displayAddress,
-        deliveryMode: deliveryMode.name,
-        paymentStatus: 'pending',
-        deliveryAddressSnapshot: buyerAddress.toMap(),
-        deliveryEstimate: validation.deliveryEstimate,
-      );
-      final batch = _firestore.batch();
-      final orderData = order.toJson()
-        ..['items'] = quote.items.map((item) => item.toJson()).toList()
-        ..['sellerIds'] = sellerItems.keys.toList()
-        ..['subtotal'] = quote.subtotal
-        ..['discount'] = quote.discount
-        ..['tax'] = quote.tax
-        ..['handlingFee'] = quote.handlingFee
-        ..['deliveryFee'] = quote.deliveryFee;
-      batch.set(customerOrderRef, orderData);
-      for (final entry in sellerItems.entries) {
-        final sellerOrderRef = _firestore
-            .collection(FirestorePaths.sellerOrders)
-            .doc();
-        batch.set(sellerOrderRef, {
-          'id': sellerOrderRef.id,
-          'parentOrderId': order.id,
-          'buyerId': order.buyerId,
-          'sellerId': entry.key,
-          'items': entry.value.map((item) => item.toJson()).toList(),
-          'totalAmount': entry.value.fold<double>(
-            0,
-            (total, item) => total + item.totalPrice,
-          ),
-          'status': 'pending',
-          'paymentStatus': 'pending',
-          'shippingAddress': order.shippingAddress,
-          'deliveryMode': order.deliveryMode,
-          'deliveryAddressSnapshot': order.deliveryAddressSnapshot,
-          'deliveryEstimate': validation.sellerEstimates[entry.key],
-          'createdAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+      var stage = 'starting checkout';
+      try {
+        stage = 'preparing the customer order';
+        final customerOrderRef = _firestore
+            .collection(FirestorePaths.customerOrders)
+            .doc(requestedOrder.id);
+        stage = 'validating cart, products, and delivery address';
+        final validation = await _validateCheckout(
+          buyerId: requestedOrder.buyerId,
+          deliveryMode: deliveryMode,
+          buyerAddress: buyerAddress,
+        );
+        final quote = validation.quote;
+        final sellerItems = CheckoutPricing.groupBySeller(quote.items);
+        final order = requestedOrder.copyWith(
+          items: quote.items,
+          totalAmount: quote.total,
+          shippingAddress: buyerAddress.displayAddress,
+          deliveryMode: deliveryMode.name,
+          paymentStatus: 'pending',
+          deliveryAddressSnapshot: buyerAddress.toMap(),
+          deliveryEstimate: validation.deliveryEstimate,
+        );
+        final batch = _firestore.batch();
+        final orderData = order.toJson()
+          ..['items'] = quote.items.map((item) => item.toJson()).toList()
+          ..['sellerIds'] = sellerItems.keys.toList()
+          ..['subtotal'] = quote.subtotal
+          ..['discount'] = quote.discount
+          ..['tax'] = quote.tax
+          ..['handlingFee'] = quote.handlingFee
+          ..['deliveryFee'] = quote.deliveryFee;
+        batch.set(customerOrderRef, orderData);
+        stage = 'preparing seller orders';
+        for (final entry in sellerItems.entries) {
+          final sellerOrderRef = _firestore
+              .collection(FirestorePaths.sellerOrders)
+              .doc();
+          batch.set(sellerOrderRef, {
+            'id': sellerOrderRef.id,
+            'parentOrderId': order.id,
+            'buyerId': order.buyerId,
+            'sellerId': entry.key,
+            'items': entry.value.map((item) => item.toJson()).toList(),
+            'totalAmount': entry.value.fold<double>(
+              0,
+              (total, item) => total + item.totalPrice,
+            ),
+            'status': 'pending',
+            'paymentStatus': 'pending',
+            'shippingAddress': order.shippingAddress,
+            'deliveryMode': order.deliveryMode,
+            'deliveryAddressSnapshot': order.deliveryAddressSnapshot,
+            'deliveryEstimate': validation.sellerEstimates[entry.key],
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+        stage = 'saving the order';
+        await batch.commit();
+      } on FirebaseException catch (error, stackTrace) {
+        throw FirebaseServiceException(
+          message: 'Order placement failed while $stage. ${error.message ?? 'Firebase returned not-found.'}',
+          code: error.code,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
       }
-      await batch.commit();
     });
   }
 
@@ -231,6 +245,11 @@ class CheckoutRepository {
         .collection(FirestorePaths.users)
         .doc(buyerId)
         .get();
+    if (!snapshot.exists) {
+      throw BusinessRuleException(
+        message: 'Your buyer profile was not found. Please sign out and sign in again.',
+      );
+    }
     final data = snapshot.data();
     final saved = data?['savedAddresses'];
     if (saved is! List) {

@@ -142,7 +142,7 @@ final class SelectedDeliveryAddressIndexProvider
 }
 
 String _$selectedDeliveryAddressIndexHash() =>
-    r'51655cb704d6fe2fbe0dc7fd818ee1493496b280';
+    r'd12082b6144414ef96bc279bfedfe64a34bf2d04';
 
 abstract class _$SelectedDeliveryAddressIndex extends $Notifier<int?> {
   int? build();

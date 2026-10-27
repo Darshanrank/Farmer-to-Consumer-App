@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/logging/app_logger.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/result/result.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -9,6 +10,7 @@ import '../../data/cart_repository.dart';
 import '../../data/checkout_repository.dart';
 import '../../domain/entities/customer_order.dart';
 import 'shopping_providers.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 
 part 'checkout_controller.g.dart';
 
@@ -94,6 +96,28 @@ class CheckoutController extends _$CheckoutController {
       // refresh; newly added lines are never touched.
       if (clearResult.isFailure) {
         state = AsyncError(clearResult.exceptionOrNull!, StackTrace.current);
+      }
+      try {
+        await ref.read(notificationRepositoryProvider).createForUser(
+          uid: user.uid,
+          eventId: 'checkout_$orderId',
+          title: 'Order placed',
+          message: 'Your order was placed successfully.',
+          type: 'order_created',
+          entityId: orderId,
+          entityType: 'customerOrder',
+        );
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'Order notification could not be saved.',
+          context: 'CheckoutController',
+          error: error,
+          data: {'orderId': orderId},
+        );
+        AppLogger.debug(
+          'Notification write stack trace: $stackTrace',
+          context: 'CheckoutController',
+        );
       }
     });
 

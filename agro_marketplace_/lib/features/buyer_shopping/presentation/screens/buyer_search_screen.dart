@@ -12,11 +12,32 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/search_providers.dart';
 import '../providers/shopping_providers.dart';
 
-class BuyerSearchScreen extends ConsumerWidget {
+class BuyerSearchScreen extends ConsumerStatefulWidget {
   const BuyerSearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BuyerSearchScreen> createState() => _BuyerSearchScreenState();
+}
+
+class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
+  late final TextEditingController _queryController;
+
+  @override
+  void initState() {
+    super.initState();
+    _queryController = TextEditingController(
+      text: ref.read(searchQueryProvider),
+    );
+  }
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final productsAsync = ref.watch(buyerProductsProvider);
     final filteredProducts = ref.watch(filteredProductsProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
@@ -38,15 +59,25 @@ class BuyerSearchScreen extends ConsumerWidget {
       appBar: AppBar(
         title: TextField(
           autofocus: true,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search agro products...',
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
+            suffixIcon: IconButton(
+              tooltip: 'Clear search',
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _queryController.clear();
+                ref.read(searchQueryProvider.notifier).updateQuery('');
+              },
+            ),
           ),
+          controller: _queryController,
           onChanged: (val) {
             ref.read(searchQueryProvider.notifier).updateQuery(val);
           },
+          onTapOutside: (_) => FocusScope.of(context).unfocus(),
         ),
       ),
       body: Column(
@@ -70,6 +101,18 @@ class BuyerSearchScreen extends ConsumerWidget {
                       ),
                     ],
                     selected: {mode},
+                    style: ButtonStyle(
+                      foregroundColor: WidgetStateProperty.resolveWith(
+                        (states) => states.contains(WidgetState.selected)
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
+                      backgroundColor: WidgetStateProperty.resolveWith(
+                        (states) => states.contains(WidgetState.selected)
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
+                      ),
+                    ),
                     onSelectionChanged: (selection) => ref
                         .read(productListingModeControllerProvider.notifier)
                         .select(selection.first),
@@ -129,6 +172,16 @@ class BuyerSearchScreen extends ConsumerWidget {
                   return ChoiceChip(
                     label: const Text('All'),
                     selected: isSelected,
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                     onSelected: (selected) {
                       ref
                           .read(selectedCategoryProvider.notifier)
@@ -142,6 +195,16 @@ class BuyerSearchScreen extends ConsumerWidget {
                 return ChoiceChip(
                   label: Text(category),
                   selected: isSelected,
+                  labelStyle: TextStyle(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                  selectedColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                   onSelected: (selected) {
                     ref
                         .read(selectedCategoryProvider.notifier)
